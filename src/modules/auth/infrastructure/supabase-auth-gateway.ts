@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { AppError } from '@/shared/errors/app-error';
+import type { AuthGateway } from '@/modules/auth/application/auth-gateway';
 import {
   passwordResetRequestSchema,
   passwordUpdateSchema,
@@ -8,7 +8,7 @@ import {
   type PasswordUpdate,
   type SignInInput,
 } from '@/modules/auth/application/auth.schemas';
-import type { AuthGateway } from '@/modules/auth/application/auth-gateway';
+import { AppError } from '@/shared/errors/app-error';
 
 function toAuthenticationError(error: unknown): AppError {
   const message = String((error as { message?: unknown })?.message ?? '').toLowerCase();
