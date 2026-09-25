@@ -31,9 +31,9 @@ Se crean únicamente cuando comienza su migración; no se generan carpetas vací
 ## Reglas de tamaño
 
 - Objetivo habitual TS/TSX: 50–250 líneas.
-- >300: revisión de responsabilidad.
-- >500: justificación explícita.
-- >800: CI bloquea salvo archivo generado y excluido conscientemente.
+- > 300: revisión de responsabilidad.
+- > 500: justificación explícita.
+- > 800: CI bloquea salvo archivo generado y excluido conscientemente.
 - Funciones >100 líneas: CI bloquea.
 - Complejidad ciclomática >20: CI bloquea.
 

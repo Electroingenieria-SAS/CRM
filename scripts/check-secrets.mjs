@@ -26,12 +26,17 @@ for (const file of tracked) {
     if (pattern.test(text)) failures.push(`${file}: patrón ${name}`);
   }
 
-  if (file.startsWith('src/') && /NEXT_PUBLIC_[A-Z0-9_]*(?:SECRET|SERVICE_ROLE|PRIVATE_KEY)/.test(text)) {
+  if (
+    file.startsWith('src/') &&
+    /NEXT_PUBLIC_[A-Z0-9_]*(?:SECRET|SERVICE_ROLE|PRIVATE_KEY)/.test(text)
+  ) {
     failures.push(`${file}: variable privada expuesta con prefijo NEXT_PUBLIC_`);
   }
 }
 
-const forbiddenEnv = tracked.filter((file) => /^\.env(?:\.|$)/.test(file) && file !== '.env.example');
+const forbiddenEnv = tracked.filter(
+  (file) => /^\.env(?:\.|$)/.test(file) && file !== '.env.example',
+);
 for (const file of forbiddenEnv) failures.push(`${file}: entorno real versionado`);
 
 if (failures.length) {

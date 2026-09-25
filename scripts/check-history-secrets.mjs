@@ -4,7 +4,15 @@ let history = '';
 try {
   history = execFileSync(
     'git',
-    ['log', '-p', '--all', '--full-history', '--no-ext-diff', '--no-textconv', '--format=commit:%H'],
+    [
+      'log',
+      '-p',
+      '--all',
+      '--full-history',
+      '--no-ext-diff',
+      '--no-textconv',
+      '--format=commit:%H',
+    ],
     { encoding: 'utf8', maxBuffer: 128 * 1024 * 1024 },
   );
 } catch (error) {
@@ -17,7 +25,10 @@ const findings = [];
 const patterns = [
   ['private-key', /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g],
   ['supabase-secret', new RegExp('sb_' + 'secret_[A-Za-z0-9_-]{20,}', 'g')],
-  ['service-role-jwt', new RegExp('service_' + 'role\\s*[:=]\\s*["\'\`]?(eyJ[A-Za-z0-9_.-]+)', 'gi')],
+  [
+    'service-role-jwt',
+    new RegExp('service_' + 'role\\s*[:=]\\s*["\'\`]?(eyJ[A-Za-z0-9_.-]+)', 'gi'),
+  ],
   ['github-token', new RegExp('gh' + '[pousr]_[A-Za-z0-9]{30,}', 'g')],
   ['google-api-key', new RegExp('AI' + 'za[0-9A-Za-z_-]{35}', 'g')],
   ['aws-access-key', new RegExp('AK' + 'IA[0-9A-Z]{16}', 'g')],
@@ -30,7 +41,9 @@ for (const [name, pattern] of patterns) {
 
 if (findings.length) {
   console.error(`HISTORY SECRET CHECK FALLÓ · patrones detectados: ${findings.join(', ')}`);
-  console.error('Los valores no se imprimen. Si fueran reales, deben rotarse antes de reescribir historia.');
+  console.error(
+    'Los valores no se imprimen. Si fueran reales, deben rotarse antes de reescribir historia.',
+  );
   process.exit(1);
 }
 
