@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  passwordUpdateSchema,
-  signInSchema,
-} from '@/modules/auth/application/auth.schemas';
+import { passwordUpdateSchema, signInSchema } from '@/modules/auth/application/auth.schemas';
 
 describe('auth schemas', () => {
   it('normalizes email and preserves password', () => {
@@ -17,8 +14,8 @@ describe('auth schemas', () => {
 
   it('requires a stronger replacement password', () => {
     expect(() => passwordUpdateSchema.parse({ password: 'short' })).toThrow();
-    expect(
-      passwordUpdateSchema.parse({ password: 'correct-horse-battery-staple' }).password,
-    ).toBe('correct-horse-battery-staple');
+    expect(passwordUpdateSchema.parse({ password: 'correct-horse-battery-staple' }).password).toBe(
+      'correct-horse-battery-staple',
+    );
   });
 });

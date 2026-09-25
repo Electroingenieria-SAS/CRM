@@ -61,10 +61,7 @@ export class SupabaseAuthGateway implements AuthGateway {
     return data.session;
   }
 
-  async requestPasswordReset(
-    input: PasswordResetRequest,
-    redirectTo?: string,
-  ): Promise<void> {
+  async requestPasswordReset(input: PasswordResetRequest, redirectTo?: string): Promise<void> {
     const { email } = passwordResetRequestSchema.parse(input);
     const { error } = await this.client.auth.resetPasswordForEmail(email, {
       ...(redirectTo ? { redirectTo } : {}),
