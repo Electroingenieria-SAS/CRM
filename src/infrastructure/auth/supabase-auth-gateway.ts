@@ -1,8 +1,5 @@
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
-import type {
-  AuthGateway,
-  AuthSession,
-} from '@/modules/auth/application/auth-gateway';
+import type { AuthGateway, AuthSession } from '@/modules/auth/application/auth-gateway';
 import {
   passwordResetRequestSchema,
   passwordUpdateSchema,
