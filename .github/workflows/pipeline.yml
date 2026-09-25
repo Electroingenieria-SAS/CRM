@@ -78,7 +78,6 @@ jobs:
         with:
           extra_args: --results=verified
 
-
   codeql:
     runs-on: ubuntu-latest
     permissions:
