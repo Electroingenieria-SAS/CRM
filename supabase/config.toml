@@ -1,0 +1,4 @@
+# Configuration tracked for local/review use.
+# Production secrets belong to Supabase secret management, never this file.
+
+project_id = "crm-reconstruction"
