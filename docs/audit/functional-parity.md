@@ -5,8 +5,8 @@
 | Funcionalidad                      |   CRM fuente   | CRM nuevo | Tests | Mobile | Seguridad | Estado              |
 | ---------------------------------- | :------------: | :-------: | :---: | :----: | :-------: | ------------------- |
 | Shell/base técnica                 |       ✓        |     ✓     |   ✓   |   ✓    |     ✓     | Validado en staging |
-| Login / sesión                     |       ✓        |     —     |   —   |   —    |     —     | Pendiente           |
-| Recuperación de contraseña         | Fuente parcial |     —     |   —   |   —    |     —     | Pendiente           |
+| Login / sesión                     |       ✓        | Base técnica | Unit |   —    | En curso  | Implementación parcial |
+| Recuperación de contraseña         | Fuente parcial | Base técnica | Unit |   —    | En curso  | Implementación parcial |
 | Dashboard / centro de operaciones  |       ✓        |     —     |   —   |   —    |     —     | Pendiente           |
 | Pedidos / ventas                   |       ✓        |     —     |   —   |   —    |     —     | Pendiente           |
 | Segmentación de clientes           |       ✓        |     —     |   —   |   —    |     —     | Pendiente           |
@@ -31,3 +31,5 @@
 | PACO asistente                     |       ✓        |     —     |   —   |   —    |     —     | Pendiente           |
 
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
+
+> “Base técnica” no equivale a paridad: faltan pantallas, integración con entorno no productivo, E2E autenticado, MFA/administración y pruebas de autorización antes de validar estas filas.
