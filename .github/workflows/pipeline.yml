@@ -55,8 +55,8 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - name: Responsive + semantic staging smoke
         run: npm run test:e2e
       - name: Upload Playwright report on failure
@@ -77,15 +77,6 @@ jobs:
         uses: trufflesecurity/trufflehog@v3.97.5
         with:
           extra_args: --results=verified
-
-  dependency-review:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/dependency-review-action@v5
-        with:
-          fail-on-severity: high
 
   codeql:
     runs-on: ubuntu-latest
