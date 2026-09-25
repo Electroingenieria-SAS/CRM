@@ -1,0 +1,141 @@
+.page {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: max(2rem, env(safe-area-inset-top)) 0 max(3rem, env(safe-area-inset-bottom));
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 280px);
+  gap: var(--space-6);
+  align-items: end;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero h1 {
+  margin: var(--space-2) 0 var(--space-3);
+  font-size: clamp(2.4rem, 8vw, 5.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+
+.lead {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.versionCard {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--brand-soft);
+}
+
+.versionCard span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.versionCard strong {
+  margin-bottom: var(--space-2);
+  font-size: 1.35rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.card,
+.baseline {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.card {
+  min-height: 170px;
+  padding: var(--space-5);
+}
+
+.cardHeader,
+.baseline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.card h2,
+.baseline h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.card p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.badge {
+  flex: 0 0 auto;
+  padding: 0.42rem 0.68rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge[data-state='validated'] {
+  color: var(--positive);
+}
+
+.badge[data-state='in-progress'] {
+  color: var(--brand-strong);
+}
+
+.badge[data-state='pending'] {
+  color: var(--warning);
+}
+
+.badge[data-state='blocked'] {
+  color: var(--danger);
+}
+
+.baseline {
+  margin-top: var(--space-4);
+  padding: var(--space-5);
+}
+
+.baseline code {
+  overflow-wrap: anywhere;
+  color: var(--brand-strong);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 760px) {
+  .page {
+    width: min(100% - 1rem, 680px);
+  }
+
+  .hero,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader,
+  .baseline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

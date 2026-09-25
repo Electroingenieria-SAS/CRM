@@ -1,0 +1,9 @@
+{
+  "name": "CRM Electroingeniería — Staging",
+  "short_name": "CRM EI",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0b66c3",
+  "lang": "es"
+}
