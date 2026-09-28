@@ -435,8 +435,7 @@ declare
   v_credit erp_supply.credit_requests%rowtype;
 begin
   if not (
-    erp_private.can_access_module('orders','read')
-    or erp_private.can_access_module('credit','read')
+    erp_private.can_access_module('credit','read')
     or erp_private.can_access_module('cartera','read')
     or erp_private.can_access_module('caja','read')
   ) then
@@ -519,7 +518,7 @@ create or replace function public.erp_x_financial_gate(p_order_id uuid)
 returns jsonb
 language plpgsql
 stable
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
