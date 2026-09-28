@@ -111,7 +111,9 @@ test('sales user restores session, creates, filters and opens an order', async (
   await expect(page.getByRole('status')).toContainText(
     `Pedido ${orderNumber} creado correctamente.`,
   );
-  await expect(page.getByText(orderNumber)).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: new RegExp(orderNumber) }),
+  ).toBeVisible();
 
   await page.getByLabel('Buscar').fill(orderNumber);
   await page.getByRole('button', { name: 'Buscar' }).click();
