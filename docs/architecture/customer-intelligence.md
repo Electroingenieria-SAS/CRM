@@ -29,11 +29,11 @@ La UI no calcula Pareto, score ni segmento.
 public.erp_x_customer_priority_signal(document) retorna únicamente segmento, prioridad derivada, score, ranking cuando existe, soporte, provisional y versión.
 
 | Segmento | Prioridad futura de pedido |
-| --- | --- |
-| BASIC | LOW |
-| NORMAL | MEDIUM |
-| PREMIUM | HIGH |
-| URGENT | URGENT |
+| -------- | -------------------------- |
+| BASIC    | LOW                        |
+| NORMAL   | MEDIUM                     |
+| PREMIUM  | HIGH                       |
+| URGENT   | URGENT                     |
 
 No existe selector manual como fuente de verdad.
 

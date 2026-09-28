@@ -58,7 +58,9 @@ export function useCustomerIntelligenceSession(
       })
       .catch((error) => {
         if (active) {
-          handlers.onError(error instanceof Error ? error.message : 'No fue posible abrir el módulo.');
+          handlers.onError(
+            error instanceof Error ? error.message : 'No fue posible abrir el módulo.',
+          );
         }
       })
       .finally(() => {

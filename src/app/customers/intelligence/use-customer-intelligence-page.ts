@@ -106,11 +106,20 @@ export function useCustomerIntelligencePage() {
 
   const unavailable = !application;
   return {
-    context, ranking, pareto, detail, filters,
+    context,
+    ranking,
+    pareto,
+    detail,
+    filters,
     loading: unavailable ? false : loading,
     recalculating,
     message: unavailable ? 'Este entorno no tiene un backend de staging configurado.' : message,
-    notice, setFilters, closeDetail: () => setDetail(null),
-    search: loadRanking, openDetail, recalculate, signOut,
+    notice,
+    setFilters,
+    closeDetail: () => setDetail(null),
+    search: loadRanking,
+    openDetail,
+    recalculate,
+    signOut,
   };
 }

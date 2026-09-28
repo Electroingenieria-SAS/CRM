@@ -32,19 +32,21 @@ test('customer intelligence main journey is explainable and filterable', async (
   ).toBeVisible();
   await expect(page.getByText('Cliente Sintético Urgente')).toBeVisible();
   await expect(page.getByText('Cliente Sintético Premium')).toBeVisible();
-  await expect(page.getByRole('heading', { level: 3, name: 'Concentración Pareto real' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 3, name: 'Concentración Pareto real' }),
+  ).toBeVisible();
   await expect(page.getByText('Top 20 % · valor pagado')).toBeVisible();
 
-  await page
-    .getByRole('button', { name: /Abrir Cliente Sintético Premium/ })
-    .click();
+  await page.getByRole('button', { name: /Abrir Cliente Sintético Premium/ }).click();
 
   await expect(
     page.getByRole('heading', { level: 2, name: 'Cliente Sintético Premium' }),
   ).toBeVisible();
   await expect(page.getByText(/cantidad de pedidos/i)).toBeVisible();
   await expect(page.getByText(/facturas registradas, netas de reversión/i)).toBeVisible();
-  await expect(page.getByRole('heading', { level: 3, name: 'Evolución de segmento' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 3, name: 'Evolución de segmento' }),
+  ).toBeVisible();
 
   await page.getByLabel('Segmento').selectOption('PREMIUM');
   await page.getByRole('button', { name: 'Aplicar filtros' }).click();
@@ -71,7 +73,6 @@ test('customer intelligence smoke has no accidental horizontal overflow', async 
   );
   expect(overflow).toBe(false);
 });
-
 
 test('customer intelligence supports all reference viewport widths', async ({ page }, testInfo) => {
   test.skip(

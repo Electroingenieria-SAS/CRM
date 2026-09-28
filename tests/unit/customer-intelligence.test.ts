@@ -41,9 +41,7 @@ describe('customer intelligence domain', () => {
   });
 
   it('uses a neutral midpoint when only one observed customer exists', () => {
-    const [row] = calculateCustomerScores([
-      { customerId: 'only', orderCount: 1, paidAmount: 0 },
-    ]);
+    const [row] = calculateCustomerScores([{ customerId: 'only', orderCount: 1, paidAmount: 0 }]);
 
     expect(row?.frequencyPercentile).toBe(50);
     expect(row?.paidPercentile).toBe(50);

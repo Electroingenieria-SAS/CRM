@@ -44,11 +44,7 @@ function dateLabel(value: string | null | undefined) {
 }
 
 export function CustomerIntelligenceWorkspace(props: Props) {
-  const canRecalculate = hasModuleCapability(
-    props.context,
-    'customer_intelligence',
-    'admin',
-  );
+  const canRecalculate = hasModuleCapability(props.context, 'customer_intelligence', 'admin');
 
   return (
     <AppShell
@@ -127,20 +123,14 @@ export function CustomerIntelligenceWorkspace(props: Props) {
               Consultando inteligencia comercial…
             </p>
           ) : (
-            <CustomerRanking
-              items={props.ranking?.items ?? []}
-              onSelect={props.onOpenDetail}
-            />
+            <CustomerRanking items={props.ranking?.items ?? []} onSelect={props.onOpenDetail} />
           )}
         </section>
 
         {props.pareto ? <ParetoChart data={props.pareto} /> : null}
 
         {props.detail ? (
-          <CustomerIntelligenceDetailPanel
-            detail={props.detail}
-            onClose={props.onCloseDetail}
-          />
+          <CustomerIntelligenceDetailPanel detail={props.detail} onClose={props.onCloseDetail} />
         ) : null}
       </div>
     </AppShell>

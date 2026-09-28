@@ -82,8 +82,8 @@ export function CustomerIntelligenceDetailPanel({ detail, onClose }: Props) {
 
       <p className={styles.explanation}>
         Se clasifica usando exclusivamente {orderWeight}% de posición por cantidad de pedidos y{' '}
-        {paidWeight}% de posición por valor pagado en facturas registradas, netas de reversión.
-        Está en percentil {detail.metrics.frequencyPercentile.toFixed(1)} por cantidad de pedidos y{' '}
+        {paidWeight}% de posición por valor pagado en facturas registradas, netas de reversión. Está
+        en percentil {detail.metrics.frequencyPercentile.toFixed(1)} por cantidad de pedidos y{' '}
         {detail.metrics.paidPercentile.toFixed(1)} por valor pagado.
         {detail.metrics.provisional
           ? ' La clasificación es provisional porque el soporte estadístico todavía es limitado.'

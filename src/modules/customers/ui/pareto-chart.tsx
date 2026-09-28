@@ -30,9 +30,7 @@ export function ParetoChart({ data }: Props) {
     <section className={styles.paretoLayout} aria-labelledby="pareto-title">
       <div className={styles.chartPanel}>
         <h3 id="pareto-title">Concentración Pareto real</h3>
-        <p>
-          Cada curva ordena clientes por su propio factor. No se fuerza una relación 80/20.
-        </p>
+        <p>Cada curva ordena clientes por su propio factor. No se fuerza una relación 80/20.</p>
         {hasData ? (
           <>
             <svg

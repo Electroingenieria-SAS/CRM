@@ -22,9 +22,7 @@ function mapError(error: { code?: string; message?: string } | null) {
   return new AppError('DATABASE', 'No fue posible consultar la inteligencia de clientes.');
 }
 
-export class SupabaseCustomerIntelligenceRepository
-  implements CustomerIntelligenceRepository
-{
+export class SupabaseCustomerIntelligenceRepository implements CustomerIntelligenceRepository {
   constructor(private readonly client: SupabaseClient) {}
 
   async list(query: CustomerIntelligenceQuery = {}) {

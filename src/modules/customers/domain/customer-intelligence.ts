@@ -53,10 +53,7 @@ export function scoreCustomer(
   config: CustomerIntelligenceConfig = CUSTOMER_INTELLIGENCE_V1,
 ): number {
   return Number(
-    (
-      config.orderWeight * frequencyPercentile +
-      config.paidWeight * paidPercentile
-    ).toFixed(2),
+    (config.orderWeight * frequencyPercentile + config.paidWeight * paidPercentile).toFixed(2),
   );
 }
 
@@ -94,7 +91,6 @@ export function orderPriorityForSegment(segment: CustomerSegment) {
       return 'LOW';
   }
 }
-
 
 export type InvoiceState = 'REGISTERED' | 'PARTIALLY_REVERSED' | 'REVERSED' | 'VOID';
 

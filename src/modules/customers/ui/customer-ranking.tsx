@@ -24,9 +24,7 @@ interface Props {
 export function CustomerRanking({ items, onSelect }: Props) {
   if (!items.length) {
     return (
-      <p className={styles.empty}>
-        No hay clientes calculados para los filtros seleccionados.
-      </p>
+      <p className={styles.empty}>No hay clientes calculados para los filtros seleccionados.</p>
     );
   }
 
