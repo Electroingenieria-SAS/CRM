@@ -10,13 +10,26 @@ export interface OrdersFilterValues {
   route: string;
 }
 
+export interface OrdersFilterOption {
+  code: string;
+  name: string;
+}
+
 interface OrdersFiltersProps {
   value: OrdersFilterValues;
+  orderTypes: OrdersFilterOption[];
+  deliveryRoutes: OrdersFilterOption[];
   onChange(value: OrdersFilterValues): void;
   onSubmit(): void;
 }
 
-export function OrdersFilters({ value, onChange, onSubmit }: OrdersFiltersProps) {
+export function OrdersFilters({
+  value,
+  orderTypes,
+  deliveryRoutes,
+  onChange,
+  onSubmit,
+}: OrdersFiltersProps) {
   function patch(key: keyof OrdersFilterValues, nextValue: string) {
     onChange({ ...value, [key]: nextValue });
   }
@@ -55,20 +68,22 @@ export function OrdersFilters({ value, onChange, onSubmit }: OrdersFiltersProps)
           onChange={(event) => patch('orderType', event.target.value)}
         >
           <option value="">Todos</option>
-          <option value="PVC">PVC</option>
-          <option value="PVN">PVN</option>
-          <option value="PVE">PVE</option>
-          <option value="PVP">PVP</option>
+          {orderTypes.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
+          ))}
         </select>
       </label>
       <label>
         <span>Entrega</span>
         <select value={value.route} onChange={(event) => patch('route', event.target.value)}>
           <option value="">Todas</option>
-          <option value="CLIENT_POINT">Punto</option>
-          <option value="CLIENT_PICKUP">Recoge</option>
-          <option value="LOCAL_DISPATCH">Local</option>
-          <option value="NATIONAL_DISPATCH">Nacional</option>
+          {deliveryRoutes.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
+          ))}
         </select>
       </label>
       <button className="primary-button" type="submit">
