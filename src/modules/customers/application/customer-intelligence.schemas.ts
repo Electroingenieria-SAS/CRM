@@ -95,16 +95,17 @@ export const customerIntelligenceDetailSchema = z.object({
   contractVersion: z.string(),
 });
 
+export const paretoPointSchema = z.object({
+  rank: z.coerce.number().int().positive(),
+  customerId: z.string().uuid(),
+  customerName: z.string(),
+  customerPct: z.coerce.number().min(0).max(100),
+  cumulativePct: z.coerce.number().min(0).max(100),
+});
+
 export const paretoResponseSchema = z.object({
-  points: z.array(
-    z.object({
-      rank: z.coerce.number().int().positive(),
-      customerId: z.string().uuid(),
-      customerName: z.string(),
-      ordersCumulativePct: z.coerce.number().min(0).max(100),
-      paidCumulativePct: z.coerce.number().min(0).max(100),
-    }),
-  ),
+  ordersSeries: z.array(paretoPointSchema),
+  paidSeries: z.array(paretoPointSchema),
   summary: z.object({
     customers: z.coerce.number().int().nonnegative().default(0),
     orders: z.coerce.number().int().nonnegative().default(0),
