@@ -48,7 +48,7 @@ language plpgsql
 stable
 security invoker
 set search_path=pg_catalog,public,erp_supply,erp_private
-as $
+as $$
 declare
   v_org uuid:=erp_private.current_org_id();
   v_search text:=lower(trim(coalesce(p_search,'')));
@@ -79,7 +79,7 @@ begin
     'contractVersion','1.0.0'
   );
 end;
-$;
+$$;
 
 create or replace function public.erp_x_finance_credit_queue(
   p_status text default null,
