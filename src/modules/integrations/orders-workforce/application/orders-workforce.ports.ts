@@ -1,10 +1,12 @@
 import type {
   OrderWorkforceEvent,
+  OrderWorkforceHealth,
   OrderWorkforceOutboxItem,
   WorkforceAutomationResult,
 } from '@/modules/integrations/orders-workforce/application/orders-workforce.schemas';
 
 export interface OrderWorkforceOutboxPort {
+  health(): Promise<OrderWorkforceHealth>;
   listPending(orderId?: string, limit?: number): Promise<readonly OrderWorkforceOutboxItem[]>;
   claim(outboxId: string): Promise<{
     readonly idempotent: boolean;
