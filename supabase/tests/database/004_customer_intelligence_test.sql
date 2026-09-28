@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(32);
 
 select has_table('erp_supply','customers','stable customer identity table exists');
 select has_table('erp_supply','invoices','invoice payment ledger exists');
