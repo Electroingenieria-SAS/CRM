@@ -15,11 +15,7 @@ export function PasswordUpdatePageClient() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!application) {
-      setState('error');
-      setMessage('Este entorno no tiene un backend de autenticación configurado.');
-      return;
-    }
+    if (!application) return;
 
     let active = true;
     const params = new URLSearchParams(window.location.search);
@@ -49,6 +45,19 @@ export function PasswordUpdatePageClient() {
     };
   }, [application]);
 
+  if (!application) {
+    return (
+      <main id="main-content" className="centered-page">
+        <section className="surface" aria-labelledby="password-title">
+          <p className="eyebrow">Seguridad</p>
+          <h1 id="password-title">Cambiar contraseña</h1>
+          <p role="alert">Este entorno no tiene un backend de autenticación configurado.</p>
+          <Link href="/login">Volver al inicio de sesión</Link>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main id="main-content" className="centered-page">
       <section className="surface" aria-labelledby="password-title">
@@ -65,7 +74,7 @@ export function PasswordUpdatePageClient() {
           </>
         ) : null}
 
-        {state === 'ready' && application ? (
+        {state === 'ready' ? (
           <PasswordUpdateForm
             onUpdate={async (password) => {
               await application.auth.updatePassword({ password });
