@@ -7,14 +7,18 @@ import { hasModuleCapability } from '@/modules/auth/application/session-permissi
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type { OrderWorkforceHealth } from '@/modules/integrations/orders-workforce/application/orders-workforce.schemas';
 
+const unavailableMessage = 'Este entorno no tiene un backend de staging configurado.';
+
 export function useOrdersWorkforcePage() {
   const router = useRouter();
   const application = useMemo(() => createOrdersWorkforceBrowserApplication(), []);
   const [context, setContext] = useState<SessionContext | null>(null);
   const [health, setHealth] = useState<OrderWorkforceHealth | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => Boolean(application));
   const [repairing, setRepairing] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(() =>
+    application ? null : unavailableMessage,
+  );
   const [notice, setNotice] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -35,13 +39,9 @@ export function useOrdersWorkforcePage() {
   }, [application, router]);
 
   useEffect(() => {
-    let active = true;
-    if (!application) {
-      setLoading(false);
-      setMessage('Este entorno no tiene un backend de staging configurado.');
-      return;
-    }
+    if (!application) return;
 
+    let active = true;
     const unsubscribe = application.auth.onSessionChange((event) => {
       if (event.type === 'signed_out') router.replace('/login');
     });
