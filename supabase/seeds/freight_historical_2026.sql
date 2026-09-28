@@ -201,8 +201,14 @@ normalized as (
 department_by_city as (
   select
     city_key,
-    coalesce(max(nullif(department_key,'')),'UNKNOWN') department_key,
-    coalesce(max(nullif(department_name,'')),'Sin departamento') department_name,
+    case
+      when city_key='BOGOTA' then 'BOGOTA DC'
+      else coalesce(max(nullif(department_key,'')),'UNKNOWN')
+    end department_key,
+    case
+      when city_key='BOGOTA' then 'Bogotá D.C.'
+      else coalesce(max(nullif(department_name,'')),'Sin departamento')
+    end department_name,
     max(city_name) city_name
   from normalized
   group by city_key
@@ -430,11 +436,14 @@ normalized as (
 resolved as (
   select
     n.*,
-    coalesce(
-      nullif(n.department_key,''),
-      max(nullif(n.department_key,'')) over(partition by n.city_key),
-      'UNKNOWN'
-    ) resolved_department
+    case
+      when n.city_key='BOGOTA' then 'BOGOTA DC'
+      else coalesce(
+        nullif(n.department_key,''),
+        max(nullif(n.department_key,'')) over(partition by n.city_key),
+        'UNKNOWN'
+      )
+    end resolved_department
   from normalized n
 ),
 grouped as (
