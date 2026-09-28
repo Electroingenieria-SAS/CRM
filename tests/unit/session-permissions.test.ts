@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 
-const context = {
+const context: Pick<SessionContext, 'modules'> = {
   modules: [
     {
       code: 'orders',
@@ -15,7 +15,7 @@ const context = {
       canAdmin: false,
     },
   ],
-} as Pick<SessionContext, 'modules'> as SessionContext;
+};
 
 describe('session permissions', () => {
   it('authorizes from module capabilities instead of role-name checks', () => {
