@@ -13,10 +13,14 @@ export default defineConfig({
   },
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
+    { name: 'desktop-firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'desktop-webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'mobile-android', use: { ...devices['Pixel 7'] } },
+    { name: 'mobile-iphone', use: { ...devices['iPhone 13'] } },
+    { name: 'tablet-webkit', use: { ...devices['iPad (gen 7)'] } },
   ],
   webServer: {
-    command: 'npm run dev -- --hostname 127.0.0.1',
+    command: 'npm run build && npm run start -- --hostname 127.0.0.1',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

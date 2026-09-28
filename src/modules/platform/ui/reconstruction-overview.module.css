@@ -117,8 +117,15 @@
   padding: var(--space-5);
 }
 
-.baseline code {
+.baseline > code {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
   overflow-wrap: anywhere;
+  word-break: break-all;
   color: var(--brand-strong);
   font-size: 0.78rem;
 }

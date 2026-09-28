@@ -12,7 +12,7 @@ export function ReconstructionOverview() {
   const status = getReconstructionStatus();
 
   return (
-    <main className={styles.page}>
+    <main id="main-content" className={styles.page} tabIndex={-1}>
       <section className={styles.hero} aria-labelledby="crm-title">
         <div>
           <p className="eyebrow">Electroingeniería S.A.S. · staging seguro</p>
