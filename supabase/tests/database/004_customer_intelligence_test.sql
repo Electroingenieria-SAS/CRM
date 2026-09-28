@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(39);
+select plan(42);
 
 select has_table('erp_supply','customers','stable customer identity table exists');
 select has_table('erp_supply','invoices','invoice payment ledger exists');
@@ -206,6 +206,37 @@ select is(
   'new organizations receive the default active algorithm'
 );
 
+insert into erp_supply.customers(
+  id,organization_id,identity_kind,document,normalized_document,display_name
+) values(
+  '44000000-0000-0000-0000-000000000001',
+  '42000000-0000-0000-0000-000000000002',
+  'DOCUMENT','999-OTHER','999OTHER','Other Org Customer'
+);
+
+select throws_ok(
+  $sql$update erp_supply.orders
+       set customer_id='44000000-0000-0000-0000-000000000001'
+       where order_number='CI-T-1-1'$sql$,
+  '23503',
+  null,
+  'order cannot reference a customer from another organization'
+);
+
+select throws_ok(
+  $sql$insert into erp_supply.invoices(
+         organization_id,order_id,invoice_number,amount,status
+       )
+       select
+         '42000000-0000-0000-0000-000000000002',
+         o.id,'CROSS-ORG-INVOICE',1000,'REGISTERED'
+       from erp_supply.orders o
+       where o.order_number='CI-T-1-1'$sql$,
+  '23503',
+  null,
+  'invoice cannot reference an order from another organization'
+);
+
 select set_config(
   'request.jwt.claims',
   '{"sub":"41000000-0000-0000-0000-000000000001","role":"authenticated","email":"ci-admin@example.test"}',
@@ -402,6 +433,12 @@ select set_config(
   true
 );
 set local role authenticated;
+
+select is(
+  (select count(*) from erp_supply.customer_intelligence_current),
+  0::bigint,
+  'RLS hides customer intelligence snapshots from a role without permission'
+);
 
 select throws_ok(
   $sql$select public.erp_x_customer_intelligence_list(null,null,1,100)$sql$,
