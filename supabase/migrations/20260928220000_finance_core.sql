@@ -218,6 +218,21 @@ create unique index uq_financial_event_idempotency
 create index idx_financial_events_order
   on erp_supply.financial_events(organization_id,order_id,created_at desc);
 
+create or replace function erp_private.finance_round_money(p_amount numeric)
+returns numeric
+language sql
+immutable
+security invoker
+set search_path=pg_catalog
+as $
+  select round(p_amount,2)
+$;
+
+revoke all on function erp_private.finance_round_money(numeric)
+from public,anon;
+grant execute on function erp_private.finance_round_money(numeric)
+to authenticated;
+
 create or replace function erp_private.finance_idempotency_lock(
   p_scope text,
   p_key text
