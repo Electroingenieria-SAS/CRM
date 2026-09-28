@@ -19,6 +19,17 @@ Se cuenta un pedido cuando pertenece a la organización, tiene customer_id, is_t
 
 Un pedido válido puede tener pago cero y sigue aportando a la métrica de cantidad.
 
+## Devoluciones y ajustes
+
+La auditoría del CRM fuente encontró devoluciones físicas dentro del dominio de Recepción/Bodega, pero no un ledger financiero independiente de refund/nota crédito que deba alimentar Customer Intelligence.
+
+Por tanto:
+
+- una devolución física no resta dinero por inferencia;
+- si el pedido queda CANCELLED, deja de contar como pedido válido;
+- si la factura registrada se revierte total o parcialmente, el valor pagado disminuye con esa reversión;
+- no se usa ninguna tercera métrica para compensar devoluciones.
+
 ## Tablas
 
 - customers: identidad estable.
