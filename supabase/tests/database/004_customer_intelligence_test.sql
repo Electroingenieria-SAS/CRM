@@ -310,7 +310,7 @@ select set_config(
 set local role authenticated;
 
 select throws_ok(
-  $select public.erp_x_customer_intelligence_list(null,null,1,100)$,
+  $sql$select public.erp_x_customer_intelligence_list(null,null,1,100)$sql$,
   '42501',
   'No autorizado para consultar inteligencia de clientes',
   'same-organization role without permission cannot read ranking'
