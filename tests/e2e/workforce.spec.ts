@@ -60,7 +60,7 @@ test('planner completes the activity lifecycle with required photo evidence', as
   await expect(dialog.getByText(/QA Coordinador B/)).toBeVisible();
 
   await dialog.getByRole('button', { name: 'Iniciar actividad' }).click();
-  await expect(dialog.getByText(/IN_PROGRESS/)).toBeVisible();
+  await expect(dialog.getByText(/En curso/)).toBeVisible();
 
   await dialog.getByLabel('Seleccionar archivo').setInputFiles({
     name: 'evidencia-workforce.png',
@@ -70,7 +70,7 @@ test('planner completes the activity lifecycle with required photo evidence', as
   await expect(page.getByRole('status')).toContainText('Evidencia registrada.');
 
   await dialog.getByRole('button', { name: 'Finalizar' }).click();
-  await expect(dialog.getByText(/COMPLETED/)).toBeVisible();
+  await expect(dialog.getByText(/Realizada/)).toBeVisible();
 
   await dialog.getByRole('button', { name: 'Cerrar detalle' }).click();
   await expect(dialog).toHaveCount(0);
