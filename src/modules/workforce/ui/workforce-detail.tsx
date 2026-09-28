@@ -12,6 +12,7 @@ interface WorkforceDetailProps {
   detail: WorkforceActivityDetailResponse;
   people: readonly WorkforcePerson[];
   busy: boolean;
+  canManage: boolean;
   onClose(): void;
   onAssign(profileId: string | null): Promise<void>;
   onStart(): Promise<void>;
@@ -88,15 +89,19 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
         <section className={styles.actions} aria-label="Acciones de actividad">
           {activity.status === 'PLANNED' ? (
             <>
-              <label>
-                Responsable
-                <select value={assignee} onChange={(event) => setAssignee(event.target.value)}>
-                  {props.people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
-                </select>
-              </label>
-              <button type="button" disabled={props.busy || assignee === activity.assigneeProfileId} onClick={() => void props.onAssign(assignee)}>
-                Reasignar
-              </button>
+              {props.canManage ? (
+                <>
+                  <label>
+                    Responsable
+                    <select value={assignee} onChange={(event) => setAssignee(event.target.value)}>
+                      {props.people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
+                    </select>
+                  </label>
+                  <button type="button" disabled={props.busy || assignee === activity.assigneeProfileId} onClick={() => void props.onAssign(assignee)}>
+                    Reasignar
+                  </button>
+                </>
+              ) : null}
               <button type="button" disabled={props.busy} onClick={() => void props.onStart()}>Iniciar actividad</button>
             </>
           ) : null}
