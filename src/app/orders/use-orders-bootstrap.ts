@@ -28,39 +28,40 @@ async function loadInitialWorkspace(application: BrowserApplication) {
 }
 
 export function useOrdersBootstrap(dependencies: BootstrapDependencies) {
+  const { application, goToLogin, setContext, setItems, setLoading, setMessage } = dependencies;
+
   useEffect(() => {
-    const { application } = dependencies;
     if (!application) return;
 
     let active = true;
     const unsubscribe = application.auth.onSessionChange((event) => {
-      if (event.type === 'signed_out') dependencies.goToLogin();
+      if (event.type === 'signed_out') goToLogin();
     });
 
     void loadInitialWorkspace(application)
       .then((workspace) => {
         if (!active) return;
         if (!workspace) {
-          dependencies.goToLogin();
+          goToLogin();
           return;
         }
-        dependencies.setContext(workspace.context);
-        dependencies.setItems(workspace.items);
+        setContext(workspace.context);
+        setItems(workspace.items);
       })
       .catch((error) => {
         if (active) {
-          dependencies.setMessage(
+          setMessage(
             error instanceof Error ? error.message : 'No fue posible iniciar el módulo.',
           );
         }
       })
       .finally(() => {
-        if (active) dependencies.setLoading(false);
+        if (active) setLoading(false);
       });
 
     return () => {
       active = false;
       unsubscribe();
     };
-  }, [dependencies]);
+  }, [application, goToLogin, setContext, setItems, setLoading, setMessage]);
 }
