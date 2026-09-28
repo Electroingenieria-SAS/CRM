@@ -86,6 +86,7 @@ begin
     'customerDocument',document,
     'identityKind',identity_kind,
     'validOrderCount',valid_order_count,
+    'observationCount',valid_order_count,
     'paidAmount',paid_amount,
     'orderRank',order_rank,
     'paidRank',paid_rank,
@@ -152,6 +153,7 @@ begin
     ),
     'metrics',jsonb_build_object(
       'validOrderCount',c.valid_order_count,
+      'observationCount',c.valid_order_count,
       'paidAmount',c.paid_amount,
       'orderRank',c.order_rank,
       'paidRank',c.paid_rank,
