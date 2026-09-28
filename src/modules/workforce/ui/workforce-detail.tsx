@@ -5,6 +5,7 @@ import type {
   WorkforceActivityDetailResponse,
   WorkforcePerson,
 } from '@/modules/workforce/application/workforce.schemas';
+import { activityStatusLabel } from '@/modules/workforce/ui/workforce-calendar-utils';
 import { formatBusinessDate } from '@/shared/time/time-zone';
 import styles from './workforce-detail.module.css';
 
@@ -76,7 +77,7 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
             </span>
             <h2 id="workforce-detail-title">{activity.title}</h2>
             <p>
-              {activity.assigneeName} · {activity.status}
+              {activity.assigneeName} · {activityStatusLabel(activity.status)}
             </p>
           </div>
           <button type="button" onClick={props.onClose} autoFocus aria-label="Cerrar detalle">
