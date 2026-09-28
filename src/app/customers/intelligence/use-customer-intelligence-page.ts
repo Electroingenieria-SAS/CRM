@@ -1,11 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  createBrowserApplication,
-  type BrowserApplication,
-} from '@/composition/browser-application';
+import { createBrowserApplication } from '@/composition/browser-application';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type {
   CustomerIntelligenceDetail,
@@ -13,23 +10,12 @@ import type {
   ParetoResponse,
 } from '@/modules/customers/application/customer-intelligence.schemas';
 import type { CustomerIntelligenceFilterValues } from '@/modules/customers/ui/customer-intelligence-filters';
+import { useCustomerIntelligenceSession } from './use-customer-intelligence-session';
 
 export const initialCustomerFilters: CustomerIntelligenceFilterValues = {
   search: '',
   segment: '',
 };
-
-async function loadInitial(application: BrowserApplication) {
-  const context = await application.auth.restoreContext();
-  if (!context) return null;
-
-  const [ranking, pareto] = await Promise.all([
-    application.customerIntelligence.list({ page: 1, pageSize: 50 }),
-    application.customerIntelligence.pareto(),
-  ]);
-
-  return { context, ranking, pareto };
-}
 
 export function useCustomerIntelligencePage() {
   const router = useRouter();
@@ -44,61 +30,39 @@ export function useCustomerIntelligencePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const loadRanking = useCallback(
-    async (nextFilters: CustomerIntelligenceFilterValues) => {
-      if (!application) return;
-      setLoading(true);
-      setMessage(null);
-      try {
-        const response = await application.customerIntelligence.list({
-          ...nextFilters,
-          page: 1,
-          pageSize: 50,
-        });
-        setRanking(response);
-      } catch (error) {
-        setMessage(
-          error instanceof Error ? error.message : 'No fue posible cargar el ranking de clientes.',
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [application],
-  );
-
-  useEffect(() => {
-    if (!application) return;
-    let active = true;
-    const unsubscribe = application.auth.onSessionChange((event) => {
-      if (event.type === 'signed_out') router.replace('/login');
-    });
-
-    void loadInitial(application)
-      .then((workspace) => {
-        if (!active) return;
-        if (!workspace) {
-          router.replace('/login');
-          return;
-        }
+  const sessionHandlers = useMemo(
+    () => ({
+      onLoaded: (workspace: {
+        context: SessionContext;
+        ranking: CustomerIntelligenceList;
+        pareto: ParetoResponse;
+      }) => {
         setContext(workspace.context);
         setRanking(workspace.ranking);
         setPareto(workspace.pareto);
-      })
-      .catch((error) => {
-        if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible abrir el módulo.');
-        }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+      },
+      onSignedOut: () => router.replace('/login'),
+      onError: (nextMessage: string) => setMessage(nextMessage),
+      onSettled: () => setLoading(false),
+    }),
+    [router],
+  );
+  useCustomerIntelligenceSession(application, sessionHandlers);
 
-    return () => {
-      active = false;
-      unsubscribe();
-    };
-  }, [application, router]);
+  const loadRanking = useCallback(async () => {
+    if (!application) return;
+    setLoading(true);
+    setMessage(null);
+    try {
+      setRanking(
+        await application.customerIntelligence.list({ ...filters, page: 1, pageSize: 50 }),
+      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No fue posible cargar el ranking.');
+    } finally {
+      setLoading(false);
+    }
+  }, [application, filters]);
 
   async function openDetail(customerId: string) {
     if (!application) return;
@@ -141,22 +105,12 @@ export function useCustomerIntelligencePage() {
   }
 
   const unavailable = !application;
-
   return {
-    context,
-    ranking,
-    pareto,
-    detail,
-    filters,
+    context, ranking, pareto, detail, filters,
     loading: unavailable ? false : loading,
     recalculating,
     message: unavailable ? 'Este entorno no tiene un backend de staging configurado.' : message,
-    notice,
-    setFilters,
-    closeDetail: () => setDetail(null),
-    search: () => loadRanking(filters),
-    openDetail,
-    recalculate,
-    signOut,
+    notice, setFilters, closeDetail: () => setDetail(null),
+    search: loadRanking, openDetail, recalculate, signOut,
   };
 }
