@@ -184,6 +184,18 @@ begin
       select coalesce(jsonb_agg(jsonb_build_object('code',s.code,'name',s.name) order by s.sort_order),'[]'::jsonb)
       from erp_supply.workflow_steps s
       where s.active and not s.terminal
+    ),
+    'blockReasons',(
+      select coalesce(jsonb_agg(jsonb_build_object('code',r.code,'name',r.name) order by r.sort_order),'[]'::jsonb)
+      from erp_supply.order_block_reasons r
+      where r.active
+    ),
+    'issueTypes',(
+      select coalesce(jsonb_agg(jsonb_build_object(
+        'code',i.code,'name',i.name,'defaultSeverity',i.default_severity,'defaultBlocking',i.default_blocking
+      ) order by i.sort_order),'[]'::jsonb)
+      from erp_supply.order_issue_types i
+      where i.active
     )
   );
 end;
