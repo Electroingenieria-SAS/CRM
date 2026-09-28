@@ -11,7 +11,7 @@ const capabilityField = {
 } as const;
 
 export function hasModuleCapability(
-  context: SessionContext,
+  context: Pick<SessionContext, 'modules'>,
   moduleCode: string,
   capability: ModuleCapability,
 ): boolean {
