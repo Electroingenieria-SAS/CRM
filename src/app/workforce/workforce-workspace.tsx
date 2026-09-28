@@ -55,6 +55,12 @@ interface WorkforceWorkspaceProps {
 
 export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
   const canCreate = hasModuleCapability(props.context, 'workforce', 'create');
+  const canManage =
+    hasModuleCapability(props.context, 'workforce', 'admin') ||
+    hasModuleCapability(props.context, 'workforce', 'approve');
+  const assignablePeople = canManage
+    ? props.schedule.people
+    : props.schedule.people.filter((person) => person.id === props.context.profile.id);
   const range = workforceRange(props.mode, props.anchor);
 
   return (
@@ -105,8 +111,9 @@ export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
       {props.creating && canCreate ? (
         <WorkforceCreateForm
           catalog={props.catalog}
-          people={props.schedule.people}
+          people={assignablePeople}
           initialDate={props.anchor}
+          allowAutoAssign={canManage}
           onCreate={props.onCreate}
           onCancel={props.onCancelCreate}
         />
@@ -148,8 +155,9 @@ export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
       {props.detail ? (
         <WorkforceDetail
           detail={props.detail}
-          people={props.schedule.people}
+          people={assignablePeople}
           busy={props.busy}
+          canManage={canManage}
           onClose={props.onCloseDetail}
           onAssign={props.onAssign}
           onStart={props.onStart}
