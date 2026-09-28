@@ -1,0 +1,115 @@
+import { expect, test, type Page } from '@playwright/test';
+
+const plannerEmail = 'qa-coordinator-a@example.test';
+
+function password() {
+  const value = process.env.E2E_PASSWORD;
+  if (!value) throw new Error('E2E_PASSWORD is required for authenticated tests.');
+  return value;
+}
+
+async function login(page: Page) {
+  await page.goto('/login');
+  await page.getByLabel('Correo').fill(plannerEmail);
+  await page.getByLabel('Contraseña').fill(password());
+  await page.getByRole('button', { name: 'Ingresar' }).click();
+  await expect(page).toHaveURL(/\/orders\/?$/);
+}
+
+async function openWorkforce(page: Page) {
+  await page.goto('/workforce');
+  await expect(page.getByRole('heading', { level: 1, name: 'Jornada y cronograma' })).toBeVisible();
+}
+
+test('anonymous users are redirected away from Workforce', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+  await page.goto('/workforce');
+  await expect(page).toHaveURL(/\/login\/?$/);
+});
+
+test('planner completes the activity lifecycle with required photo evidence', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+
+  await login(page);
+  await openWorkforce(page);
+
+  await expect(page.getByText('Tratamiento especial QA')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Registrar actividad' }).click();
+  await page.getByLabel('Categoría').selectOption({ label: 'Despacho local' });
+  await page.getByLabel('Subcategoría').selectOption({ label: 'Cargue y entrega' });
+  await page.getByLabel('Actividad específica').selectOption({ label: 'Cargue' });
+  await page.getByLabel('Inicio').fill('2026-09-29T07:00');
+  await page.getByLabel('Fin').fill('2026-09-29T09:00');
+  await page.getByRole('button', { name: 'Planificar actividad' }).click();
+
+  await expect(page.getByRole('status')).toContainText('Actividad planificada correctamente.');
+
+  await page.getByRole('button', { name: 'Periodo siguiente' }).click();
+  const activity = page.getByRole('button', { name: /Cargue.*Planificada/ }).first();
+  await expect(activity).toBeVisible();
+  await activity.click();
+
+  const dialog = page.getByRole('dialog', { name: 'Cargue' });
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByLabel('Responsable').selectOption({ label: 'QA Coordinador B' });
+  await dialog.getByRole('button', { name: 'Reasignar' }).click();
+  await expect(dialog.getByText(/QA Coordinador B/)).toBeVisible();
+
+  await dialog.getByRole('button', { name: 'Iniciar actividad' }).click();
+  await expect(dialog.getByText(/IN_PROGRESS/)).toBeVisible();
+
+  await dialog.getByLabel('Seleccionar archivo').setInputFiles({
+    name: 'evidencia-workforce.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from('synthetic-image-content'),
+  });
+  await expect(page.getByRole('status')).toContainText('Evidencia registrada.');
+
+  await dialog.getByRole('button', { name: 'Finalizar' }).click();
+  await expect(dialog.getByText(/COMPLETED/)).toBeVisible();
+
+  await dialog.getByRole('button', { name: 'Cerrar detalle' }).click();
+  await expect(dialog).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Semana' }).click();
+  await expect(page.getByRole('columnheader', { name: 'Equipo' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Mes' }).click();
+  await expect(page.getByRole('region', { name: 'Planificación mensual' })).toBeVisible();
+});
+
+test('mobile Workforce uses timeline cards without page overflow', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-iphone');
+
+  await login(page);
+  await openWorkforce(page);
+
+  for (const label of [
+    '07:00–09:00',
+    '09:00–11:00',
+    '11:00–12:00',
+    '13:40–15:40',
+    '15:40–17:30',
+  ]) {
+    await expect(page.getByRole('heading', { name: label }).first()).toBeVisible();
+  }
+
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+
+  await page.getByRole('button', { name: 'Semana' }).click();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+
+  await page.getByRole('button', { name: 'Mes' }).click();
+  await expect(page.getByRole('region', { name: 'Planificación mensual' })).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+});
