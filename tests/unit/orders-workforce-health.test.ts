@@ -4,6 +4,7 @@ import type { OrderWorkforceOutboxPort } from '@/modules/integrations/orders-wor
 
 function outbox(): OrderWorkforceOutboxPort {
   return {
+    binding: vi.fn(),
     health: vi.fn().mockResolvedValue({
       summary: {
         pending: 2,
