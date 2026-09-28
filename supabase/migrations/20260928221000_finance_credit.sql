@@ -10,7 +10,7 @@ create or replace function erp_private.finance_append_event(
 )
 returns uuid
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,erp_supply,erp_private
 as $$
 declare
