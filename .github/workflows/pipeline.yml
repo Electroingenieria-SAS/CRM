@@ -113,7 +113,8 @@ jobs:
           source /tmp/supabase.env
           set +a
           PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
-          if [ -z "${API_URL:-}" ] || [ -z "${PUBLIC_KEY:-}" ] || [ -z "${DB_URL:-}" ]; then
+          LOCAL_SECRET_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
+          if [ -z "${API_URL:-}" ] || [ -z "${PUBLIC_KEY:-}" ] || [ -z "${LOCAL_SECRET_KEY:-}" ] || [ -z "${DB_URL:-}" ]; then
             echo "Supabase local status did not expose the required runtime values."
             exit 1
           fi
@@ -122,13 +123,15 @@ jobs:
             echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
             echo "DB_URL=$DB_URL"
+            echo "SUPABASE_LOCAL_SECRET_KEY=$LOCAL_SECRET_KEY"
             echo "E2E_PASSWORD=$E2E_PASSWORD"
           } >> "$GITHUB_ENV"
-      - name: Create synthetic authenticated users
+      - name: Create synthetic Auth users
+        run: node tests/fixtures/create-authenticated-e2e-users.mjs
+      - name: Attach synthetic CRM profiles and roles
         run: >
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
-          -v e2e_password="$E2E_PASSWORD"
           -f tests/fixtures/authenticated_e2e.sql
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
