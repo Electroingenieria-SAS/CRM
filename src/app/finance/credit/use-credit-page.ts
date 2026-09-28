@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { BrowserApplication } from '@/composition/browser-application';
 import type {
   CreditQueue,
   FinanceCustomerSearch,
@@ -13,6 +14,74 @@ const initialQuery: QueueQuery = { page: 1, pageSize: 25 };
 
 function financeKey(prefix: string) {
   return prefix + ':' + crypto.randomUUID();
+}
+
+function creditActions(input: {
+  application: BrowserApplication | null;
+  query: QueueQuery;
+  load(next: QueueQuery): Promise<void>;
+  setBusy(value: boolean): void;
+  setMessage(value: string | null): void;
+  setNotice(value: string | null): void;
+  setCustomers(value: FinanceCustomerSearch['items']): void;
+}) {
+  return {
+    searchCustomers: async (search: string) => {
+      if (!input.application) return;
+      input.setBusy(true);
+      try {
+        const result = await input.application.finance.searchCustomers(search);
+        input.setCustomers(result.items);
+      } finally {
+        input.setBusy(false);
+      }
+    },
+    create: async (value: CreditRequestInput) => {
+      if (!input.application) return;
+      input.setBusy(true);
+      input.setMessage(null);
+      try {
+        await input.application.finance.createCredit(value, financeKey('credit-create'));
+        input.setNotice('Solicitud de crédito radicada.');
+        await input.load(input.query);
+      } catch (error) {
+        input.setMessage(error instanceof Error ? error.message : 'No fue posible radicar crédito.');
+      } finally {
+        input.setBusy(false);
+      }
+    },
+    take: async (requestId: string) => {
+      if (!input.application) return;
+      input.setBusy(true);
+      try {
+        await input.application.finance.takeCredit(requestId, financeKey('credit-take'));
+        input.setNotice('Solicitud asignada para revisión.');
+        await input.load(input.query);
+      } finally {
+        input.setBusy(false);
+      }
+    },
+    decide: async (
+      requestId: string,
+      decision: 'APPROVED' | 'REJECTED',
+      reason: string,
+    ) => {
+      if (!input.application) return;
+      input.setBusy(true);
+      try {
+        await input.application.finance.decideCredit(
+          requestId,
+          decision,
+          reason,
+          financeKey('credit-decision'),
+        );
+        input.setNotice(decision === 'APPROVED' ? 'Crédito aprobado.' : 'Crédito rechazado.');
+        await input.load(input.query);
+      } finally {
+        input.setBusy(false);
+      }
+    },
+  };
 }
 
 export function useCreditPage() {
@@ -41,64 +110,15 @@ export function useCreditPage() {
     if (session.context) void load(initialQuery);
   }, [session.context, load]);
 
-  async function searchCustomers(search: string) {
-    if (!session.application) return;
-    setBusy(true);
-    try {
-      const result = await session.application.finance.searchCustomers(search);
-      setCustomers(result.items);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function create(input: CreditRequestInput) {
-    if (!session.application) return;
-    setBusy(true);
-    setMessage(null);
-    try {
-      await session.application.finance.createCredit(input, financeKey('credit-create'));
-      setNotice('Solicitud de crédito radicada.');
-      await load(query);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible radicar crédito.');
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function take(requestId: string) {
-    if (!session.application) return;
-    setBusy(true);
-    try {
-      await session.application.finance.takeCredit(requestId, financeKey('credit-take'));
-      setNotice('Solicitud asignada para revisión.');
-      await load(query);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function decide(
-    requestId: string,
-    decision: 'APPROVED' | 'REJECTED',
-    reason: string,
-  ) {
-    if (!session.application) return;
-    setBusy(true);
-    try {
-      await session.application.finance.decideCredit(
-        requestId,
-        decision,
-        reason,
-        financeKey('credit-decision'),
-      );
-      setNotice(decision === 'APPROVED' ? 'Crédito aprobado.' : 'Crédito rechazado.');
-      await load(query);
-    } finally {
-      setBusy(false);
-    }
-  }
+  const actions = creditActions({
+    application: session.application,
+    query,
+    load,
+    setBusy,
+    setMessage,
+    setNotice,
+    setCustomers,
+  });
 
   function search(next: QueueQuery) {
     const resolved = { ...next, page: 1 };
@@ -116,9 +136,6 @@ export function useCreditPage() {
     notice,
     setQuery,
     search,
-    searchCustomers,
-    create,
-    take,
-    decide,
+    ...actions,
   };
 }
