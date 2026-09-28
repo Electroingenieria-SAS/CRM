@@ -54,10 +54,9 @@ test.describe('reference responsive widths', () => {
         return { viewportWidth, documentWidth, offenders };
       });
 
-      expect(
-        layout.documentWidth > layout.viewportWidth,
-        JSON.stringify(layout, null, 2),
-      ).toBe(false);
+      expect(layout.documentWidth > layout.viewportWidth, JSON.stringify(layout, null, 2)).toBe(
+        false,
+      );
     });
   }
 });
