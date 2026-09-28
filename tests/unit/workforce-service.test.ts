@@ -41,7 +41,7 @@ describe('workforce service', () => {
 
     await service.create(
       {
-        catalogId: '00000000-0000-0000-0000-000000000010',
+        catalogId: '00000000-0000-4000-8000-000000000010',
         plannedStart: '2026-09-29T07:00:00-05:00',
         plannedEnd: '2026-09-29T09:00:00-05:00',
         metadata: {},
