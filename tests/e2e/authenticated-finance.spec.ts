@@ -12,6 +12,14 @@ function password() {
   return value;
 }
 
+async function selectOptionContaining(page: Page, label: string, text: RegExp) {
+  const select = page.getByLabel(label);
+  const option = select.locator('option').filter({ hasText: text }).first();
+  const value = await option.getAttribute('value');
+  if (!value) throw new Error('No option matched ' + text.source + ' for ' + label);
+  await select.selectOption(value);
+}
+
 async function login(page: Page, email: string) {
   await page.goto('/login');
   await page.getByLabel('Correo').fill(email);
@@ -51,7 +59,7 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   await page.getByRole('link', { name: 'Crédito' }).click();
   await page.getByLabel('Buscar cliente').fill('QA-FIN-CREDIT');
   await page.getByRole('button', { name: 'Buscar' }).first().click();
-  await page.getByLabel('Cliente').selectOption({ label: /Cliente Crédito E2E/i });
+  await selectOptionContaining(page, 'Cliente', /Cliente Crédito E2E/i);
   await page.getByLabel('Valor solicitado (COP)').fill('500000');
   await page.getByLabel('Plazo solicitado (días)').fill('30');
   await page.getByRole('button', { name: 'Radicar crédito' }).click();
