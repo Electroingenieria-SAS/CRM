@@ -4,6 +4,10 @@ import type {
   FreightDestination,
 } from '@/modules/freight/application/freight-catalog.schemas';
 import type { FreightPredictionInput } from '@/modules/freight/application/freight-prediction.schemas';
+import {
+  normalizeFreightCity,
+  normalizeFreightDepartment,
+} from '@/modules/freight/domain/location-normalizer';
 import styles from './freight-ui.module.css';
 
 interface FreightQuoteFormProps {
@@ -34,12 +38,15 @@ export function FreightQuoteForm({
   const [volumeM3, setVolumeM3] = useState('');
 
   const filteredDestinations = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase('es');
-    if (!query) return destinations;
+    const queryCity = normalizeFreightCity(search);
+    const queryDepartment = normalizeFreightDepartment(search);
+    if (!queryCity && !queryDepartment) return destinations;
 
-    return destinations.filter((destination) =>
-      `${destination.city} ${destination.department}`.toLocaleLowerCase('es').includes(query),
-    );
+    return destinations.filter((destination) => {
+      const city = normalizeFreightCity(destination.city);
+      const department = normalizeFreightDepartment(destination.department);
+      return city.includes(queryCity) || department.includes(queryDepartment);
+    });
   }, [destinations, search]);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
