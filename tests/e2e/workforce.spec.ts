@@ -38,9 +38,9 @@ test('planner completes the activity lifecycle with required photo evidence', as
   await expect(page.getByText('Tratamiento especial QA')).toBeVisible();
 
   await page.getByRole('button', { name: 'Registrar actividad' }).click();
-  await page.getByLabel('Categoría', { exact: true }).selectOption({ label: 'Despacho local' });
-  await page.getByLabel('Subcategoría').selectOption({ label: 'Cargue y entrega' });
-  await page.getByLabel('Actividad específica').selectOption({ label: 'Cargue' });
+  await page.getByRole('combobox', { name: 'Categoría', exact: true }).selectOption({ label: 'Despacho local' });
+  await page.getByRole('combobox', { name: 'Subcategoría', exact: true }).selectOption({ label: 'Cargue y entrega' });
+  await page.getByRole('combobox', { name: 'Actividad específica', exact: true }).selectOption({ label: 'Cargue' });
   await page.getByLabel('Inicio').fill('2026-09-29T07:00');
   await page.getByLabel('Fin').fill('2026-09-29T09:00');
   await page.getByRole('button', { name: 'Planificar actividad' }).click();
@@ -97,9 +97,11 @@ test('mobile Workforce uses timeline cards without page overflow', async ({ page
   );
 
   await page.getByRole('button', { name: 'Semana' }).click();
+  await expect(page.getByRole('region', { name: 'Cronograma semanal' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );
+  expect(await page.evaluate(() => window.scrollX)).toBe(0);
 
   await page.getByRole('button', { name: 'Mes' }).click();
   await expect(page.getByRole('region', { name: 'Planificación mensual' })).toBeVisible();
