@@ -1,9 +1,11 @@
+import type { OrderWorkflowMutationObserver } from '@/modules/orders/application/order-workflow-observer';
+import type { OrderWorkflowRepository } from '@/modules/orders/application/order-workflow-repository';
 import {
   blockTaskInputSchema,
   evidenceInputSchema,
   issueInputSchema,
+  type WorkflowMutationResponse,
 } from '@/modules/orders/application/order-workflow.schemas';
-import type { OrderWorkflowRepository } from '@/modules/orders/application/order-workflow-repository';
 
 function requireKey(value: string) {
   const key = value.trim();
@@ -19,55 +21,96 @@ function requireVersion(version: number) {
 }
 
 export class OrderWorkflowService {
-  constructor(private readonly repository: OrderWorkflowRepository) {}
+  constructor(
+    private readonly repository: OrderWorkflowRepository,
+    private readonly observer?: OrderWorkflowMutationObserver,
+  ) {}
+
+  private async mutate(operation: () => Promise<WorkflowMutationResponse>) {
+    const result = await operation();
+
+    if (this.observer) {
+      try {
+        await this.observer.onWorkflowMutation(result);
+      } catch {
+        // Orders is already committed and the durable outbox remains visible/retryable.
+      }
+    }
+
+    return result;
+  }
 
   claim(orderId: string, version: number, key: string) {
-    return this.repository.claim(orderId, requireVersion(version), requireKey(key));
+    return this.mutate(() =>
+      this.repository.claim(orderId, requireVersion(version), requireKey(key)),
+    );
   }
 
   assign(orderId: string, profileId: string, version: number, key: string) {
     if (!profileId.trim()) throw new Error('Selecciona un responsable.');
-    return this.repository.assign(
-      orderId,
-      profileId.trim(),
-      requireVersion(version),
-      requireKey(key),
+    return this.mutate(() =>
+      this.repository.assign(
+        orderId,
+        profileId.trim(),
+        requireVersion(version),
+        requireKey(key),
+      ),
     );
   }
 
   start(orderId: string, version: number, key: string) {
-    return this.repository.start(orderId, requireVersion(version), requireKey(key));
+    return this.mutate(() =>
+      this.repository.start(orderId, requireVersion(version), requireKey(key)),
+    );
   }
 
   block(orderId: string, input: unknown, version: number, key: string) {
-    return this.repository.block(
-      orderId,
-      blockTaskInputSchema.parse(input),
-      requireVersion(version),
-      requireKey(key),
+    return this.mutate(() =>
+      this.repository.block(
+        orderId,
+        blockTaskInputSchema.parse(input),
+        requireVersion(version),
+        requireKey(key),
+      ),
     );
   }
 
   resume(orderId: string, resolution: string, version: number, key: string) {
     const normalized = resolution.trim();
     if (normalized.length < 3) throw new Error('Describe cómo se resolvió el bloqueo.');
-    return this.repository.resume(orderId, normalized, requireVersion(version), requireKey(key));
+    return this.mutate(() =>
+      this.repository.resume(
+        orderId,
+        normalized,
+        requireVersion(version),
+        requireKey(key),
+      ),
+    );
   }
 
   complete(orderId: string, resultCode: string, detail: string, version: number, key: string) {
-    return this.repository.complete(
-      orderId,
-      resultCode.trim() || 'COMPLETED',
-      detail.trim(),
-      requireVersion(version),
-      requireKey(key),
+    return this.mutate(() =>
+      this.repository.complete(
+        orderId,
+        resultCode.trim() || 'COMPLETED',
+        detail.trim(),
+        requireVersion(version),
+        requireKey(key),
+      ),
     );
   }
 
   cancel(orderId: string, reason: string, version: number, key: string) {
     const normalized = reason.trim();
     if (normalized.length < 3) throw new Error('Indica la razón de cancelación.');
-    return this.repository.cancel(orderId, normalized, requireVersion(version), requireKey(key));
+    return this.mutate(() =>
+      this.repository.cancel(
+        orderId,
+        normalized,
+        requireVersion(version),
+        requireKey(key),
+      ),
+    );
   }
 
   reopen(orderId: string, targetStep: string, reason: string, version: number, key: string) {
