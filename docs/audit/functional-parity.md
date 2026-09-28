@@ -8,7 +8,7 @@
 | Login / sesión                     |       ✓        | Base técnica | Unit  |   —    | En curso  | Implementación parcial |
 | Recuperación de contraseña         | Fuente parcial | Base técnica | Unit  |   —    | En curso  | Implementación parcial |
 | Dashboard / centro de operaciones  |       ✓        |      —       |   —   |   —    |     —     | Pendiente              |
-| Pedidos / ventas                   |       ✓        |      —       |   —   |   —    |     —     | Pendiente              |
+| Pedidos / ventas                   |       ✓        | Núcleo/API    | Unit + DB/RLS | — | En curso | Implementación parcial |
 | Segmentación de clientes           |       ✓        |      —       |   —   |   —    |     —     | Pendiente              |
 | Inteligencia/predicción de fletes  |       ✓        |      —       |   —   |   —    |     —     | Pendiente              |
 | Crédito                            |       ✓        |      —       |   —   |   —    |     —     | Pendiente              |
@@ -33,3 +33,5 @@
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
 
 > “Base técnica” no equivale a paridad: faltan pantallas, integración con entorno no productivo, E2E autenticado, MFA/administración y pruebas de autorización antes de validar estas filas.
+
+> Pedidos tiene ya núcleo SQL/API, integridad, idempotencia y capa Application/Repository. Sigue sin marcarse `Validado` hasta completar UI, recorrido autenticado, responsive del módulo y paridad de acciones operativas.
