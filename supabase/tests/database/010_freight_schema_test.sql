@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(16);
+select plan(17);
 
 select has_table('erp_supply','freight_carriers','freight carriers table exists');
 select has_table('erp_supply','freight_destinations','freight destinations table exists');
@@ -59,6 +59,17 @@ select is(
    where organization_id=(select id from erp_supply.organizations where code='EI')),
   3::bigint,
   'historical baseline has three stable carrier identities'
+);
+
+select is(
+  (
+    select coalesce(sum(h.sample_count),0)::bigint
+    from erp_supply.freight_historical_aggregates h
+    join erp_supply.freight_destinations d on d.id=h.destination_id
+    where d.city_key='BOGOTA' and d.department_key='BOGOTA DC'
+  ),
+  44::bigint,
+  'Bogotá normalization preserves all 44 historical samples'
 );
 
 select is(
