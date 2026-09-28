@@ -4,10 +4,16 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import styles from './app-shell.module.css';
 
+export interface AppShellNavigationItem {
+  readonly href: string;
+  readonly label: string;
+  readonly current?: boolean;
+}
+
 interface AppShellProps {
   userName: string;
-  currentSection?: 'orders' | 'customer-intelligence';
   organizationName: string;
+  navigation: readonly AppShellNavigationItem[];
   onSignOut(): Promise<void>;
   children: ReactNode;
 }
@@ -15,7 +21,7 @@ interface AppShellProps {
 export function AppShell({
   userName,
   organizationName,
-  currentSection = 'orders',
+  navigation,
   onSignOut,
   children,
 }: AppShellProps) {
@@ -30,15 +36,11 @@ export function AppShell({
           </div>
         </div>
         <nav className={styles.nav}>
-          <Link href="/orders" aria-current={currentSection === 'orders' ? 'page' : undefined}>
-            Pedidos
-          </Link>
-          <Link
-            href="/customers/intelligence"
-            aria-current={currentSection === 'customer-intelligence' ? 'page' : undefined}
-          >
-            Clientes
-          </Link>
+          {navigation.map((item) => (
+            <Link href={item.href} aria-current={item.current ? 'page' : undefined} key={item.href}>
+              {item.label}
+            </Link>
+          ))}
         </nav>
         <div className={styles.account}>
           <span>{userName}</span>
