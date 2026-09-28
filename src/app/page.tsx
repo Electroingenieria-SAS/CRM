@@ -1,4 +1,4 @@
-import { LoginPageClient } from '@/app/login/login-page-client';
+import { LoginPageClient } from './login/login-page-client';
 
 export default function HomePage() {
   return <LoginPageClient />;
