@@ -119,8 +119,11 @@ with check (
   organization_id=erp_private.current_org_id()
   and actor_profile_id=erp_private.current_profile_id()
   and exists(
-    select 1 from erp_supply.workforce_activities a
-    where a.id=activity_id and a.organization_id=erp_private.current_org_id()
+    select 1
+    from erp_supply.workforce_activities a
+    where a.id=activity_id
+      and a.organization_id=erp_private.current_org_id()
+      and erp_private.workforce_can_manage_profile(a.assignee_profile_id)
   )
 );
 
