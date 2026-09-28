@@ -11,21 +11,8 @@ create table erp_supply.order_workforce_step_mappings (
   check(length(trim(activity_title)) > 0)
 );
 
-insert into erp_supply.order_workforce_step_mappings(
-  step_code,workforce_catalog_code,activity_title,metadata
-) values
-('ALISTAMIENTO','LOG_SUPPORT_PICKING','Alistamiento de pedido','{"integration":"orders-workforce","operational":true}'::jsonb),
-('CORTE','LOG_SUPPORT_CUTTING','Corte de pedido','{"integration":"orders-workforce","operational":true}'::jsonb),
-('LOCAL_DISPATCH','LOG_LOADING','Despacho local','{"integration":"orders-workforce","operational":true}'::jsonb),
-('NATIONAL_DISPATCH','LOG_LOADING','Despacho nacional','{"integration":"orders-workforce","operational":true}'::jsonb),
-('CLIENT_POINT','LOG_LOADING','Entrega en punto','{"integration":"orders-workforce","operational":true}'::jsonb),
-('CLIENT_PICKUP','LOG_LOADING','Entrega a cliente que recoge','{"integration":"orders-workforce","operational":true}'::jsonb)
-on conflict(step_code) do update set
-  workforce_catalog_code=excluded.workforce_catalog_code,
-  activity_title=excluded.activity_title,
-  active=excluded.active,
-  metadata=excluded.metadata,
-  updated_at=now();
+-- Los mappings dependen de workflow_steps, cuyos catálogos se cargan en seed.sql.
+-- Mantener aquí solo la estructura permite reconstruir migraciones antes del seed sintético.
 
 create table erp_supply.order_workforce_outbox (
   id uuid primary key default gen_random_uuid(),
