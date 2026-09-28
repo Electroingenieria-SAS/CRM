@@ -50,3 +50,22 @@ El job `e2e-authenticated` levanta Supabase local, genera una contraseña aleato
 La recuperación real utiliza Mailpit del stack local para capturar el correo generado por Supabase y seguir el enlace PKCE. El usuario de recuperación es exclusivo de ese escenario para que el cambio de contraseña no afecte a vendedor/auditor.
 
 Producción no participa en estas pruebas.
+
+
+## Evidencia de validación
+
+Validado en el PR #6 sobre el commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`.
+
+Pipeline #105 (`36453408365`):
+
+- quality: verde;
+- database reset + pgTAP/RLS + DB lint: verde;
+- CodeQL: verde;
+- secret scan: verde;
+- supply-chain/npm audit: verde;
+- smoke responsive/semántico: verde;
+- E2E autenticado real contra Supabase local: verde.
+
+El recorrido autenticado verifica entrada anónima bloqueada, login real, restauración de sesión, contexto operativo, permisos de ventas/auditoría, logout, enlace de recuperación inválido, recuperación real mediante Mailpit, validación de contraseña débil, confirmación incorrecta y acceso con la contraseña nueva.
+
+Producción no fue utilizada ni modificada.
