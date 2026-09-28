@@ -30,6 +30,8 @@ declare
   v_actual_low numeric;
   v_actual_mid numeric;
   v_actual_high numeric;
+  v_actual_mean numeric;
+  v_actual_p90 numeric;
   v_actual_newest timestamptz;
   v_actual_oldest timestamptz;
   v_outliers integer := 0;
@@ -147,6 +149,8 @@ begin
       percentile_cont(0.25) within group(order by actual_cost) actual_low,
       percentile_cont(0.50) within group(order by actual_cost) actual_mid,
       percentile_cont(0.75) within group(order by actual_cost) actual_high,
+      avg(actual_cost)::numeric actual_mean,
+      percentile_cont(0.90) within group(order by actual_cost) actual_p90,
       max(observed_at) newest,
       min(observed_at) oldest,
       count(weight_kg) filter(where weight_kg>0)::integer weight_count,
@@ -173,14 +177,14 @@ begin
     from clean
   )
   select
-    raw_count,clean_count,actual_low,actual_mid,actual_high,newest,oldest,
+    raw_count,clean_count,actual_low,actual_mid,actual_high,actual_mean,actual_p90,newest,oldest,
     greatest(raw_count-clean_count,0),
     weight_count,weight_corr,weight_slope,weight_intercept,
     package_count_n,package_corr,package_slope,package_intercept,
     volume_count,volume_corr,volume_slope,volume_intercept
   into
     v_actual_raw,v_actual_samples,v_actual_low,v_actual_mid,v_actual_high,
-    v_actual_newest,v_actual_oldest,v_outliers,
+    v_actual_mean,v_actual_p90,v_actual_newest,v_actual_oldest,v_outliers,
     v_weight_count,v_weight_corr,v_weight_slope,v_weight_intercept,
     v_package_count,v_package_corr,v_package_slope,v_package_intercept,
     v_volume_count,v_volume_corr,v_volume_slope,v_volume_intercept
@@ -202,6 +206,8 @@ begin
     'actualLow',v_actual_low,
     'actualMid',v_actual_mid,
     'actualHigh',v_actual_high,
+    'actualMean',v_actual_mean,
+    'actualP90',v_actual_p90,
     'actualNewest',v_actual_newest,
     'actualOldest',v_actual_oldest,
     'outlierCount',coalesce(v_outliers,0),
@@ -556,6 +562,19 @@ begin
       'weight',nullif(v_evidence->>'weightCorrelation','')::numeric,
       'packages',nullif(v_evidence->>'packageCorrelation','')::numeric,
       'volume',nullif(v_evidence->>'volumeCorrelation','')::numeric
+    ),
+    'newObservationDistribution',jsonb_build_object(
+      'mean',nullif(v_evidence->>'actualMean','')::numeric,
+      'p25',nullif(v_evidence->>'actualLow','')::numeric,
+      'p50',nullif(v_evidence->>'actualMid','')::numeric,
+      'p75',nullif(v_evidence->>'actualHigh','')::numeric,
+      'p90',nullif(v_evidence->>'actualP90','')::numeric,
+      'iqr',case
+        when nullif(v_evidence->>'actualLow','') is null
+          or nullif(v_evidence->>'actualHigh','') is null then null
+        else nullif(v_evidence->>'actualHigh','')::numeric
+          - nullif(v_evidence->>'actualLow','')::numeric
+      end
     ),
     'algorithmVersion','FREIGHT_ROBUST_V1'
   );
