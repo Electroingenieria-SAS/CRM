@@ -63,7 +63,7 @@ test('planner completes the activity lifecycle with required photo evidence', as
 
   await dialog.getByLabel('Responsable').selectOption({ label: 'QA Coordinador B' });
   await dialog.getByRole('button', { name: 'Reasignar' }).click();
-  await expect(dialog.getByText(/QA Coordinador B/)).toBeVisible();
+  await expect(dialog.locator('header p')).toContainText('QA Coordinador B');
 
   await dialog.getByRole('button', { name: 'Iniciar actividad' }).click();
   await expect(dialog.getByText(/En curso/)).toBeVisible();
