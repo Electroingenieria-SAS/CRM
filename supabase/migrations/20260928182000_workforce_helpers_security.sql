@@ -9,7 +9,7 @@ language plpgsql
 volatile
 security definer
 set search_path = pg_catalog
-as $
+as $$
 begin
   if nullif(trim(p_idempotency_key),'') is null then
     raise exception 'La clave de idempotencia es obligatoria' using errcode='22023';
@@ -19,7 +19,7 @@ begin
     hashtextextended(p_organization_id::text||':'||trim(p_idempotency_key),0)
   );
 end;
-$;
+$$;
 
 create or replace function erp_private.workforce_can_manage()
 returns boolean
@@ -210,7 +210,7 @@ as $$
   end
   from erp_supply.workforce_activities a
   where a.id=p_activity_id
-$;
+$$;
 
 create or replace function erp_private.workforce_occupancy_status(
   p_profile_id uuid,
