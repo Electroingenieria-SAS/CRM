@@ -13,7 +13,7 @@ function password() {
 }
 
 async function selectOptionContaining(page: Page, label: string, text: RegExp) {
-  const select = page.getByLabel(label);
+  const select = page.getByLabel(label, { exact: true });
   const option = select.locator('option').filter({ hasText: text }).first();
   const value = await option.getAttribute('value');
   if (!value) throw new Error('No option matched ' + text.source + ' for ' + label);
