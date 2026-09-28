@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { OrderDetailResponse } from '@/modules/orders/application/order.schemas';
+import { OpenOrderIssues } from '@/modules/orders/ui/open-order-issues';
 import styles from './order-workflow-panel.module.css';
 
 interface Props {
@@ -17,18 +18,13 @@ interface Props {
   onResolveIssue(issueId: string, resolution: string): Promise<void>;
 }
 
-function text(value: unknown) {
-  return typeof value === 'string' ? value : '';
-}
-
 export function OrderIssuesPanel({ detail, busy, onCreateIssue, onResolveIssue }: Props) {
   const firstType = detail.workflow.issueTypes[0];
   const [issueType, setIssueType] = useState(firstType?.code ?? '');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [blocking, setBlocking] = useState(firstType?.defaultBlocking ?? false);
-  const [resolutions, setResolutions] = useState<Record<string, string>>({});
-  const openIssues = detail.issues.filter((item) => text(item.status) === 'OPEN');
+  const openIssues = detail.issues.filter((item) => item.status === 'OPEN');
   const selectedType =
     detail.workflow.issueTypes.find((item) => item.code === issueType) ?? firstType;
 
@@ -91,39 +87,7 @@ export function OrderIssuesPanel({ detail, busy, onCreateIssue, onResolveIssue }
         </button>
       </details>
 
-      {openIssues.length > 0 ? (
-        <section className={styles.issues}>
-          <h4>Incidencias abiertas</h4>
-          {openIssues.map((issue) => {
-            const id = text(issue.id);
-            return (
-              <article key={id}>
-                <div>
-                  <strong>{text(issue.title)}</strong>
-                  <span>{text(issue.severity)}</span>
-                </div>
-                <p>{text(issue.description)}</p>
-                <label>
-                  Resolución
-                  <textarea
-                    value={resolutions[id] ?? ''}
-                    onChange={(event) =>
-                      setResolutions((current) => ({ ...current, [id]: event.target.value }))
-                    }
-                  />
-                </label>
-                <button
-                  type="button"
-                  disabled={busy || (resolutions[id] ?? '').trim().length < 3}
-                  onClick={() => onResolveIssue(id, resolutions[id] ?? '')}
-                >
-                  Resolver incidencia
-                </button>
-              </article>
-            );
-          })}
-        </section>
-      ) : null}
+      <OpenOrderIssues issues={openIssues} busy={busy} onResolveIssue={onResolveIssue} />
     </>
   );
 }
