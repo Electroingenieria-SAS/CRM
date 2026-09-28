@@ -1,5 +1,6 @@
 'use client';
 
+import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type {
   CreateOrderInput,
@@ -40,8 +41,7 @@ function catalogOptions(rows: Array<Record<string, unknown>>) {
 }
 
 export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
-  const orderModule = props.context.modules.find((module) => module.code === 'orders');
-  const canCreate = Boolean(orderModule?.canCreate);
+  const canCreate = hasModuleCapability(props.context, 'orders', 'create');
 
   return (
     <AppShell

@@ -1,9 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createSupabaseBrowserClient } from '@/infrastructure/supabase/browser-client';
-import { SupabaseAuthGateway } from '@/infrastructure/auth/supabase-auth-gateway';
+import { createBrowserApplication } from '@/composition/browser-application';
 import { LoginForm } from '@/modules/auth/ui/login-form';
 
 function recoveryRedirect(): string | undefined {
@@ -11,12 +10,38 @@ function recoveryRedirect(): string | undefined {
   return new URL('../auth/update-password/', window.location.href).toString();
 }
 
+function passwordUpdatedNotice(): string | null {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get('passwordUpdated') === '1'
+    ? 'Tu contraseña fue actualizada. Inicia sesión con la nueva contraseña.'
+    : null;
+}
+
 export function LoginPageClient() {
   const router = useRouter();
-  const gateway = useMemo(() => {
-    const client = createSupabaseBrowserClient();
-    return client ? new SupabaseAuthGateway(client) : null;
-  }, []);
+  const application = useMemo(() => createBrowserApplication(), []);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNotice(passwordUpdatedNotice());
+    if (!application) return;
+
+    let active = true;
+    void application.auth
+      .restoreContext()
+      .then((context) => {
+        if (active && context) router.replace('/orders');
+      })
+      .catch((error) => {
+        if (active) {
+          setNotice(error instanceof Error ? error.message : 'No fue posible restaurar la sesión.');
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [application, router]);
 
   return (
     <main id="main-content" className="centered-page">
@@ -26,22 +51,23 @@ export function LoginPageClient() {
         <p>
           Usa tu cuenta asignada. El acceso a cada módulo se valida nuevamente en la base de datos.
         </p>
-        {!gateway ? (
+        {!application ? (
           <p role="status">
             Este staging visual no está conectado a un backend operativo. La integración se valida
             en CI contra un Supabase aislado.
           </p>
         ) : null}
+        {notice ? <p role="status">{notice}</p> : null}
         <LoginForm
-          disabled={!gateway}
+          disabled={!application}
           onLogin={async (email, password) => {
-            if (!gateway) return;
-            await gateway.signIn({ email, password });
+            if (!application) return;
+            await application.auth.signIn({ email, password });
             router.replace('/orders');
           }}
           onRecover={async (email) => {
-            if (!gateway) return;
-            await gateway.requestPasswordReset({ email }, recoveryRedirect());
+            if (!application) return;
+            await application.auth.requestPasswordReset({ email }, recoveryRedirect());
           }}
         />
       </section>

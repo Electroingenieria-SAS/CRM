@@ -20,8 +20,21 @@ async function login(page: Page, email: string) {
   ).toBeVisible();
 }
 
-test('sales user logs in, creates, filters and opens an order', async ({ page }, testInfo) => {
+test('anonymous users are redirected away from the private orders route', async ({ page }) => {
+  await page.goto('/orders');
+  await expect(page).toHaveURL(/\/login\/?$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
+});
+
+test('sales user restores session, creates, filters and opens an order', async ({
+  page,
+}, testInfo) => {
   await login(page, sellerEmail);
+
+  await page.reload();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Control integral de pedidos' }),
+  ).toBeVisible();
 
   const suffix = testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toUpperCase();
   const orderNumber = `E2E-${suffix}-${testInfo.retry}-${Date.now()}`;
@@ -65,4 +78,7 @@ test('logout invalidates the local session and returns to login', async ({ page 
   await page.getByRole('button', { name: 'Cerrar sesión' }).click();
   await expect(page).toHaveURL(/\/login\/?$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
+
+  await page.goto('/orders');
+  await expect(page).toHaveURL(/\/login\/?$/);
 });

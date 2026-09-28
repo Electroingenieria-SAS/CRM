@@ -1,15 +1,53 @@
 'use client';
 
-import { useMemo } from 'react';
-import { createSupabaseBrowserClient } from '@/infrastructure/supabase/browser-client';
-import { SupabaseAuthGateway } from '@/infrastructure/auth/supabase-auth-gateway';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createBrowserApplication } from '@/composition/browser-application';
 import { PasswordUpdateForm } from '@/modules/auth/ui/password-update-form';
 
+type RecoveryState = 'checking' | 'ready' | 'error';
+
 export function PasswordUpdatePageClient() {
-  const gateway = useMemo(() => {
-    const client = createSupabaseBrowserClient();
-    return client ? new SupabaseAuthGateway(client) : null;
-  }, []);
+  const router = useRouter();
+  const application = useMemo(() => createBrowserApplication(), []);
+  const [state, setState] = useState<RecoveryState>('checking');
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!application) {
+      setState('error');
+      setMessage('Este entorno no tiene un backend de autenticación configurado.');
+      return;
+    }
+
+    let active = true;
+    const params = new URLSearchParams(window.location.search);
+
+    void application.auth
+      .preparePasswordRecovery({
+        code: params.get('code'),
+        flowId: params.get('sb_flow_id'),
+      })
+      .then(() => {
+        if (!active) return;
+        window.history.replaceState({}, '', window.location.pathname);
+        setState('ready');
+      })
+      .catch((error) => {
+        if (!active) return;
+        setState('error');
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : 'El enlace de recuperación no es válido o ya expiró.',
+        );
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [application]);
 
   return (
     <main id="main-content" className="centered-page">
@@ -17,13 +55,25 @@ export function PasswordUpdatePageClient() {
         <p className="eyebrow">Seguridad</p>
         <h1 id="password-title">Cambiar contraseña</h1>
         <p>Utiliza una contraseña de al menos 12 caracteres y evita reutilizar credenciales.</p>
-        <PasswordUpdateForm
-          disabled={!gateway}
-          onUpdate={async (password) => {
-            if (!gateway) return;
-            await gateway.updatePassword({ password });
-          }}
-        />
+
+        {state === 'checking' ? <p role="status">Validando enlace de recuperación…</p> : null}
+
+        {state === 'error' ? (
+          <>
+            <p role="alert">{message}</p>
+            <Link href="/login">Volver al inicio de sesión</Link>
+          </>
+        ) : null}
+
+        {state === 'ready' && application ? (
+          <PasswordUpdateForm
+            onUpdate={async (password) => {
+              await application.auth.updatePassword({ password });
+              await application.auth.signOut();
+              router.replace('/login?passwordUpdated=1');
+            }}
+          />
+        ) : null}
       </section>
     </main>
   );

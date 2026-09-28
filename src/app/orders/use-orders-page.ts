@@ -2,17 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SupabaseAuthGateway } from '@/infrastructure/auth/supabase-auth-gateway';
-import { SupabaseSessionRepository } from '@/infrastructure/auth/supabase-session-repository';
-import { SupabaseOrdersRepository } from '@/infrastructure/orders/supabase-orders-repository';
-import { createSupabaseBrowserClient } from '@/infrastructure/supabase/browser-client';
+import { createBrowserApplication } from '@/composition/browser-application';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type {
   CreateOrderInput,
   OrderDetailResponse,
   OrderListItem,
 } from '@/modules/orders/application/order.schemas';
-import { OrdersService } from '@/modules/orders/application/orders-service';
 import type { OrdersFilterValues } from '@/modules/orders/ui/orders-filters';
 
 const initialFilters: OrdersFilterValues = {
@@ -22,23 +18,9 @@ const initialFilters: OrdersFilterValues = {
   route: '',
 };
 
-function useOrdersDependencies() {
-  const client = useMemo(() => createSupabaseBrowserClient(), []);
-  const auth = useMemo(() => (client ? new SupabaseAuthGateway(client) : null), [client]);
-  const sessionRepository = useMemo(
-    () => (client ? new SupabaseSessionRepository(client) : null),
-    [client],
-  );
-  const orders = useMemo(
-    () => (client ? new OrdersService(new SupabaseOrdersRepository(client)) : null),
-    [client],
-  );
-  return { auth, sessionRepository, orders };
-}
-
 export function useOrdersPage() {
   const router = useRouter();
-  const { auth, sessionRepository, orders } = useOrdersDependencies();
+  const application = useMemo(() => createBrowserApplication(), []);
   const [context, setContext] = useState<SessionContext | null>(null);
   const [items, setItems] = useState<OrderListItem[]>([]);
   const [filters, setFilters] = useState(initialFilters);
@@ -49,11 +31,11 @@ export function useOrdersPage() {
 
   const loadOrders = useCallback(
     async (nextFilters: OrdersFilterValues) => {
-      if (!orders) return;
+      if (!application) return;
       setLoading(true);
       setMessage(null);
       try {
-        const response = await orders.list({
+        const response = await application.orders.list({
           ...nextFilters,
           page: 1,
           pageSize: 50,
@@ -66,62 +48,75 @@ export function useOrdersPage() {
         setLoading(false);
       }
     },
-    [orders],
+    [application],
   );
 
   useEffect(() => {
+    if (!application) {
+      setMessage('Este entorno no tiene un backend de staging configurado.');
+      setLoading(false);
+      return;
+    }
+
     let active = true;
+    const unsubscribe = application.auth.onSessionChange((event) => {
+      if (event.type === 'signed_out') router.replace('/login');
+    });
+
     async function boot() {
-      if (!auth || !sessionRepository || !orders) {
-        setMessage('Este entorno no tiene un backend de staging configurado.');
-        setLoading(false);
-        return;
-      }
-      if (!(await auth.getSession())) {
-        router.replace('/login');
-        return;
-      }
       try {
-        const [nextContext, firstPage] = await Promise.all([
-          sessionRepository.load(),
-          orders.list({ page: 1, pageSize: 50, includeHistory: true }),
-        ]);
+        const nextContext = await application.auth.restoreContext();
+        if (!nextContext) {
+          router.replace('/login');
+          return;
+        }
+
+        const firstPage = await application.orders.list({
+          page: 1,
+          pageSize: 50,
+          includeHistory: true,
+        });
+
         if (active) {
           setContext(nextContext);
           setItems(firstPage.items);
         }
       } catch (error) {
-        if (active)
+        if (active) {
           setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
+        }
       } finally {
         if (active) setLoading(false);
       }
     }
+
     void boot();
+
     return () => {
       active = false;
+      unsubscribe();
     };
-  }, [auth, orders, router, sessionRepository]);
+  }, [application, router]);
 
   async function createOrder(input: CreateOrderInput) {
-    if (!orders) return;
-    await orders.create(input, crypto.randomUUID());
+    if (!application) return;
+    await application.orders.create(input, crypto.randomUUID());
     setCreating(false);
     await loadOrders(initialFilters);
   }
 
   async function openDetail(orderId: string) {
-    if (!orders) return;
+    if (!application) return;
     setMessage(null);
     try {
-      setDetail(await orders.get(orderId));
+      setDetail(await application.orders.get(orderId));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No fue posible cargar el pedido.');
     }
   }
 
   async function signOut() {
-    await auth?.signOut();
+    await application?.auth.signOut();
     router.replace('/login');
   }
 
