@@ -164,7 +164,7 @@ select lives_ok(
 );
 
 select throws_ok(
-  $select public.erp_x_freight_predict(
+  $$select public.erp_x_freight_predict(
     (select id from erp_supply.freight_destinations
      where city_key='ARMENIA' and department_key='QUINDIO' limit 1),
     'NATIONAL_DISPATCH'
