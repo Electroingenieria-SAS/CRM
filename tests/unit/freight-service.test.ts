@@ -22,7 +22,7 @@ describe('freight service', () => {
     const service = new FreightService(repository);
 
     await service.predict({
-      destinationId: '00000000-0000-0000-0000-000000000001',
+      destinationId: '11111111-1111-4111-8111-111111111111',
       routeCode: 'NATIONAL_DISPATCH',
       weightKg: 25,
     });
@@ -40,7 +40,7 @@ describe('freight service', () => {
 
     expect(() =>
       service.predict({
-        destinationId: '00000000-0000-0000-0000-000000000001',
+        destinationId: '11111111-1111-4111-8111-111111111111',
         routeCode: 'NATIONAL_DISPATCH',
         weightKg: -1,
       }),
