@@ -235,33 +235,4 @@ grant select on erp_supply.freight_legacy_route_stats to authenticated;
 grant select,insert on erp_supply.freight_predictions to authenticated;
 grant select,insert on erp_supply.freight_observations to authenticated;
 
-insert into erp_supply.modules(code,name,description,icon,sort_order,active)
-values ('freight','Inteligencia de fletes','Estimación explicable e histórico de costos','truck',125,true)
-on conflict (code) do update
-set name=excluded.name,description=excluded.description,icon=excluded.icon,sort_order=excluded.sort_order,active=true;
-
-insert into erp_supply.role_module_permissions(
-  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
-) values
-('ventas','freight',true,true,false,false,false),
-('aux_logistica','freight',true,true,false,false,false),
-('coordinador_logistico','freight',true,true,true,false,false),
-('lider_logistica','freight',true,true,true,false,false),
-('jefe_logistica','freight',true,true,true,true,false),
-('gerencia','freight',true,true,false,true,false),
-('auditoria','freight',true,false,false,false,false)
-on conflict (role_code,module_code) do update set
-  can_read=excluded.can_read,
-  can_create=excluded.can_create,
-  can_update=excluded.can_update,
-  can_approve=excluded.can_approve,
-  can_admin=excluded.can_admin;
-
-insert into erp_supply.role_module_permissions(
-  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
-)
-values ('super_admin','freight',true,true,true,true,true)
-on conflict (role_code,module_code) do update set
-  can_read=true,can_create=true,can_update=true,can_approve=true,can_admin=true;
-
 commit;
