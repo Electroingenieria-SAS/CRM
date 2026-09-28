@@ -36,9 +36,7 @@ declare
   v_customer_count integer:=0;
   v_order_count bigint:=0;
   v_total_paid numeric(20,2):=0;
-  v_order_updated timestamptz;
-  v_invoice_updated timestamptz;
-  v_invoice_count bigint:=0;
+  v_started_at timestamptz:=clock_timestamp();
 begin
   if v_org is null or v_actor is null then
     raise exception 'Usuario sin perfil operativo activo' using errcode='42501';
@@ -61,106 +59,12 @@ begin
     raise exception 'No existe una versión activa del algoritmo';
   end if;
 
-  select
-    count(distinct o.customer_id)::integer,
-    count(*)::bigint,
-    max(o.updated_at)
-  into v_customer_count,v_order_count,v_order_updated
-  from erp_supply.orders o
-  where o.organization_id=v_org
-    and o.customer_id is not null
-    and not o.is_test
-    and o.status not in ('DRAFT','CANCELLED');
+  drop table if exists pg_temp.ci_customer_base;
 
-  select
-    coalesce(sum(erp_private.customer_invoice_effective_paid(i.amount,i.reversed_amount,i.status)),0),
-    count(*)::bigint,
-    max(i.updated_at)
-  into v_total_paid,v_invoice_count,v_invoice_updated
-  from erp_supply.invoices i
-  join erp_supply.orders o on o.id=i.order_id
-  where o.organization_id=v_org
-    and o.customer_id is not null
-    and not o.is_test
-    and o.status not in ('DRAFT','CANCELLED');
-
-  v_fingerprint:=md5(concat_ws(
-    '|',
-    v_config.version,
-    v_customer_count::text,
-    v_order_count::text,
-    round(v_total_paid,2)::text,
-    v_invoice_count::text,
-    coalesce(v_order_updated::text,''),
-    coalesce(v_invoice_updated::text,'')
-  ));
-
-  select id
-  into v_existing_run
-  from erp_supply.customer_intelligence_runs
-  where organization_id=v_org
-    and algorithm_version=v_config.version
-    and dataset_fingerprint=v_fingerprint
-    and status='COMPLETED'
-  order by completed_at desc
-  limit 1;
-
-  if v_existing_run is not null then
-    update erp_supply.customer_intelligence_state
-    set dirty_since=null,
-        dirty_reason=null,
-        last_run_id=v_existing_run,
-        updated_at=now()
-    where organization_id=v_org;
-
-    return jsonb_build_object(
-      'success',true,
-      'reused',true,
-      'runId',v_existing_run,
-      'algorithmVersion',v_config.version,
-      'customerCount',v_customer_count,
-      'validOrderCount',v_order_count,
-      'totalPaid',v_total_paid
-    );
-  end if;
-
-  insert into erp_supply.customer_intelligence_runs(
-    organization_id,algorithm_version,dataset_fingerprint,actor_profile_id,status,
-    customer_count,valid_order_count,total_paid
-  )
-  values(
-    v_org,v_config.version,v_fingerprint,v_actor,'RUNNING',
-    v_customer_count,v_order_count,v_total_paid
-  )
-  returning id into v_run_id;
-
-  with order_paid as (
-    select
-      o.id order_id,
-      o.customer_id,
-      o.created_at order_created_at,
-      coalesce(sum(
-        erp_private.customer_invoice_effective_paid(i.amount,i.reversed_amount,i.status)
-      ),0)::numeric paid_amount
-    from erp_supply.orders o
-    left join erp_supply.invoices i on i.order_id=o.id
-    where o.organization_id=v_org
-      and o.customer_id is not null
-      and not o.is_test
-      and o.status not in ('DRAFT','CANCELLED')
-    group by o.id,o.customer_id,o.created_at
-  ),
-  base as (
-    select
-      customer_id,
-      count(*)::bigint valid_order_count,
-      round(coalesce(sum(paid_amount),0),2)::numeric paid_amount,
-      min(order_created_at) first_order_at,
-      max(order_created_at) last_order_at
-    from order_paid
-    group by customer_id
-  ),
-  normalized as (
+  create temporary table ci_customer_base
+  on commit drop
+  as
+  with normalized as (
     select
       b.*,
       dense_rank() over(order by b.valid_order_count desc)::integer order_rank,
@@ -176,7 +80,7 @@ begin
       count(*) over()::integer sample_clients,
       sum(b.valid_order_count) over()::bigint sample_orders,
       sum(b.paid_amount) over()::numeric total_paid
-    from base b
+    from pg_temp.ci_customer_base b
   ),
   scored0 as (
     select
@@ -247,33 +151,7 @@ begin
   where prev.customer_id is null or prev.segment is distinct from c.segment
   on conflict (run_id,customer_id) do nothing;
 
-  with order_paid as (
-    select
-      o.id order_id,
-      o.customer_id,
-      o.created_at order_created_at,
-      coalesce(sum(
-        erp_private.customer_invoice_effective_paid(i.amount,i.reversed_amount,i.status)
-      ),0)::numeric paid_amount
-    from erp_supply.orders o
-    left join erp_supply.invoices i on i.order_id=o.id
-    where o.organization_id=v_org
-      and o.customer_id is not null
-      and not o.is_test
-      and o.status not in ('DRAFT','CANCELLED')
-    group by o.id,o.customer_id,o.created_at
-  ),
-  base as (
-    select
-      customer_id,
-      count(*)::bigint valid_order_count,
-      round(coalesce(sum(paid_amount),0),2)::numeric paid_amount,
-      min(order_created_at) first_order_at,
-      max(order_created_at) last_order_at
-    from order_paid
-    group by customer_id
-  ),
-  normalized as (
+  with normalized as (
     select
       b.*,
       dense_rank() over(order by b.valid_order_count desc)::integer order_rank,
@@ -285,7 +163,7 @@ begin
       count(*) over()::integer sample_clients,
       sum(b.valid_order_count) over()::bigint sample_orders,
       sum(b.paid_amount) over()::numeric total_paid
-    from base b
+    from pg_temp.ci_customer_base b
   ),
   scored0 as (
     select n.*,round(100*(
@@ -394,8 +272,18 @@ begin
   )
   values(v_org,null,null,v_run_id,now())
   on conflict (organization_id) do update set
-    dirty_since=null,
-    dirty_reason=null,
+    dirty_since=case
+      when erp_supply.customer_intelligence_state.dirty_since is not null
+       and erp_supply.customer_intelligence_state.dirty_since>v_started_at
+      then erp_supply.customer_intelligence_state.dirty_since
+      else null
+    end,
+    dirty_reason=case
+      when erp_supply.customer_intelligence_state.dirty_since is not null
+       and erp_supply.customer_intelligence_state.dirty_since>v_started_at
+      then erp_supply.customer_intelligence_state.dirty_reason
+      else null
+    end,
     last_run_id=excluded.last_run_id,
     updated_at=now();
 
