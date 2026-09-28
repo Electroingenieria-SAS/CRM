@@ -10,7 +10,7 @@
 | Dashboard / centro de operaciones  |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado |
 | Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Inteligencia/predicción de fletes  |       ✓        |        ✓        |  Unit + DB + E2E*   |   ✓*   |     ✓     | En validación CI       |
+| Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
 | Crédito                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Cartera                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Caja                               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
