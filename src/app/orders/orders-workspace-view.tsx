@@ -84,6 +84,8 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
         </div>
         <OrdersFilters
           value={props.filters}
+          orderTypes={catalogOptions(props.context.catalogs.orderTypes)}
+          deliveryRoutes={catalogOptions(props.context.catalogs.deliveryRoutes)}
           onChange={props.onFiltersChange}
           onSubmit={props.onSearch}
         />
