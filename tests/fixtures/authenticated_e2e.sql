@@ -37,28 +37,28 @@ insert into auth.users(
 );
 
 insert into auth.identities(
-  id,provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at,email
+  id,provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at
 ) values
 (
   '92000000-0000-0000-0000-000000000001',
   '91000000-0000-0000-0000-000000000001',
   '91000000-0000-0000-0000-000000000001',
   '{"sub":"91000000-0000-0000-0000-000000000001","email":"qa-seller@example.test"}'::jsonb,
-  'email',now(),now(),now(),'qa-seller@example.test'
+  'email',now(),now(),now()
 ),
 (
   '92000000-0000-0000-0000-000000000002',
   '91000000-0000-0000-0000-000000000002',
   '91000000-0000-0000-0000-000000000002',
   '{"sub":"91000000-0000-0000-0000-000000000002","email":"qa-auditor@example.test"}'::jsonb,
-  'email',now(),now(),now(),'qa-auditor@example.test'
+  'email',now(),now(),now()
 ),
 (
   '92000000-0000-0000-0000-000000000003',
   '91000000-0000-0000-0000-000000000003',
   '91000000-0000-0000-0000-000000000003',
   '{"sub":"91000000-0000-0000-0000-000000000003","email":"qa-recovery@example.test"}'::jsonb,
-  'email',now(),now(),now(),'qa-recovery@example.test'
+  'email',now(),now(),now()
 );
 
 insert into erp_supply.profiles(
