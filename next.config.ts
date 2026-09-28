@@ -27,6 +27,23 @@ const connectSources = [
   ...configuredSupabaseConnectSources(),
 ];
 
+function configuredSupabaseConnectSources(): string[] {
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  if (!rawUrl) return [];
+
+  try {
+    const url = new URL(rawUrl);
+    const sources = [url.origin];
+
+    if (url.protocol === 'http:') sources.push(`ws://${url.host}`);
+    if (url.protocol === 'https:') sources.push(`wss://${url.host}`);
+
+    return sources;
+  } catch {
+    return [];
+  }
+}
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
