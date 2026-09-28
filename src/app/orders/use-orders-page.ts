@@ -6,6 +6,7 @@ import {
   createBrowserApplication,
   type BrowserApplication,
 } from '@/composition/browser-application';
+import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type {
   CreateOrderInput,
   OrderDetailResponse,
@@ -72,6 +73,7 @@ export function useOrdersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
+  const goToLogin = useCallback(() => router.replace('/login'), [router]);
 
   const loadOrders = useCallback(
     async (nextFilters: OrdersFilterValues) => {
@@ -102,7 +104,7 @@ export function useOrdersPage() {
     setItems,
     setMessage,
     setLoading,
-    goToLogin: () => router.replace('/login'),
+    goToLogin,
   });
 
   const reloadOrder = useCallback(
@@ -120,7 +122,7 @@ export function useOrdersPage() {
     showDetail: setDetail,
     showMessage: setMessage,
     showNotice: setNotice,
-    goToLogin: () => router.replace('/login'),
+    goToLogin,
   });
 
   const workflow = useOrderWorkflowActions({
