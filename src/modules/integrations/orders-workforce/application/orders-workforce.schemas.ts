@@ -89,3 +89,15 @@ export const orderWorkforceHealthResponseSchema = z.object({
 });
 
 export type OrderWorkforceHealth = z.infer<typeof orderWorkforceHealthResponseSchema>;
+
+export const orderWorkforceBindingSchema = z.object({
+  orderTaskId: z.string().uuid(),
+  orderId: z.string().uuid().optional(),
+  workforceActivityId: z.string().uuid().nullable(),
+  status: z.string(),
+  lastIntegrationEvent: z.string().optional(),
+  processedAt: z.string().nullable().optional(),
+  contractVersion: z.string(),
+});
+
+export type OrderWorkforceBinding = z.infer<typeof orderWorkforceBindingSchema>;
