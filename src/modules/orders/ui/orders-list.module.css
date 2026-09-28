@@ -1,0 +1,123 @@
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(360px, 2fr) auto;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.identity {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.identity > span {
+  color: var(--brand-strong);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.identity strong {
+  font-size: 1.1rem;
+}
+
+.identity small {
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.metrics div {
+  min-width: 0;
+}
+
+.metrics dt {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.metrics dd {
+  overflow: hidden;
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.priority {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.priority[data-priority='HIGH'],
+.priority[data-priority='URGENT'],
+.priority[data-priority='CRITICAL'] {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+@media (max-width: 980px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .identity small,
+  .metrics dd {
+    white-space: normal;
+  }
+
+  .priority {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 430px) {
+  .row {
+    padding: var(--space-3);
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+.empty {
+  display: grid;
+  gap: var(--space-2);
+  place-items: center;
+  min-height: 180px;
+  padding: var(--space-5);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  text-align: center;
+}
