@@ -11,9 +11,7 @@ import {
   CustomerIntelligenceFilters,
   type CustomerIntelligenceFilterValues,
 } from '@/modules/customers/ui/customer-intelligence-filters';
-import {
-  CustomerIntelligenceDetailPanel,
-} from '@/modules/customers/ui/customer-intelligence-detail';
+import { CustomerIntelligenceDetailPanel } from '@/modules/customers/ui/customer-intelligence-detail';
 import { CustomerRanking } from '@/modules/customers/ui/customer-ranking';
 import { ParetoChart } from '@/modules/customers/ui/pareto-chart';
 import { AppShell } from '@/shared/ui/app-shell';
