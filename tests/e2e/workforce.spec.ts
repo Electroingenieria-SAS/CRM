@@ -113,3 +113,19 @@ test('mobile Workforce uses timeline cards without page overflow', async ({ page
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
   ).toBe(true);
 });
+
+test('Workforce has no page overflow at every required reference width', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+
+  await login(page);
+
+  for (const width of [320, 375, 390, 430, 768, 1024, 1366, 1920]) {
+    await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
+    await openWorkforce(page);
+
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      `unexpected page overflow at ${width}px`,
+    ).toBe(true);
+  }
+});
