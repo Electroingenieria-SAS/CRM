@@ -1,6 +1,7 @@
 import type {
   CreditQueue,
   CreditRequestInput,
+  FinanceCustomerSearch,
   CustomerPaidProjection,
   FinanceQueue,
   FinancialApprovalQueue,
@@ -62,6 +63,7 @@ export interface FinancialExceptionInput {
 }
 
 export interface FinanceRepository {
+  searchCustomers(search: string): Promise<FinanceCustomerSearch>;
   listCredit(query?: QueueQuery): Promise<CreditQueue>;
   createCredit(input: CreditRequestInput, key: string): Promise<void>;
   takeCredit(requestId: string, key: string): Promise<void>;
