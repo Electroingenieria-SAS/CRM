@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-test('login entry renders without horizontal overflow', async ({ page }) => {
+test('private CRM root renders login without horizontal overflow', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
+  await expect(page.getByLabel('Correo')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ingresar' })).toBeDisabled();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth,
@@ -14,8 +16,7 @@ test('semantic landmarks and language are present', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.getByRole('main')).toHaveCount(1);
-  await expect(page.getByLabel('Correo')).toBeVisible();
-  await expect(page.getByLabel('Contraseña')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 });
 
 test('keyboard navigation exposes a visible focus target', async ({ page }) => {
@@ -33,12 +34,31 @@ test.describe('reference responsive widths', () => {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
       await page.goto('/');
 
-      const layout = await page.evaluate(() => ({
-        viewportWidth: window.innerWidth,
-        documentWidth: document.documentElement.scrollWidth,
-      }));
+      const layout = await page.evaluate(() => {
+        const viewportWidth = window.innerWidth;
+        const documentWidth = document.documentElement.scrollWidth;
+        const offenders = Array.from(document.querySelectorAll<HTMLElement>('*'))
+          .map((element) => {
+            const rect = element.getBoundingClientRect();
+            return {
+              tag: element.tagName.toLowerCase(),
+              id: element.id,
+              className: element.className,
+              left: Math.round(rect.left * 100) / 100,
+              right: Math.round(rect.right * 100) / 100,
+              width: Math.round(rect.width * 100) / 100,
+              text: element.textContent?.slice(0, 120) ?? '',
+            };
+          })
+          .filter((item) => item.right > viewportWidth + 0.5 || item.left < -0.5)
+          .slice(0, 10);
 
-      expect(layout.documentWidth > layout.viewportWidth, JSON.stringify(layout)).toBe(false);
+        return { viewportWidth, documentWidth, offenders };
+      });
+
+      expect(layout.documentWidth > layout.viewportWidth, JSON.stringify(layout, null, 2)).toBe(
+        false,
+      );
     });
   }
 });
