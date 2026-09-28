@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   createBrowserApplication,
@@ -13,6 +13,8 @@ import type {
   OrderListItem,
 } from '@/modules/orders/application/order.schemas';
 import type { OrdersFilterValues } from '@/modules/orders/ui/orders-filters';
+import { useOrderWorkflowActions } from './use-order-workflow-actions';
+import { useOrdersBootstrap } from './use-orders-bootstrap';
 
 const initialFilters: OrdersFilterValues = {
   search: '',
@@ -20,19 +22,6 @@ const initialFilters: OrdersFilterValues = {
   orderType: '',
   route: '',
 };
-
-async function loadInitialWorkspace(application: BrowserApplication) {
-  const context = await application.auth.restoreContext();
-  if (!context) return null;
-
-  const firstPage = await application.orders.list({
-    page: 1,
-    pageSize: 50,
-    includeHistory: true,
-  });
-
-  return { context, items: firstPage.items };
-}
 
 interface OrderActionsDependencies {
   application: BrowserApplication | null;
@@ -84,6 +73,7 @@ export function useOrdersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
+  const goToLogin = useCallback(() => router.replace('/login'), [router]);
 
   const loadOrders = useCallback(
     async (nextFilters: OrdersFilterValues) => {
@@ -108,39 +98,22 @@ export function useOrdersPage() {
     [application],
   );
 
-  useEffect(() => {
-    if (!application) return;
+  useOrdersBootstrap({
+    application,
+    setContext,
+    setItems,
+    setMessage,
+    setLoading,
+    goToLogin,
+  });
 
-    const app = application;
-    let active = true;
-    const unsubscribe = app.auth.onSessionChange((event) => {
-      if (event.type === 'signed_out') router.replace('/login');
-    });
-
-    void loadInitialWorkspace(app)
-      .then((workspace) => {
-        if (!active) return;
-        if (!workspace) {
-          router.replace('/login');
-          return;
-        }
-        setContext(workspace.context);
-        setItems(workspace.items);
-      })
-      .catch((error) => {
-        if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
-        }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-      unsubscribe();
-    };
-  }, [application, router]);
+  const reloadOrder = useCallback(
+    async (orderId: string) => {
+      if (!application) return;
+      setDetail(await application.orders.get(orderId));
+    },
+    [application],
+  );
 
   const actions = createOrderActions({
     application,
@@ -149,8 +122,18 @@ export function useOrdersPage() {
     showDetail: setDetail,
     showMessage: setMessage,
     showNotice: setNotice,
-    goToLogin: () => router.replace('/login'),
+    goToLogin,
   });
+
+  const workflow = useOrderWorkflowActions({
+    application,
+    detail,
+    reloadOrder,
+    reloadList: () => loadOrders(filters),
+    showMessage: setMessage,
+    showNotice: setNotice,
+  });
+
   const unavailable = !application;
 
   return {
@@ -167,6 +150,7 @@ export function useOrdersPage() {
     setDetail,
     search: () => loadOrders(filters),
     ...actions,
+    ...workflow,
   };
 }
 
