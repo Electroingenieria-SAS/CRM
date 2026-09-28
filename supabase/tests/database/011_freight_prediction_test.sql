@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(9);
+select plan(11);
 
 insert into auth.users(
   instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,
@@ -47,6 +47,13 @@ select is(
   (public.erp_x_freight_catalog()#>>'{coverage,historicalSamples}')::bigint,
   749::bigint,
   'catalog reports the real historical sample size'
+);
+
+select lives_ok(
+  $select public.erp_x_freight_history(
+    null,'Quindío',null,'NATIONAL_DISPATCH',null,null,1,25
+  )$,
+  'sales may read normalized freight history through SECURITY INVOKER RPC'
 );
 
 select is(
@@ -149,8 +156,15 @@ select lives_ok(
   'auditor may read freight intelligence'
 );
 
+select lives_ok(
+  $select public.erp_x_freight_history(
+    null,'Quindío',null,'NATIONAL_DISPATCH',null,null,1,25
+  )$,
+  'auditor may read normalized freight history'
+);
+
 select throws_ok(
-  $$select public.erp_x_freight_predict(
+  $select public.erp_x_freight_predict(
     (select id from erp_supply.freight_destinations
      where city_key='ARMENIA' and department_key='QUINDIO' limit 1),
     'NATIONAL_DISPATCH'
