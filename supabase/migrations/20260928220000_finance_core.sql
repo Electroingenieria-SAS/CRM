@@ -443,19 +443,12 @@ using (
   )
 );
 
-create policy financial_events_insert on erp_supply.financial_events
-for insert to authenticated
-with check (
-  organization_id=erp_private.current_org_id()
-  and actor_profile_id=erp_private.current_profile_id()
-);
-
 grant select,insert,update on erp_supply.credit_requests to authenticated;
 grant select,insert on erp_supply.financial_validations to authenticated;
 grant select,insert,update on erp_supply.financial_holds to authenticated;
 grant select,insert,update on erp_supply.financial_approval_requests to authenticated;
 grant select,insert,update on erp_supply.financial_supports to authenticated;
-grant select,insert on erp_supply.financial_events to authenticated;
+grant select on erp_supply.financial_events to authenticated;
 grant select,insert,update on erp_supply.invoices to authenticated;
 
 commit;
