@@ -49,7 +49,7 @@ export function ReconstructionOverview() {
           <p className="eyebrow">Trazabilidad</p>
           <h2 id="baseline-title">Baseline funcional congelado</h2>
         </div>
-        <code className={styles.baselineCommit}>{status.baselineCommit}</code>
+        <code>{status.baselineCommit}</code>
       </section>
     </main>
   );
