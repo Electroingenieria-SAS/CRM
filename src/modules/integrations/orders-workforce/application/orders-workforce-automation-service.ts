@@ -44,7 +44,14 @@ export class OrdersWorkforceAutomationService {
         claimed.event.orderEventId,
         claimed.dedupeKey,
       );
-      const result = await this.workforce.applyOrderEvent(claimed.event, keys);
+      const existingActivityId = claimed.event.orderTaskId
+        ? (await this.outbox.binding(claimed.event.orderTaskId)).workforceActivityId
+        : null;
+      const result = await this.workforce.applyOrderEvent(
+        claimed.event,
+        keys,
+        existingActivityId,
+      );
 
       await this.outbox.markProcessed(outboxId, result.activityId, {
         status: result.status,
