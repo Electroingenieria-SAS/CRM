@@ -53,7 +53,9 @@ export function useFinanceQueuePage(domain: FinanceDomain) {
   }, [session.application]);
 
   useEffect(() => {
-    if (session.context) void load(initialQuery);
+    if (!session.context) return;
+    const timer = window.setTimeout(() => void load(initialQuery), 0);
+    return () => window.clearTimeout(timer);
   }, [session.context, load]);
 
   function choose(item: FinanceQueueItem) {
