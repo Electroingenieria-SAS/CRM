@@ -7,20 +7,40 @@
 ```text
 src/app
   ↓
-modules/<dominio>/ui
+modules/<dominio>/ui + application
   ↓
-modules/<dominio>/application
+ports / contracts de application
+  ↑
+src/composition
   ↓
-modules/<dominio>/domain
+src/infrastructure
   ↓
-modules/<dominio>/infrastructure | shared ports
-  ↓
-infrastructure/supabase | APIs
+Supabase / APIs externas
   ↓
 PostgreSQL / Edge Functions
 ```
 
-La UI no debe llamar RPC o tablas directamente. Las integraciones externas entran por adaptadores explícitos.
+La UI no llama RPC, tablas ni SDK de Supabase directamente. Los módulos de negocio tampoco conocen implementaciones de infraestructura.
+
+## Direction of dependencies
+
+Las reglas comprobadas por `scripts/check-architecture.mjs` son:
+
+- `src/app` no importa `src/infrastructure`.
+- `src/modules` no importa Supabase, `src/infrastructure` ni `src/composition`.
+- `src/infrastructure` no importa `src/app` ni `src/composition`.
+- `src/composition` puede conocer Application e Infrastructure para realizar únicamente el wiring, pero no puede depender de la UI.
+- Las capacidades de autorización se consumen desde Application; la UI no decide acceso por nombres de rol.
+
+## Composition root
+
+`src/composition/browser-application.ts` es el punto de composición del runtime de navegador. Allí se conectan:
+
+- `AuthService` ↔ `SupabaseAuthGateway` + `SupabaseSessionRepository`;
+- `OrdersService` ↔ `SupabaseOrdersRepository`;
+- `createSupabaseBrowserClient` como adaptador de transporte.
+
+El composition root devuelve contratos/servicios que `src/app` puede consumir sin conocer Supabase. Si el runtime no tiene configuración pública de staging, devuelve `null` y la UI queda explícitamente no operativa.
 
 ## Dominios previstos
 
@@ -36,7 +56,3 @@ Se crean únicamente cuando comienza su migración; no se generan carpetas vací
 - > 800: CI bloquea salvo archivo generado y excluido conscientemente.
 - Funciones >100 líneas: CI bloquea.
 - Complejidad ciclomática >20: CI bloquea.
-
-## Composition root
-
-`src/app` compone rutas y layouts. La lógica de negocio vive en módulos; infraestructura común vive en `src/infrastructure`; errores, tiempo y primitivas compartidas en `src/shared`.
