@@ -79,7 +79,6 @@ export function WorkforceCreateForm({
         plannedStart: localColombiaIso(start),
         plannedEnd: localColombiaIso(end),
         description: description.trim() || undefined,
-        items: undefined,
         metadata: {},
       } as CreateWorkforceActivityInput);
     } finally {
