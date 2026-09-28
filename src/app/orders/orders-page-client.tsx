@@ -11,7 +11,9 @@ export function OrdersPageClient() {
       <main id="main-content" className="centered-page">
         <section className="surface" aria-live="polite">
           <p className="eyebrow">CRM</p>
-          <h1>{page.loading ? 'Cargando tu espacio de trabajo…' : 'No fue posible abrir Pedidos'}</h1>
+          <h1>
+            {page.loading ? 'Cargando tu espacio de trabajo…' : 'No fue posible abrir Pedidos'}
+          </h1>
           {page.message ? <p>{page.message}</p> : null}
         </section>
       </main>

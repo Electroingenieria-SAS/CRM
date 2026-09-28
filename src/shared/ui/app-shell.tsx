@@ -23,14 +23,20 @@ export function AppShell({ userName, organizationName, onSignOut, children }: Ap
           </div>
         </div>
         <nav className={styles.nav}>
-          <Link href="/orders" aria-current="page">Pedidos</Link>
+          <Link href="/orders" aria-current="page">
+            Pedidos
+          </Link>
         </nav>
         <div className={styles.account}>
           <span>{userName}</span>
-          <button type="button" onClick={() => void onSignOut()}>Cerrar sesión</button>
+          <button type="button" onClick={() => void onSignOut()}>
+            Cerrar sesión
+          </button>
         </div>
       </aside>
-      <main id="main-content" className={styles.content}>{children}</main>
+      <main id="main-content" className={styles.content}>
+        {children}
+      </main>
     </div>
   );
 }

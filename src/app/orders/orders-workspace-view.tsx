@@ -78,12 +78,24 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
             <h2 id="orders-list-title">Lista de pedidos</h2>
             <p>La prioridad mostrada es automática; no existe selector manual en creación.</p>
           </div>
-          <span>{props.items.length} visible{props.items.length === 1 ? '' : 's'}</span>
+          <span>
+            {props.items.length} visible{props.items.length === 1 ? '' : 's'}
+          </span>
         </div>
-        <OrdersFilters value={props.filters} onChange={props.onFiltersChange} onSubmit={props.onSearch} />
-        {props.message ? <p className={styles.message} role="alert">{props.message}</p> : null}
+        <OrdersFilters
+          value={props.filters}
+          onChange={props.onFiltersChange}
+          onSubmit={props.onSearch}
+        />
+        {props.message ? (
+          <p className={styles.message} role="alert">
+            {props.message}
+          </p>
+        ) : null}
         {props.loading ? (
-          <p className={styles.loading} role="status">Consultando la operación…</p>
+          <p className={styles.loading} role="status">
+            Consultando la operación…
+          </p>
         ) : (
           <OrdersList items={props.items} onSelect={props.onOpenDetail} />
         )}

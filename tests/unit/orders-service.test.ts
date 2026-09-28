@@ -44,7 +44,11 @@ describe('orders service', () => {
   });
 
   it('rejects cut items without a cut length', () => {
-    const repository = { list: vi.fn(), get: vi.fn(), create: vi.fn() } as unknown as OrdersRepository;
+    const repository = {
+      list: vi.fn(),
+      get: vi.fn(),
+      create: vi.fn(),
+    } as unknown as OrdersRepository;
     const service = new OrdersService(repository);
 
     expect(() =>

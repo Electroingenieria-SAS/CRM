@@ -34,7 +34,9 @@ export function OrderBasicsFields({
         <span>Tipo *</span>
         <select name="orderType" required>
           {orderTypes.map((item) => (
-            <option key={item.code} value={item.code}>{item.name}</option>
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
           ))}
         </select>
       </label>
@@ -42,7 +44,9 @@ export function OrderBasicsFields({
         <span>Condición de pago *</span>
         <select name="paymentCondition" required>
           {paymentConditions.map((item) => (
-            <option key={item.code} value={item.code}>{item.name}</option>
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
           ))}
         </select>
       </label>
@@ -50,7 +54,9 @@ export function OrderBasicsFields({
         <span>Modalidad de entrega *</span>
         <select name="deliveryRoute" required>
           {deliveryRoutes.map((item) => (
-            <option key={item.code} value={item.code}>{item.name}</option>
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
           ))}
         </select>
       </label>

@@ -1,5 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { sessionContextSchema, type SessionContext } from '@/modules/auth/application/session.schemas';
+import {
+  sessionContextSchema,
+  type SessionContext,
+} from '@/modules/auth/application/session.schemas';
 import type { SessionRepository } from '@/modules/auth/application/session-repository';
 import { AppError } from '@/shared/errors/app-error';
 

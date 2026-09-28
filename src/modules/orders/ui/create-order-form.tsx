@@ -3,11 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import type { CreateOrderInput } from '@/modules/orders/application/order.schemas';
 import { OrderBasicsFields, type CatalogOption } from './order-basics-fields';
-import {
-  createEmptyOrderItem,
-  OrderItemsEditor,
-  type DraftOrderItem,
-} from './order-items-editor';
+import { createEmptyOrderItem, OrderItemsEditor, type DraftOrderItem } from './order-items-editor';
 import styles from './create-order-form.module.css';
 
 interface CreateOrderFormProps {
@@ -64,7 +60,9 @@ export function CreateOrderForm(props: CreateOrderFormProps) {
           <h2>Registrar información esencial</h2>
           <p>La prioridad no se captura manualmente; la definirá la inteligencia del cliente.</p>
         </div>
-        <button type="button" onClick={props.onCancel} disabled={saving}>Cerrar</button>
+        <button type="button" onClick={props.onCancel} disabled={saving}>
+          Cerrar
+        </button>
       </header>
 
       <div className={styles.grid}>
@@ -76,10 +74,16 @@ export function CreateOrderForm(props: CreateOrderFormProps) {
       </div>
 
       <OrderItemsEditor items={items} onChange={setItems} />
-      {message ? <p className={styles.message} role="alert">{message}</p> : null}
+      {message ? (
+        <p className={styles.message} role="alert">
+          {message}
+        </p>
+      ) : null}
 
       <footer className={styles.actions}>
-        <button type="button" onClick={props.onCancel} disabled={saving}>Cancelar</button>
+        <button type="button" onClick={props.onCancel} disabled={saving}>
+          Cancelar
+        </button>
         <button className="primary-button" type="submit" disabled={saving}>
           {saving ? 'Creando…' : 'Crear pedido'}
         </button>

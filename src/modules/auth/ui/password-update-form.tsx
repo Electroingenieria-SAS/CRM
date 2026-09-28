@@ -25,7 +25,9 @@ export function PasswordUpdateForm({ disabled = false, onUpdate }: PasswordUpdat
       await onUpdate(password);
       setMessage('Contraseña actualizada correctamente.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible actualizar la contraseña.');
+      setMessage(
+        error instanceof Error ? error.message : 'No fue posible actualizar la contraseña.',
+      );
     } finally {
       setSaving(false);
     }

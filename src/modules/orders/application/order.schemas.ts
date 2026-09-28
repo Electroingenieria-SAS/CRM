@@ -27,9 +27,24 @@ export const orderItemInputSchema = z
 export const createOrderSchema = z.object({
   orderNumber: z.string().trim().min(1).max(120),
   externalReference: z.string().trim().max(160).optional(),
-  orderType: z.string().trim().min(1).max(20).transform((value) => value.toUpperCase()),
-  paymentCondition: z.string().trim().min(1).max(30).transform((value) => value.toUpperCase()),
-  deliveryRoute: z.string().trim().min(1).max(40).transform((value) => value.toUpperCase()),
+  orderType: z
+    .string()
+    .trim()
+    .min(1)
+    .max(20)
+    .transform((value) => value.toUpperCase()),
+  paymentCondition: z
+    .string()
+    .trim()
+    .min(1)
+    .max(30)
+    .transform((value) => value.toUpperCase()),
+  deliveryRoute: z
+    .string()
+    .trim()
+    .min(1)
+    .max(40)
+    .transform((value) => value.toUpperCase()),
   clientName: z.string().trim().min(1).max(240),
   clientDocument: z.string().trim().max(80).optional(),
   clientDepartment: z.string().trim().max(120).optional(),
@@ -105,16 +120,18 @@ export const orderDetailResponseSchema = z.object({
     updated_at: z.string(),
   }),
   items: z.array(
-    z.object({
-      id: z.string().uuid(),
-      description: z.string(),
-      quantity: z.coerce.number(),
-      unit: z.string(),
-      sku: z.string().nullable(),
-      reference: z.string().nullable(),
-      requires_cut: z.boolean(),
-      requested_cut_length: z.coerce.number().nullable(),
-    }).passthrough(),
+    z
+      .object({
+        id: z.string().uuid(),
+        description: z.string(),
+        quantity: z.coerce.number(),
+        unit: z.string(),
+        sku: z.string().nullable(),
+        reference: z.string().nullable(),
+        requires_cut: z.boolean(),
+        requested_cut_length: z.coerce.number().nullable(),
+      })
+      .passthrough(),
   ),
   tasks: z.array(z.record(z.string(), z.unknown())),
   events: z.array(z.record(z.string(), z.unknown())),

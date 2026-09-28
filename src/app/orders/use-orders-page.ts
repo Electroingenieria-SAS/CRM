@@ -47,24 +47,27 @@ export function useOrdersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
 
-  const loadOrders = useCallback(async (nextFilters: OrdersFilterValues) => {
-    if (!orders) return;
-    setLoading(true);
-    setMessage(null);
-    try {
-      const response = await orders.list({
-        ...nextFilters,
-        page: 1,
-        pageSize: 50,
-        includeHistory: true,
-      });
-      setItems(response.items);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible cargar los pedidos.');
-    } finally {
-      setLoading(false);
-    }
-  }, [orders]);
+  const loadOrders = useCallback(
+    async (nextFilters: OrdersFilterValues) => {
+      if (!orders) return;
+      setLoading(true);
+      setMessage(null);
+      try {
+        const response = await orders.list({
+          ...nextFilters,
+          page: 1,
+          pageSize: 50,
+          includeHistory: true,
+        });
+        setItems(response.items);
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible cargar los pedidos.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [orders],
+  );
 
   useEffect(() => {
     let active = true;
@@ -88,13 +91,16 @@ export function useOrdersPage() {
           setItems(firstPage.items);
         }
       } catch (error) {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
+        if (active)
+          setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
       } finally {
         if (active) setLoading(false);
       }
     }
     void boot();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [auth, orders, router, sessionRepository]);
 
   async function createOrder(input: CreateOrderInput) {
@@ -120,10 +126,20 @@ export function useOrdersPage() {
   }
 
   return {
-    context, items, filters, loading, creating, message, detail,
-    setFilters, setCreating, setDetail,
+    context,
+    items,
+    filters,
+    loading,
+    creating,
+    message,
+    detail,
+    setFilters,
+    setCreating,
+    setDetail,
     search: () => loadOrders(filters),
-    createOrder, openDetail, signOut,
+    createOrder,
+    openDetail,
+    signOut,
   };
 }
 

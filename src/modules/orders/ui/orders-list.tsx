@@ -37,13 +37,27 @@ export function OrdersList({ items, onSelect }: OrdersListProps) {
             <div className={styles.identity}>
               <span>{order.stepName}</span>
               <strong>{order.orderNumber}</strong>
-              <small>{order.clientName} · {order.orderType} · {order.paymentCondition}</small>
+              <small>
+                {order.clientName} · {order.orderType} · {order.paymentCondition}
+              </small>
             </div>
             <dl className={styles.metrics}>
-              <div><dt>Estado</dt><dd>{statusLabel(order.status)}</dd></div>
-              <div><dt>Responsable</dt><dd>{order.assigneeName ?? 'En cola'}</dd></div>
-              <div><dt>Vendedor</dt><dd>{order.sellerName ?? '—'}</dd></div>
-              <div><dt>Ruta</dt><dd>{order.route}</dd></div>
+              <div>
+                <dt>Estado</dt>
+                <dd>{statusLabel(order.status)}</dd>
+              </div>
+              <div>
+                <dt>Responsable</dt>
+                <dd>{order.assigneeName ?? 'En cola'}</dd>
+              </div>
+              <div>
+                <dt>Vendedor</dt>
+                <dd>{order.sellerName ?? '—'}</dd>
+              </div>
+              <div>
+                <dt>Ruta</dt>
+                <dd>{order.route}</dd>
+              </div>
             </dl>
             <span className={styles.priority} data-priority={order.priority}>
               {order.priority === 'MEDIUM' ? 'Prioridad automática' : order.priority}

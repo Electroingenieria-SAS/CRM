@@ -50,7 +50,10 @@ export function OrdersFilters({ value, onChange, onSubmit }: OrdersFiltersProps)
       </label>
       <label>
         <span>Tipo</span>
-        <select value={value.orderType} onChange={(event) => patch('orderType', event.target.value)}>
+        <select
+          value={value.orderType}
+          onChange={(event) => patch('orderType', event.target.value)}
+        >
           <option value="">Todos</option>
           <option value="PVC">PVC</option>
           <option value="PVN">PVN</option>
@@ -68,7 +71,9 @@ export function OrdersFilters({ value, onChange, onSubmit }: OrdersFiltersProps)
           <option value="NATIONAL_DISPATCH">Nacional</option>
         </select>
       </label>
-      <button className="primary-button" type="submit">Buscar</button>
+      <button className="primary-button" type="submit">
+        Buscar
+      </button>
     </form>
   );
 }

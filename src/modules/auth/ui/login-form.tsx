@@ -34,7 +34,9 @@ export function LoginForm({ disabled = false, onLogin, onRecover }: LoginFormPro
       await onRecover(email);
       setMessage('Si el correo está registrado, recibirás las instrucciones de recuperación.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible solicitar la recuperación.');
+      setMessage(
+        error instanceof Error ? error.message : 'No fue posible solicitar la recuperación.',
+      );
     } finally {
       setState('idle');
     }
@@ -70,7 +72,11 @@ export function LoginForm({ disabled = false, onLogin, onRecover }: LoginFormPro
         />
       </div>
 
-      {message ? <p className={styles.message} role="status">{message}</p> : null}
+      {message ? (
+        <p className={styles.message} role="status">
+          {message}
+        </p>
+      ) : null}
 
       <button className="primary-button" type="submit" disabled={disabled || state !== 'idle'}>
         {state === 'loading' ? 'Ingresando…' : 'Ingresar'}
