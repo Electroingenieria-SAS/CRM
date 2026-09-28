@@ -18,10 +18,7 @@ export function createWorkforceBrowserApplication(): WorkforceBrowserApplication
   if (!client) return null;
 
   return {
-    auth: new AuthService(
-      new SupabaseAuthGateway(client),
-      new SupabaseSessionRepository(client),
-    ),
+    auth: new AuthService(new SupabaseAuthGateway(client), new SupabaseSessionRepository(client)),
     workforce: new WorkforceService(
       new SupabaseWorkforceRepository(client),
       new SupabaseWorkforceEvidenceStorage(client),

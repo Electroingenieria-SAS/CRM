@@ -34,10 +34,7 @@ export function clockToMinutes(value: string): number {
   return hour * 60 + minute;
 }
 
-export function overlaps(
-  first: ScheduleSegment,
-  second: ScheduleSegment,
-): boolean {
+export function overlaps(first: ScheduleSegment, second: ScheduleSegment): boolean {
   return first.startMinutes < second.endMinutes && second.startMinutes < first.endMinutes;
 }
 
@@ -45,9 +42,7 @@ export function slotIndexesFor(
   segment: ScheduleSegment,
   slots: readonly WorkforceDaySlot[] = workforceDaySlots,
 ): number[] {
-  return slots.flatMap((slot, index) =>
-    overlaps(segment, slot) ? [index] : [],
-  );
+  return slots.flatMap((slot, index) => (overlaps(segment, slot) ? [index] : []));
 }
 
 export function plannedMinutes(segment: ScheduleSegment): number {

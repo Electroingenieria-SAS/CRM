@@ -55,12 +55,16 @@ export function WorkforceWeekView({
   return (
     <section className={styles.weekWrap} aria-label="Cronograma semanal">
       <div className={styles.weekGrid} role="table">
-        <div className={styles.corner} role="columnheader">Equipo</div>
+        <div className={styles.corner} role="columnheader">
+          Equipo
+        </div>
         {days.map((day) => (
           <div className={styles.dayHead} role="columnheader" key={day}>
             <strong>
-              {new Intl.DateTimeFormat('es-CO', { weekday: 'short', timeZone: 'America/Bogota' })
-                .format(new Date(`${day}T12:00:00-05:00`))}
+              {new Intl.DateTimeFormat('es-CO', {
+                weekday: 'short',
+                timeZone: 'America/Bogota',
+              }).format(new Date(`${day}T12:00:00-05:00`))}
             </strong>
             <span>{day.slice(5)}</span>
             {holidayMap.has(day) ? <small>{holidayMap.get(day)}</small> : null}

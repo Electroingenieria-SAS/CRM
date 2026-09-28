@@ -88,33 +88,29 @@ test('mobile Workforce uses timeline cards without page overflow', async ({ page
   await login(page);
   await openWorkforce(page);
 
-  for (const label of [
-    '07:00–09:00',
-    '09:00–11:00',
-    '11:00–12:00',
-    '13:40–15:40',
-    '15:40–17:30',
-  ]) {
+  for (const label of ['07:00–09:00', '09:00–11:00', '11:00–12:00', '13:40–15:40', '15:40–17:30']) {
     await expect(page.getByRole('heading', { name: label }).first()).toBeVisible();
   }
 
-  expect(
-    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-  ).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
 
   await page.getByRole('button', { name: 'Semana' }).click();
-  expect(
-    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-  ).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
 
   await page.getByRole('button', { name: 'Mes' }).click();
   await expect(page.getByRole('region', { name: 'Planificación mensual' })).toBeVisible();
-  expect(
-    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-  ).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
 });
 
-test('Workforce has no page overflow at every required reference width', async ({ page }, testInfo) => {
+test('Workforce has no page overflow at every required reference width', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium');
 
   await login(page);

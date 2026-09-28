@@ -1,5 +1,5 @@
 .dialog {
-  width: min(760px,calc(100vw - 2rem));
+  width: min(760px, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
   padding: 0;
   border: 1px solid var(--border);
@@ -44,7 +44,7 @@
 
 .facts {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
   margin: 0;
 }
@@ -74,7 +74,7 @@
 
 .actions {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
   padding: var(--space-3);
   border: 1px solid var(--border);

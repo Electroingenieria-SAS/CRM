@@ -6,12 +6,7 @@ import type {
 } from '@/modules/workforce/application/evidence-storage-port';
 import { AppError } from '@/shared/errors/app-error';
 
-const allowedMimeTypes = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'application/pdf',
-]);
+const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
 
 function safeFileName(value: string): string {
   const normalized = value.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g, '-');
@@ -35,8 +30,7 @@ async function validateFileSignature(file: File): Promise<void> {
     (file.type === 'image/webp' &&
       startsWith(bytes, [0x52, 0x49, 0x46, 0x46]) &&
       startsWith(bytes.slice(8), [0x57, 0x45, 0x42, 0x50])) ||
-    (file.type === 'application/pdf' &&
-      startsWith(bytes, [0x25, 0x50, 0x44, 0x46, 0x2d]));
+    (file.type === 'application/pdf' && startsWith(bytes, [0x25, 0x50, 0x44, 0x46, 0x2d]));
 
   if (!valid) {
     throw new AppError(

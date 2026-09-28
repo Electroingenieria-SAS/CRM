@@ -16,10 +16,16 @@ function mapWorkforceError(error: { code?: string; message?: string } | null): A
     return new AppError('AUTHORIZATION', 'No tienes permisos para realizar esta operación.');
   }
   if (error?.code === '40001') {
-    return new AppError('BUSINESS_RULE', 'La actividad cambió. Actualiza la vista e inténtalo nuevamente.');
+    return new AppError(
+      'BUSINESS_RULE',
+      'La actividad cambió. Actualiza la vista e inténtalo nuevamente.',
+    );
   }
   if (error?.code === '23P01') {
-    return new AppError('BUSINESS_RULE', 'La persona ya tiene una actividad incompatible en ese horario.');
+    return new AppError(
+      'BUSINESS_RULE',
+      'La persona ya tiene una actividad incompatible en ese horario.',
+    );
   }
   if (error?.code === '23514') {
     return new AppError('BUSINESS_RULE', 'Falta cumplir una regla de evidencia o integridad.');
@@ -78,7 +84,12 @@ export class SupabaseWorkforceRepository implements WorkforceRepository {
     return workforceMutationResponseSchema.parse(data);
   }
 
-  async assign(activityId: string, assigneeProfileId: string | null, expectedVersion: number, idempotencyKey: string) {
+  async assign(
+    activityId: string,
+    assigneeProfileId: string | null,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ) {
     const { data, error } = await this.client.rpc('erp_x_workforce_assign_activity', {
       p_activity_id: activityId,
       p_assignee_profile_id: assigneeProfileId,
@@ -114,7 +125,12 @@ export class SupabaseWorkforceRepository implements WorkforceRepository {
     });
   }
 
-  async complete(activityId: string, resultNote: string, expectedVersion: number, idempotencyKey: string) {
+  async complete(
+    activityId: string,
+    resultNote: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ) {
     return this.mutate('erp_x_workforce_complete_activity', {
       p_activity_id: activityId,
       p_result_note: resultNote,
@@ -123,7 +139,12 @@ export class SupabaseWorkforceRepository implements WorkforceRepository {
     });
   }
 
-  async cancel(activityId: string, reason: string, expectedVersion: number, idempotencyKey: string) {
+  async cancel(
+    activityId: string,
+    reason: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ) {
     return this.mutate('erp_x_workforce_cancel_activity', {
       p_activity_id: activityId,
       p_reason: reason,

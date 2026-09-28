@@ -78,7 +78,8 @@ export function useWorkforcePage() {
         setIndicators(workspace.indicators);
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible abrir Workforce.');
+        if (active)
+          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Workforce.');
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -99,17 +100,16 @@ export function useWorkforcePage() {
       try {
         const [nextSchedule, nextIndicators] = await Promise.all([
           application.workforce.schedule(range.from, range.to),
-          application.workforce.indicators(
-            range.from,
-            nextMode === 'month' ? range.to : range.to,
-          ),
+          application.workforce.indicators(range.from, nextMode === 'month' ? range.to : range.to),
         ]);
         setMode(nextMode);
         setAnchor(nextAnchor);
         setSchedule(nextSchedule);
         setIndicators(nextIndicators);
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible actualizar el cronograma.');
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible actualizar el cronograma.',
+        );
       } finally {
         setLoading(false);
       }
@@ -148,7 +148,9 @@ export function useWorkforcePage() {
       await Promise.all([reloadCurrent(), refreshDetail(activityId)]);
       setNotice(successMessage);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible actualizar la actividad.');
+      setMessage(
+        error instanceof Error ? error.message : 'No fue posible actualizar la actividad.',
+      );
     } finally {
       setBusy(false);
     }

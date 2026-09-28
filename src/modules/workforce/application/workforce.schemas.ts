@@ -8,12 +8,7 @@ const activityStatusSchema = z.enum([
   'CANCELLED',
 ]);
 
-const occupancySchema = z.enum([
-  'AVAILABLE',
-  'OCCUPIED',
-  'BLOCKED',
-  'OUT_OF_SCHEDULE',
-]);
+const occupancySchema = z.enum(['AVAILABLE', 'OCCUPIED', 'BLOCKED', 'OUT_OF_SCHEDULE']);
 
 const timeSignalSchema = z.enum(['NORMAL', 'OVER_60_MINUTES']);
 
@@ -28,14 +23,7 @@ export const workforceCatalogItemSchema = z.object({
   activityGroup: z.string(),
   activityKind: z.enum(['ACTIVITY', 'DELIVERABLE']),
   standardMinutes: z.number().int().positive().nullable(),
-  evidencePolicy: z.enum([
-    'NONE',
-    'FINAL_PHOTO',
-    'BEFORE_AFTER',
-    'FILE',
-    'LINK',
-    'ERP_REFERENCE',
-  ]),
+  evidencePolicy: z.enum(['NONE', 'FINAL_PHOTO', 'BEFORE_AFTER', 'FILE', 'LINK', 'ERP_REFERENCE']),
   teamAllowed: z.boolean(),
   allowedRoles: z.array(z.string()),
   sortOrder: z.number().int(),
@@ -114,45 +102,49 @@ export const workforceScheduleResponseSchema = z.object({
   contractVersion: z.string(),
 });
 
-export const createWorkforceActivitySchema = z.object({
-  catalogId: z.string().uuid(),
-  assigneeProfileId: z.string().uuid().optional(),
-  autoAssign: z.boolean().optional(),
-  title: z.string().trim().min(1).max(240).optional(),
-  description: z.string().trim().max(2000).optional(),
-  plannedStart: z.string().datetime({ offset: true }),
-  plannedEnd: z.string().datetime({ offset: true }),
-  orderId: z.string().uuid().optional(),
-  orderTaskId: z.string().uuid().optional(),
-  metadata: z.record(z.string(), z.unknown()).default({}),
-}).superRefine((value, context) => {
-  if (value.assigneeProfileId && value.autoAssign) {
-    context.addIssue({
-      code: 'custom',
-      path: ['autoAssign'],
-      message: 'Elige un responsable o autoasignación, no ambos.',
-    });
-  }
-  if (new Date(value.plannedEnd) <= new Date(value.plannedStart)) {
-    context.addIssue({
-      code: 'custom',
-      path: ['plannedEnd'],
-      message: 'La hora final debe ser posterior a la inicial.',
-    });
-  }
-});
+export const createWorkforceActivitySchema = z
+  .object({
+    catalogId: z.string().uuid(),
+    assigneeProfileId: z.string().uuid().optional(),
+    autoAssign: z.boolean().optional(),
+    title: z.string().trim().min(1).max(240).optional(),
+    description: z.string().trim().max(2000).optional(),
+    plannedStart: z.string().datetime({ offset: true }),
+    plannedEnd: z.string().datetime({ offset: true }),
+    orderId: z.string().uuid().optional(),
+    orderTaskId: z.string().uuid().optional(),
+    metadata: z.record(z.string(), z.unknown()).default({}),
+  })
+  .superRefine((value, context) => {
+    if (value.assigneeProfileId && value.autoAssign) {
+      context.addIssue({
+        code: 'custom',
+        path: ['autoAssign'],
+        message: 'Elige un responsable o autoasignación, no ambos.',
+      });
+    }
+    if (new Date(value.plannedEnd) <= new Date(value.plannedStart)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['plannedEnd'],
+        message: 'La hora final debe ser posterior a la inicial.',
+      });
+    }
+  });
 
-export const workforceMutationResponseSchema = z.object({
-  success: z.literal(true),
-  idempotent: z.boolean(),
-  activityId: z.string().uuid(),
-  status: z.string().optional(),
-  version: z.number().int().positive().optional(),
-  assigneeProfileId: z.string().uuid().optional(),
-  evidenceId: z.string().uuid().optional(),
-  evidenceType: z.string().optional(),
-  contractVersion: z.string(),
-}).passthrough();
+export const workforceMutationResponseSchema = z
+  .object({
+    success: z.literal(true),
+    idempotent: z.boolean(),
+    activityId: z.string().uuid(),
+    status: z.string().optional(),
+    version: z.number().int().positive().optional(),
+    assigneeProfileId: z.string().uuid().optional(),
+    evidenceId: z.string().uuid().optional(),
+    evidenceType: z.string().optional(),
+    contractVersion: z.string(),
+  })
+  .passthrough();
 
 export const workforceEvidenceInputSchema = z.object({
   evidenceType: z.enum([
@@ -203,26 +195,30 @@ export const workforceActivityDetailResponseSchema = z.object({
     evidenceComplete: z.boolean(),
     version: z.number().int().positive(),
   }),
-  evidence: z.array(z.object({
-    id: z.string().uuid(),
-    evidenceType: z.string(),
-    storageProvider: z.string(),
-    storageReference: z.string(),
-    fileName: z.string().nullable(),
-    mimeType: z.string().nullable(),
-    sizeBytes: z.number().nullable(),
-    capturedAt: z.string().nullable(),
-    createdAt: z.string(),
-  })),
-  events: z.array(z.object({
-    id: z.number(),
-    eventType: z.string(),
-    fromStatus: z.string().nullable(),
-    toStatus: z.string().nullable(),
-    actorProfileId: z.string().uuid(),
-    payload: z.record(z.string(), z.unknown()),
-    createdAt: z.string(),
-  })),
+  evidence: z.array(
+    z.object({
+      id: z.string().uuid(),
+      evidenceType: z.string(),
+      storageProvider: z.string(),
+      storageReference: z.string(),
+      fileName: z.string().nullable(),
+      mimeType: z.string().nullable(),
+      sizeBytes: z.number().nullable(),
+      capturedAt: z.string().nullable(),
+      createdAt: z.string(),
+    }),
+  ),
+  events: z.array(
+    z.object({
+      id: z.number(),
+      eventType: z.string(),
+      fromStatus: z.string().nullable(),
+      toStatus: z.string().nullable(),
+      actorProfileId: z.string().uuid(),
+      payload: z.record(z.string(), z.unknown()),
+      createdAt: z.string(),
+    }),
+  ),
   contractVersion: z.string(),
 });
 
@@ -235,14 +231,16 @@ export const workforceIndicatorsResponseSchema = z.object({
     cancelled: z.number().int().nonnegative(),
     over60Minutes: z.number().int().nonnegative(),
   }),
-  people: z.array(z.object({
-    profileId: z.string().uuid(),
-    name: z.string(),
-    occupancy: occupancySchema,
-    completed: z.number().int().nonnegative(),
-    activeBusinessMinutes: z.number().nonnegative(),
-    over60Minutes: z.number().int().nonnegative(),
-  })),
+  people: z.array(
+    z.object({
+      profileId: z.string().uuid(),
+      name: z.string(),
+      occupancy: occupancySchema,
+      completed: z.number().int().nonnegative(),
+      activeBusinessMinutes: z.number().nonnegative(),
+      over60Minutes: z.number().int().nonnegative(),
+    }),
+  ),
   contractVersion: z.string(),
 });
 

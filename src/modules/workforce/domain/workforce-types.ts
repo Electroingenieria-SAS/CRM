@@ -60,12 +60,7 @@ export interface WorkforceActivitySummary {
 
 export interface WorkforceEvidenceReference {
   readonly evidenceType:
-    | 'BEFORE_PHOTO'
-    | 'AFTER_PHOTO'
-    | 'FINAL_PHOTO'
-    | 'FILE'
-    | 'LINK'
-    | 'ERP_REFERENCE';
+    'BEFORE_PHOTO' | 'AFTER_PHOTO' | 'FINAL_PHOTO' | 'FILE' | 'LINK' | 'ERP_REFERENCE';
   readonly storageProvider: string;
   readonly storageReference: string;
   readonly fileName?: string;

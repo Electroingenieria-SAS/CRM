@@ -2,14 +2,14 @@
 
 ## Matriz funcional
 
-| Actor | Leer cronograma | Crear propia | Planificar equipo | Autoasignar | Ejecutar propia | Configurar exclusiones |
-| --- | --- | --- | --- | --- | --- | --- |
-| Rol operativo con Workforce | Sí | Sí | No | No | Sí | No |
-| Líder/Jefatura/Gerencia | Sí | Sí | Sí | Sí | Sí/gestión | Sí |
-| Superadmin | Sí | Sí | Sí | Sí | Sí/gestión | Sí |
-| Auditoría | Sí | Sí según RBAC base | No | No | Propia | No |
-| Otra organización | No | No | No | No | No | No |
-| anon | No | No | No | No | No | No |
+| Actor                       | Leer cronograma | Crear propia       | Planificar equipo | Autoasignar | Ejecutar propia | Configurar exclusiones |
+| --------------------------- | --------------- | ------------------ | ----------------- | ----------- | --------------- | ---------------------- |
+| Rol operativo con Workforce | Sí              | Sí                 | No                | No          | Sí              | No                     |
+| Líder/Jefatura/Gerencia     | Sí              | Sí                 | Sí                | Sí          | Sí/gestión      | Sí                     |
+| Superadmin                  | Sí              | Sí                 | Sí                | Sí          | Sí/gestión      | Sí                     |
+| Auditoría                   | Sí              | Sí según RBAC base | No                | No          | Propia          | No                     |
+| Otra organización           | No              | No                 | No                | No          | No              | No                     |
+| anon                        | No              | No                 | No                | No          | No              | No                     |
 
 La autorización efectiva se resuelve mediante `role_module_permissions`; no hay `if role === ...` disperso en React.
 

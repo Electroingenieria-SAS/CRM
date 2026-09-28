@@ -57,4 +57,3 @@ export interface WorkforceRepository {
     idempotencyKey: string,
   ): Promise<WorkforceMutationResponse>;
 }
-

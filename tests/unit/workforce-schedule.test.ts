@@ -19,17 +19,27 @@ describe('workforce official schedule', () => {
   });
 
   it('maps an activity only to overlapping slots', () => {
-    expect(slotIndexesFor({ startMinutes: clockToMinutes('08:30'), endMinutes: clockToMinutes('11:30') }))
-      .toEqual([0, 1, 2]);
-    expect(slotIndexesFor({ startMinutes: clockToMinutes('12:00'), endMinutes: clockToMinutes('13:40') }))
-      .toEqual([]);
+    expect(
+      slotIndexesFor({
+        startMinutes: clockToMinutes('08:30'),
+        endMinutes: clockToMinutes('11:30'),
+      }),
+    ).toEqual([0, 1, 2]);
+    expect(
+      slotIndexesFor({
+        startMinutes: clockToMinutes('12:00'),
+        endMinutes: clockToMinutes('13:40'),
+      }),
+    ).toEqual([]);
   });
 
   it('detects overlaps and durations', () => {
-    expect(overlaps({ startMinutes: 420, endMinutes: 480 }, { startMinutes: 470, endMinutes: 520 }))
-      .toBe(true);
-    expect(overlaps({ startMinutes: 420, endMinutes: 480 }, { startMinutes: 480, endMinutes: 520 }))
-      .toBe(false);
+    expect(
+      overlaps({ startMinutes: 420, endMinutes: 480 }, { startMinutes: 470, endMinutes: 520 }),
+    ).toBe(true);
+    expect(
+      overlaps({ startMinutes: 420, endMinutes: 480 }, { startMinutes: 480, endMinutes: 520 }),
+    ).toBe(false);
     expect(plannedMinutes({ startMinutes: 820, endMinutes: 940 })).toBe(120);
   });
 

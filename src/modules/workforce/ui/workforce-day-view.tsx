@@ -46,12 +46,7 @@ function ActivityChip({
   );
 }
 
-export function WorkforceDayView({
-  day,
-  people,
-  activities,
-  onOpen,
-}: WorkforceDayViewProps) {
+export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceDayViewProps) {
   return (
     <section aria-label="Cronograma del día" className={styles.daySection}>
       <div className={styles.desktopDay}>
@@ -85,11 +80,7 @@ export function WorkforceDayView({
                     <div className={styles.slotCell} role="cell" key={slot.key}>
                       {rows.length ? (
                         rows.map((activity) => (
-                          <ActivityChip
-                            activity={activity}
-                            onOpen={onOpen}
-                            key={activity.id}
-                          />
+                          <ActivityChip activity={activity} onOpen={onOpen} key={activity.id} />
                         ))
                       ) : (
                         <span className={styles.available}>Disponible</span>
@@ -123,11 +114,7 @@ export function WorkforceDayView({
                       <h3>{slot.label}</h3>
                       {rows.length ? (
                         rows.map((activity) => (
-                          <ActivityChip
-                            activity={activity}
-                            onOpen={onOpen}
-                            key={activity.id}
-                          />
+                          <ActivityChip activity={activity} onOpen={onOpen} key={activity.id} />
                         ))
                       ) : (
                         <span className={styles.available}>Disponible</span>

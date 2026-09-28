@@ -8,7 +8,7 @@
 .weekGrid {
   display: grid;
   min-width: 960px;
-  grid-template-columns: minmax(210px,1.2fr) repeat(5,minmax(140px,1fr));
+  grid-template-columns: minmax(210px, 1.2fr) repeat(5, minmax(140px, 1fr));
 }
 
 .weekRow {
@@ -74,7 +74,7 @@
 
 .weekActivity:focus-visible,
 .monthItems button:focus-visible {
-  outline: 3px solid color-mix(in srgb,var(--brand) 25%,transparent);
+  outline: 3px solid color-mix(in srgb, var(--brand) 25%, transparent);
 }
 
 .weekActivity span,
@@ -94,7 +94,7 @@
 .monthWeekdays,
 .monthGrid {
   display: grid;
-  grid-template-columns: repeat(5,minmax(0,1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: var(--space-2);
 }
 

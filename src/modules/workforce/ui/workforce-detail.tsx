@@ -20,7 +20,10 @@ interface WorkforceDetailProps {
   onResume(): Promise<void>;
   onComplete(resultNote: string): Promise<void>;
   onCancel(reason: string): Promise<void>;
-  onUpload(file: File, evidenceType: 'BEFORE_PHOTO' | 'AFTER_PHOTO' | 'FINAL_PHOTO' | 'FILE'): Promise<void>;
+  onUpload(
+    file: File,
+    evidenceType: 'BEFORE_PHOTO' | 'AFTER_PHOTO' | 'FINAL_PHOTO' | 'FILE',
+  ): Promise<void>;
 }
 
 function evidenceOptions(policy: string) {
@@ -68,20 +71,51 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
       <div className={styles.panel}>
         <header>
           <div>
-            <span className="eyebrow">{activity.categoryLabel} · {activity.subcategory}</span>
+            <span className="eyebrow">
+              {activity.categoryLabel} · {activity.subcategory}
+            </span>
             <h2 id="workforce-detail-title">{activity.title}</h2>
-            <p>{activity.assigneeName} · {activity.status}</p>
+            <p>
+              {activity.assigneeName} · {activity.status}
+            </p>
           </div>
-          <button type="button" onClick={props.onClose} autoFocus aria-label="Cerrar detalle">×</button>
+          <button type="button" onClick={props.onClose} autoFocus aria-label="Cerrar detalle">
+            ×
+          </button>
         </header>
 
         <dl className={styles.facts}>
-          <div><dt>Horario</dt><dd>{formatBusinessDate(activity.plannedStart)} → {formatBusinessDate(activity.plannedEnd)}</dd></div>
-          <div><dt>Inicio real</dt><dd>{activity.actualStart ? formatBusinessDate(activity.actualStart) : 'Sin iniciar'}</dd></div>
-          <div><dt>Pedido</dt><dd>{activity.orderNumber ?? 'Sin pedido relacionado'}</dd></div>
-          <div><dt>Semáforo</dt><dd>{activity.timeSignal === 'OVER_60_MINUTES' ? 'Más de 1 hora' : 'Normal'}</dd></div>
-          <div><dt>Evidencia</dt><dd>{activity.evidenceComplete ? 'Completa' : `Pendiente · ${activity.evidencePolicy}`}</dd></div>
-          <div><dt>Versión</dt><dd>{activity.version}</dd></div>
+          <div>
+            <dt>Horario</dt>
+            <dd>
+              {formatBusinessDate(activity.plannedStart)} →{' '}
+              {formatBusinessDate(activity.plannedEnd)}
+            </dd>
+          </div>
+          <div>
+            <dt>Inicio real</dt>
+            <dd>
+              {activity.actualStart ? formatBusinessDate(activity.actualStart) : 'Sin iniciar'}
+            </dd>
+          </div>
+          <div>
+            <dt>Pedido</dt>
+            <dd>{activity.orderNumber ?? 'Sin pedido relacionado'}</dd>
+          </div>
+          <div>
+            <dt>Semáforo</dt>
+            <dd>{activity.timeSignal === 'OVER_60_MINUTES' ? 'Más de 1 hora' : 'Normal'}</dd>
+          </div>
+          <div>
+            <dt>Evidencia</dt>
+            <dd>
+              {activity.evidenceComplete ? 'Completa' : `Pendiente · ${activity.evidencePolicy}`}
+            </dd>
+          </div>
+          <div>
+            <dt>Versión</dt>
+            <dd>{activity.version}</dd>
+          </div>
         </dl>
 
         {activity.description ? <p className={styles.description}>{activity.description}</p> : null}
@@ -94,15 +128,25 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
                   <label>
                     Responsable
                     <select value={assignee} onChange={(event) => setAssignee(event.target.value)}>
-                      {props.people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
+                      {props.people.map((person) => (
+                        <option value={person.id} key={person.id}>
+                          {person.name}
+                        </option>
+                      ))}
                     </select>
                   </label>
-                  <button type="button" disabled={props.busy || assignee === activity.assigneeProfileId} onClick={() => void props.onAssign(assignee)}>
+                  <button
+                    type="button"
+                    disabled={props.busy || assignee === activity.assigneeProfileId}
+                    onClick={() => void props.onAssign(assignee)}
+                  >
                     Reasignar
                   </button>
                 </>
               ) : null}
-              <button type="button" disabled={props.busy} onClick={() => void props.onStart()}>Iniciar actividad</button>
+              <button type="button" disabled={props.busy} onClick={() => void props.onStart()}>
+                Iniciar actividad
+              </button>
             </>
           ) : null}
 
@@ -110,8 +154,15 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
             <>
               <label>
                 Evidencia
-                <select value={evidenceType} onChange={(event) => setEvidenceType(event.target.value as typeof evidenceType)}>
-                  {options.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+                <select
+                  value={evidenceType}
+                  onChange={(event) => setEvidenceType(event.target.value as typeof evidenceType)}
+                >
+                  {options.map(([value, label]) => (
+                    <option value={value} key={value}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label className={styles.fileInput}>
@@ -131,14 +182,26 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
                 Motivo de bloqueo
                 <input value={reason} onChange={(event) => setReason(event.target.value)} />
               </label>
-              <button type="button" disabled={props.busy || !reason.trim()} onClick={() => void props.onBlock(reason)}>
+              <button
+                type="button"
+                disabled={props.busy || !reason.trim()}
+                onClick={() => void props.onBlock(reason)}
+              >
                 Bloquear
               </button>
               <label>
                 Resultado
-                <textarea value={result} onChange={(event) => setResult(event.target.value)} rows={2} />
+                <textarea
+                  value={result}
+                  onChange={(event) => setResult(event.target.value)}
+                  rows={2}
+                />
               </label>
-              <button type="button" disabled={props.busy} onClick={() => void props.onComplete(result)}>
+              <button
+                type="button"
+                disabled={props.busy}
+                onClick={() => void props.onComplete(result)}
+              >
                 Finalizar
               </button>
             </>
@@ -183,7 +246,9 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
                 </li>
               ))}
             </ul>
-          ) : <p>Sin evidencias registradas.</p>}
+          ) : (
+            <p>Sin evidencias registradas.</p>
+          )}
         </section>
 
         <section>
@@ -192,7 +257,9 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
             {props.detail.events.map((event) => (
               <li key={event.id}>
                 <strong>{event.eventType}</strong>
-                <span>{event.fromStatus ?? '—'} → {event.toStatus ?? '—'}</span>
+                <span>
+                  {event.fromStatus ?? '—'} → {event.toStatus ?? '—'}
+                </span>
                 <small>{formatBusinessDate(event.createdAt)}</small>
               </li>
             ))}

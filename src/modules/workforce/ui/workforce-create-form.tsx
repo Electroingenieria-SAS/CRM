@@ -38,7 +38,11 @@ export function WorkforceCreateForm({
   );
   const [category, setCategory] = useState(categories[0]?.[0] ?? '');
   const subcategories = useMemo(
-    () => [...new Set(catalog.filter((item) => item.categoryCode === category).map((item) => item.subcategory))],
+    () => [
+      ...new Set(
+        catalog.filter((item) => item.categoryCode === category).map((item) => item.subcategory),
+      ),
+    ],
     [catalog, category],
   );
   const [subcategory, setSubcategory] = useState(subcategories[0] ?? '');
@@ -95,35 +99,59 @@ export function WorkforceCreateForm({
           <span className="eyebrow">Planificación</span>
           <h2>Nueva actividad</h2>
         </div>
-        <button type="button" onClick={onCancel}>Cerrar</button>
+        <button type="button" onClick={onCancel}>
+          Cerrar
+        </button>
       </header>
 
       <div className={styles.grid}>
         <label>
           Categoría
           <select value={category} onChange={(event) => selectCategory(event.target.value)}>
-            {categories.map(([code, label]) => <option value={code} key={code}>{label}</option>)}
+            {categories.map(([code, label]) => (
+              <option value={code} key={code}>
+                {label}
+              </option>
+            ))}
           </select>
         </label>
         <label>
           Subcategoría
           <select value={subcategory} onChange={(event) => selectSubcategory(event.target.value)}>
-            {subcategories.map((item) => <option value={item} key={item}>{item}</option>)}
+            {subcategories.map((item) => (
+              <option value={item} key={item}>
+                {item}
+              </option>
+            ))}
           </select>
         </label>
         <label className={styles.full}>
           Actividad específica
           <select value={catalogId} onChange={(event) => setCatalogId(event.target.value)}>
-            {activities.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+            {activities.map((item) => (
+              <option value={item.id} key={item.id}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </label>
         <label>
           Inicio
-          <input type="datetime-local" value={start} onChange={(event) => setStart(event.target.value)} required />
+          <input
+            type="datetime-local"
+            value={start}
+            onChange={(event) => setStart(event.target.value)}
+            required
+          />
         </label>
         <label>
           Fin
-          <input type="datetime-local" value={end} onChange={(event) => setEnd(event.target.value)} required />
+          <input
+            type="datetime-local"
+            value={end}
+            onChange={(event) => setEnd(event.target.value)}
+            required
+          />
         </label>
         <label className={styles.full}>
           Responsable
@@ -133,7 +161,11 @@ export function WorkforceCreateForm({
             onChange={(event) => setAssignee(event.target.value)}
           >
             <option value="">Yo mismo</option>
-            {people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
+            {people.map((person) => (
+              <option value={person.id} key={person.id}>
+                {person.name}
+              </option>
+            ))}
           </select>
         </label>
         {allowAutoAssign ? (
@@ -148,13 +180,21 @@ export function WorkforceCreateForm({
         ) : null}
         <label className={styles.full}>
           Descripción
-          <textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} />
+          <textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            rows={3}
+          />
         </label>
       </div>
 
       <footer>
-        <button type="button" onClick={onCancel}>Cancelar</button>
-        <button type="submit" disabled={busy || !catalogId}>{busy ? 'Guardando…' : 'Planificar actividad'}</button>
+        <button type="button" onClick={onCancel}>
+          Cancelar
+        </button>
+        <button type="submit" disabled={busy || !catalogId}>
+          {busy ? 'Guardando…' : 'Planificar actividad'}
+        </button>
       </footer>
     </form>
   );

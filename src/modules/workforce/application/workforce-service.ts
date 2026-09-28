@@ -58,7 +58,11 @@ export class WorkforceService {
   }
 
   start(activityId: string, version: number, key: string) {
-    return this.repository.start(activityId, positiveVersion(version), requiredText(key, 'La clave de idempotencia es obligatoria.'));
+    return this.repository.start(
+      activityId,
+      positiveVersion(version),
+      requiredText(key, 'La clave de idempotencia es obligatoria.'),
+    );
   }
 
   block(activityId: string, reason: string, version: number, key: string) {
@@ -71,7 +75,11 @@ export class WorkforceService {
   }
 
   resume(activityId: string, version: number, key: string) {
-    return this.repository.resume(activityId, positiveVersion(version), requiredText(key, 'La clave de idempotencia es obligatoria.'));
+    return this.repository.resume(
+      activityId,
+      positiveVersion(version),
+      requiredText(key, 'La clave de idempotencia es obligatoria.'),
+    );
   }
 
   complete(activityId: string, resultNote: string, version: number, key: string) {

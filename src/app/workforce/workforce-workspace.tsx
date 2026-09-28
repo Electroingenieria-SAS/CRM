@@ -49,7 +49,10 @@ interface WorkforceWorkspaceProps {
   onResume(): Promise<void>;
   onComplete(resultNote: string): Promise<void>;
   onCancel(reason: string): Promise<void>;
-  onUpload(file: File, evidenceType: 'BEFORE_PHOTO' | 'AFTER_PHOTO' | 'FINAL_PHOTO' | 'FILE'): Promise<void>;
+  onUpload(
+    file: File,
+    evidenceType: 'BEFORE_PHOTO' | 'AFTER_PHOTO' | 'FINAL_PHOTO' | 'FILE',
+  ): Promise<void>;
   onSignOut(): Promise<void>;
 }
 
@@ -103,26 +106,54 @@ export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
       <section className={styles.toolbar} aria-label="Navegación del cronograma">
         <div className={styles.modeSwitch}>
           {(['day', 'week', 'month'] as const).map((item) => (
-            <button type="button" aria-pressed={props.mode === item} onClick={() => props.onMode(item)} key={item}>
+            <button
+              type="button"
+              aria-pressed={props.mode === item}
+              onClick={() => props.onMode(item)}
+              key={item}
+            >
               {item === 'day' ? 'Día' : item === 'week' ? 'Semana' : 'Mes'}
             </button>
           ))}
         </div>
         <div className={styles.navigation}>
-          <button type="button" onClick={() => props.onNavigate(-1)} aria-label="Periodo anterior">←</button>
-          <button type="button" onClick={props.onToday}>Hoy</button>
-          <button type="button" onClick={() => props.onNavigate(1)} aria-label="Periodo siguiente">→</button>
+          <button type="button" onClick={() => props.onNavigate(-1)} aria-label="Periodo anterior">
+            ←
+          </button>
+          <button type="button" onClick={props.onToday}>
+            Hoy
+          </button>
+          <button type="button" onClick={() => props.onNavigate(1)} aria-label="Periodo siguiente">
+            →
+          </button>
         </div>
-        <strong>{props.mode === 'day' ? businessDateLabel(props.anchor) : `${range.from} — ${range.to}`}</strong>
+        <strong>
+          {props.mode === 'day' ? businessDateLabel(props.anchor) : `${range.from} — ${range.to}`}
+        </strong>
       </section>
 
       {props.indicators ? (
         <section className={styles.indicators} aria-label="Indicadores básicos">
-          <article><span>Planificadas</span><strong>{props.indicators.summary.planned}</strong></article>
-          <article><span>En curso</span><strong>{props.indicators.summary.inProgress}</strong></article>
-          <article><span>Bloqueadas</span><strong>{props.indicators.summary.blocked}</strong></article>
-          <article><span>Realizadas</span><strong>{props.indicators.summary.completed}</strong></article>
-          <article><span>&gt; 1 hora</span><strong>{props.indicators.summary.over60Minutes}</strong></article>
+          <article>
+            <span>Planificadas</span>
+            <strong>{props.indicators.summary.planned}</strong>
+          </article>
+          <article>
+            <span>En curso</span>
+            <strong>{props.indicators.summary.inProgress}</strong>
+          </article>
+          <article>
+            <span>Bloqueadas</span>
+            <strong>{props.indicators.summary.blocked}</strong>
+          </article>
+          <article>
+            <span>Realizadas</span>
+            <strong>{props.indicators.summary.completed}</strong>
+          </article>
+          <article>
+            <span>&gt; 1 hora</span>
+            <strong>{props.indicators.summary.over60Minutes}</strong>
+          </article>
         </section>
       ) : null}
 
@@ -137,8 +168,16 @@ export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
         />
       ) : null}
 
-      {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
-      {props.message ? <p className={styles.notice} role="alert">{props.message}</p> : null}
+      {props.notice ? (
+        <p className={styles.notice} role="status">
+          {props.notice}
+        </p>
+      ) : null}
+      {props.message ? (
+        <p className={styles.notice} role="alert">
+          {props.message}
+        </p>
+      ) : null}
       {props.loading ? <p role="status">Actualizando cronograma…</p> : null}
 
       {!props.loading && props.mode === 'day' ? (

@@ -41,13 +41,16 @@ export function WorkforceMonthView({
   return (
     <section className={styles.month} aria-label="Planificación mensual">
       <header className={styles.monthWeekdays} aria-hidden="true">
-        {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((day) => <span key={day}>{day}</span>)}
+        {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((day) => (
+          <span key={day}>{day}</span>
+        ))}
       </header>
       <div className={styles.monthGrid}>
         {days.map((day, index) => {
           const holiday = holidayMap.get(day);
           const rows = activities.filter(
-            (activity) => businessIsoDate(activity.plannedStart) === day && activity.status !== 'CANCELLED',
+            (activity) =>
+              businessIsoDate(activity.plannedStart) === day && activity.status !== 'CANCELLED',
           );
           const weekday = new Date(`${day}T12:00:00-05:00`).getUTCDay();
           return (
