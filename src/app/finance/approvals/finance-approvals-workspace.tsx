@@ -22,9 +22,138 @@ interface ApprovalsWorkspaceProps {
   onSignOut(): Promise<void>;
 }
 
+function ApprovalDecision(props: {
+  id: string;
+  canApprove: boolean;
+  status: string;
+  reason: string;
+  onReason(value: string): void;
+  onDecide(decision: 'APPROVED' | 'REJECTED'): Promise<void>;
+}) {
+  if (!props.canApprove || props.status !== 'PENDING') return <>Solo consulta</>;
+
+  return (
+    <div className={styles.field}>
+      <label htmlFor={'approval-reason-' + props.id}>Justificación</label>
+      <input
+        id={'approval-reason-' + props.id}
+        value={props.reason}
+        onChange={(event) => props.onReason(event.target.value)}
+      />
+      <div className={styles.actions}>
+        <button
+          type="button"
+          disabled={!props.reason.trim()}
+          onClick={() => void props.onDecide('APPROVED')}
+        >
+          Aprobar
+        </button>
+        <button
+          type="button"
+          disabled={!props.reason.trim()}
+          onClick={() => void props.onDecide('REJECTED')}
+        >
+          Rechazar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ApprovalTable(props: {
+  queue: FinancialApprovalQueue;
+  canApprove: boolean;
+  onDecide(id: string, decision: 'APPROVED' | 'REJECTED', reason: string): Promise<void>;
+}) {
+  const [reasons, setReasons] = useState<Record<string, string>>({});
+
+  return (
+    <div className={styles.tableWrap}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Tipo</th>
+            <th>Solicitante</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+            <th>Decisión</th>
+          </tr>
+        </thead>
+        <tbody>
+          {props.queue.items.map((item) => (
+            <tr key={item.id}>
+              <td>
+                {item.orderNumber}
+                <br />
+                <span className={styles.muted}>{item.customerName}</span>
+              </td>
+              <td>{item.requestType}</td>
+              <td>{item.requestedBy}</td>
+              <td>{item.reason}</td>
+              <td>
+                <span className={styles.badge}>{item.status}</span>
+              </td>
+              <td>
+                <ApprovalDecision
+                  id={item.id}
+                  canApprove={props.canApprove}
+                  status={item.status}
+                  reason={reasons[item.id] ?? ''}
+                  onReason={(value) =>
+                    setReasons((current) => ({ ...current, [item.id]: value }))
+                  }
+                  onDecide={(decision) =>
+                    props.onDecide(item.id, decision, reasons[item.id] ?? '')
+                  }
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ApprovalQueueSection(props: ApprovalsWorkspaceProps & { canApprove: boolean }) {
+  return (
+    <section className={styles.section}>
+      <div className={styles.toolbar}>
+        <input
+          aria-label="Buscar aprobación"
+          value={props.query.search ?? ''}
+          onChange={(event) => props.onQuery({ ...props.query, search: event.target.value })}
+          placeholder="Pedido, cliente, tipo o solicitante"
+        />
+        <select
+          aria-label="Estado de aprobación"
+          value={props.query.status ?? ''}
+          onChange={(event) =>
+            props.onQuery({ ...props.query, status: event.target.value || undefined })
+          }
+        >
+          <option value="">Todas</option>
+          <option value="PENDING">Pendientes</option>
+          <option value="APPROVED">Aprobadas</option>
+          <option value="REJECTED">Rechazadas</option>
+        </select>
+        <button type="button" onClick={() => props.onSearch(props.query)}>
+          Buscar
+        </button>
+      </div>
+      <ApprovalTable
+        queue={props.queue}
+        canApprove={props.canApprove}
+        onDecide={props.onDecide}
+      />
+      {props.busy ? <p aria-live="polite">Actualizando aprobaciones…</p> : null}
+    </section>
+  );
+}
+
 export function FinanceApprovalsWorkspace(props: ApprovalsWorkspaceProps) {
   const canApprove = hasModuleCapability(props.context, 'approvals', 'approve');
-  const [reasons, setReasons] = useState<Record<string, string>>({});
 
   return (
     <AppShell
@@ -51,103 +180,7 @@ export function FinanceApprovalsWorkspace(props: ApprovalsWorkspaceProps) {
             {props.notice}
           </p>
         ) : null}
-
-        <section className={styles.section}>
-          <div className={styles.toolbar}>
-            <input
-              aria-label="Buscar aprobación"
-              value={props.query.search ?? ''}
-              onChange={(event) => props.onQuery({ ...props.query, search: event.target.value })}
-              placeholder="Pedido, cliente, tipo o solicitante"
-            />
-            <select
-              aria-label="Estado de aprobación"
-              value={props.query.status ?? ''}
-              onChange={(event) =>
-                props.onQuery({ ...props.query, status: event.target.value || undefined })
-              }
-            >
-              <option value="">Todas</option>
-              <option value="PENDING">Pendientes</option>
-              <option value="APPROVED">Aprobadas</option>
-              <option value="REJECTED">Rechazadas</option>
-            </select>
-            <button type="button" onClick={() => props.onSearch(props.query)}>
-              Buscar
-            </button>
-          </div>
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Pedido</th>
-                  <th>Tipo</th>
-                  <th>Solicitante</th>
-                  <th>Motivo</th>
-                  <th>Estado</th>
-                  <th>Decisión</th>
-                </tr>
-              </thead>
-              <tbody>
-                {props.queue.items.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      {item.orderNumber}
-                      <br />
-                      <span className={styles.muted}>{item.customerName}</span>
-                    </td>
-                    <td>{item.requestType}</td>
-                    <td>{item.requestedBy}</td>
-                    <td>{item.reason}</td>
-                    <td>
-                      <span className={styles.badge}>{item.status}</span>
-                    </td>
-                    <td>
-                      {canApprove && item.status === 'PENDING' ? (
-                        <div className={styles.field}>
-                          <label htmlFor={'approval-reason-' + item.id}>Justificación</label>
-                          <input
-                            id={'approval-reason-' + item.id}
-                            value={reasons[item.id] ?? ''}
-                            onChange={(event) =>
-                              setReasons((current) => ({
-                                ...current,
-                                [item.id]: event.target.value,
-                              }))
-                            }
-                          />
-                          <div className={styles.actions}>
-                            <button
-                              type="button"
-                              disabled={!reasons[item.id]?.trim()}
-                              onClick={() =>
-                                void props.onDecide(item.id, 'APPROVED', reasons[item.id] ?? '')
-                              }
-                            >
-                              Aprobar
-                            </button>
-                            <button
-                              type="button"
-                              disabled={!reasons[item.id]?.trim()}
-                              onClick={() =>
-                                void props.onDecide(item.id, 'REJECTED', reasons[item.id] ?? '')
-                              }
-                            >
-                              Rechazar
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        'Solo consulta'
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {props.busy ? <p aria-live="polite">Actualizando aprobaciones…</p> : null}
-        </section>
+        <ApprovalQueueSection {...props} canApprove={canApprove} />
       </div>
     </AppShell>
   );
