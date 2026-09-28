@@ -19,7 +19,7 @@ import {
   workforceRange,
   type WorkforceCalendarMode,
 } from '@/modules/workforce/ui/workforce-range';
-import { AppShell } from '@/shared/ui/app-shell';
+import { AppShell, type AppShellNavigationItem } from '@/shared/ui/app-shell';
 import styles from './workforce-page.module.css';
 
 interface WorkforceWorkspaceProps {
@@ -53,6 +53,23 @@ interface WorkforceWorkspaceProps {
   onSignOut(): Promise<void>;
 }
 
+function navigationFor(context: SessionContext): AppShellNavigationItem[] {
+  const items: AppShellNavigationItem[] = [];
+
+  if (hasModuleCapability(context, 'orders', 'read')) {
+    items.push({ href: '/orders', label: 'Pedidos' });
+  }
+  if (hasModuleCapability(context, 'customer_intelligence', 'read')) {
+    items.push({ href: '/customers/intelligence', label: 'Clientes' });
+  }
+  if (hasModuleCapability(context, 'freight', 'read')) {
+    items.push({ href: '/freight', label: 'Fletes' });
+  }
+
+  items.push({ href: '/workforce', label: 'Jornada', current: true });
+  return items;
+}
+
 export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
   const canCreate = hasModuleCapability(props.context, 'workforce', 'create');
   const canManage =
@@ -67,6 +84,7 @@ export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
     <AppShell
       userName={props.context.profile.name}
       organizationName={props.context.organization.name}
+      navigation={navigationFor(props.context)}
       onSignOut={props.onSignOut}
     >
       <header className={styles.header}>
