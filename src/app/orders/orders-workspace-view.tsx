@@ -11,7 +11,7 @@ import { CreateOrderForm } from '@/modules/orders/ui/create-order-form';
 import { OrderDetail } from '@/modules/orders/ui/order-detail';
 import { OrdersFilters, type OrdersFilterValues } from '@/modules/orders/ui/orders-filters';
 import { OrdersList } from '@/modules/orders/ui/orders-list';
-import { AppShell } from '@/shared/ui/app-shell';
+import { AppShell, type AppShellNavigationItem } from '@/shared/ui/app-shell';
 import styles from './orders-page.module.css';
 
 interface OrdersWorkspaceViewProps {
@@ -61,6 +61,16 @@ function catalogOptions(rows: Array<Record<string, unknown>>) {
   );
 }
 
+function navigationFor(context: SessionContext): AppShellNavigationItem[] {
+  const items: AppShellNavigationItem[] = [{ href: '/orders', label: 'Pedidos', current: true }];
+
+  if (hasModuleCapability(context, 'freight', 'read')) {
+    items.push({ href: '/freight', label: 'Fletes' });
+  }
+
+  return items;
+}
+
 export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
   const canCreate = hasModuleCapability(props.context, 'orders', 'create');
 
@@ -68,6 +78,7 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
     <AppShell
       userName={props.context.profile.name}
       organizationName={props.context.organization.name}
+      navigation={navigationFor(props.context)}
       onSignOut={props.onSignOut}
     >
       <header className={styles.pageHeader}>
