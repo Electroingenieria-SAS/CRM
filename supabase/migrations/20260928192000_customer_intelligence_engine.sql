@@ -185,7 +185,7 @@ begin
         order by s.score desc,s.paid_amount desc,s.valid_order_count desc
       )::integer overall_rank,
       case when count(*) over()=1 then 50::numeric
-        else round(100*percent_rank() over(order by s.score),2) end percentile,
+        else round((100*percent_rank() over(order by s.score))::numeric,2) end percentile,
       round(100*s.frequency_norm,2)::numeric frequency_percentile,
       round(100*s.paid_norm,2)::numeric paid_percentile,
       round(100*s.valid_order_count::numeric/nullif(s.sample_orders,0),3)::numeric order_share_pct,
