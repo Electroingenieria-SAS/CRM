@@ -4,7 +4,7 @@ insert into erp_supply.profiles(
   id,organization_id,auth_user_id,email,display_name,employee_code
 )
 select
-  '93000000-0000-0000-0000-000000000001',
+  '93000000-0000-4000-8000-000000000001',
   o.id,
   u.id,
   u.email,
@@ -18,7 +18,7 @@ insert into erp_supply.profiles(
   id,organization_id,auth_user_id,email,display_name,employee_code
 )
 select
-  '93000000-0000-0000-0000-000000000002',
+  '93000000-0000-4000-8000-000000000002',
   o.id,
   u.id,
   u.email,
@@ -32,7 +32,7 @@ insert into erp_supply.profiles(
   id,organization_id,auth_user_id,email,display_name,employee_code
 )
 select
-  '93000000-0000-0000-0000-000000000003',
+  '93000000-0000-4000-8000-000000000003',
   o.id,
   u.id,
   u.email,
@@ -51,6 +51,6 @@ end
 $$;
 
 insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
-('93000000-0000-0000-0000-000000000001','ventas',true),
-('93000000-0000-0000-0000-000000000002','auditoria',true),
-('93000000-0000-0000-0000-000000000003','ventas',true);
+('93000000-0000-4000-8000-000000000001','ventas',true),
+('93000000-0000-4000-8000-000000000002','auditoria',true),
+('93000000-0000-4000-8000-000000000003','ventas',true);
