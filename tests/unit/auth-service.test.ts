@@ -61,7 +61,10 @@ function createGateway(
     requestPasswordReset: vi.fn(async () => undefined),
     exchangeRecoveryCode: vi.fn(async () => session!),
     updatePassword: vi.fn(async () => undefined),
-    onSessionChange: vi.fn((_listener: (event: AuthSessionEvent) => void) => () => undefined),
+    onSessionChange: vi.fn((listener: (event: AuthSessionEvent) => void) => {
+      void listener;
+      return () => undefined;
+    }),
   };
 }
 
