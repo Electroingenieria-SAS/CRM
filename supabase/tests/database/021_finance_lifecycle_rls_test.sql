@@ -113,16 +113,16 @@ select set_config(
 set local role authenticated;
 
 select throws_ok(
-  $update erp_supply.order_tasks
+  $$update erp_supply.order_tasks
     set status='COMPLETED',completed_at=now()
-    where id='65000000-0000-4000-8000-000000000001'$,
+    where id='65000000-0000-4000-8000-000000000001'$$,
   '23514',
   null,
   'Orders cannot complete Cartera while its financial gate still requires review'
 );
 
 select lives_ok(
-  $select public.erp_x_finance_take_credit_request(
+  $$select public.erp_x_finance_take_credit_request(
     (select id from erp_supply.credit_requests limit 1),'credit-take-1'
   )$$,
   'cartera can take submitted credit'
@@ -230,9 +230,9 @@ select is(
 );
 
 select lives_ok(
-  $update erp_supply.order_tasks
+  $$update erp_supply.order_tasks
     set status='COMPLETED',completed_at=now()
-    where id='65000000-0000-4000-8000-000000000001'$,
+    where id='65000000-0000-4000-8000-000000000001'$$,
   'Orders can complete Cartera after the financial hold is released'
 );
 
