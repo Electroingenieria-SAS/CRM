@@ -103,14 +103,6 @@ export const paretoPointSchema = z.object({
   cumulativePct: z.coerce.number().min(0).max(100),
 });
 
-export const paretoPointSchema = z.object({
-  rank: z.coerce.number().int().positive(),
-  customerId: z.string().uuid(),
-  customerName: z.string(),
-  customerPct: z.coerce.number().min(0).max(100),
-  cumulativePct: z.coerce.number().min(0).max(100),
-});
-
 export const paretoResponseSchema = z.object({
   ordersSeries: z.array(paretoPointSchema),
   paidSeries: z.array(paretoPointSchema),
