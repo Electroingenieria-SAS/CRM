@@ -218,6 +218,31 @@ create unique index uq_financial_event_idempotency
 create index idx_financial_events_order
   on erp_supply.financial_events(organization_id,order_id,created_at desc);
 
+create or replace function erp_private.finance_idempotency_lock(
+  p_scope text,
+  p_key text
+)
+returns void
+language plpgsql
+security invoker
+set search_path=pg_catalog,erp_private
+as $
+declare
+  v_org uuid:=erp_private.current_org_id();
+  v_key text:=nullif(trim(coalesce(p_key,'')),'');
+begin
+  if v_org is null or v_key is null then
+    raise exception 'Organización e idempotency key son obligatorias' using errcode='22023';
+  end if;
+  perform pg_advisory_xact_lock(hashtextextended(v_org::text||':'||upper(p_scope)||':'||v_key,0));
+end;
+$;
+
+revoke all on function erp_private.finance_idempotency_lock(text,text)
+from public,anon;
+grant execute on function erp_private.finance_idempotency_lock(text,text)
+to authenticated;
+
 create or replace function erp_private.can_access_financial_domain(
   p_domain text,
   p_capability text
