@@ -15,15 +15,109 @@ interface FinancialValidationPanelProps {
   onRequestException(holdId: string, reason: string): Promise<void>;
 }
 
+function ValidationButtons(props: Pick<
+  FinancialValidationPanelProps,
+  'onValidate'
+> & { reason: string }) {
+  return (
+    <div className={styles.actions}>
+      <button type="button" disabled={!props.reason.trim()} onClick={() => void props.onValidate('APPROVED', props.reason)}>
+        Aprobar gestión
+      </button>
+      <button type="button" disabled={!props.reason.trim()} onClick={() => void props.onValidate('REQUIRES_REVIEW', props.reason)}>
+        Requiere revisión
+      </button>
+      <button type="button" disabled={!props.reason.trim()} onClick={() => void props.onValidate('REJECTED', props.reason)}>
+        Rechazar
+      </button>
+    </div>
+  );
+}
+
+function NewHoldControls(props: Pick<
+  FinancialValidationPanelProps,
+  'onHold'
+> & {
+  reason: string;
+  holdCode: string;
+  requiresApproval: boolean;
+  setHoldCode(value: string): void;
+  setRequiresApproval(value: boolean): void;
+}) {
+  return (
+    <>
+      <div className={styles.field}>
+        <label htmlFor="finance-hold-code">Código de retención</label>
+        <input
+          id="finance-hold-code"
+          value={props.holdCode}
+          onChange={(event) => props.setHoldCode(event.target.value.toUpperCase())}
+        />
+      </div>
+      <label>
+        <input
+          type="checkbox"
+          checked={props.requiresApproval}
+          onChange={(event) => props.setRequiresApproval(event.target.checked)}
+        />{' '}
+        Exigir aprobación independiente para liberar
+      </label>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          disabled={!props.reason.trim() || !props.holdCode.trim()}
+          onClick={() => void props.onHold(props.holdCode, props.reason, props.requiresApproval)}
+        >
+          Retener pedido
+        </button>
+      </div>
+    </>
+  );
+}
+
+function ActiveHoldControls(props: Pick<
+  FinancialValidationPanelProps,
+  'onRelease' | 'onRequestException'
+> & { reason: string; hold: OrderFinancialSummary['activeHolds'][number] }) {
+  return (
+    <div className={styles.warning}>
+      <strong>Retención activa · {props.hold.reasonCode}</strong>
+      <p>{props.hold.reason}</p>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          disabled={!props.reason.trim()}
+          onClick={() => void props.onRelease(props.hold.id, props.reason)}
+        >
+          Liberar con trazabilidad
+        </button>
+        {props.hold.metadata.requiresApproval === true ? (
+          <button
+            type="button"
+            disabled={!props.reason.trim()}
+            onClick={() => void props.onRequestException(props.hold.id, props.reason)}
+          >
+            Solicitar excepción
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function FinancialValidationPanel(props: FinancialValidationPanelProps) {
   const [reason, setReason] = useState('');
-  const [holdCode, setHoldCode] = useState(props.domain === 'CARTERA' ? 'OVERDUE_EXTERNAL' : 'PAYMENT_REVIEW');
+  const [holdCode, setHoldCode] = useState(
+    props.domain === 'CARTERA' ? 'OVERDUE_EXTERNAL' : 'PAYMENT_REVIEW',
+  );
   const [requiresApproval, setRequiresApproval] = useState(false);
   const activeHold = props.summary.activeHolds[0];
 
   return (
     <section className={styles.panel} aria-labelledby="financial-decision-title">
-      <h3 id="financial-decision-title">Decisión de {props.domain === 'CARTERA' ? 'Cartera' : 'Caja'}</h3>
+      <h3 id="financial-decision-title">
+        Decisión de {props.domain === 'CARTERA' ? 'Cartera' : 'Caja'}
+      </h3>
       <p>Las decisiones son eventos persistentes; no reemplazan el valor pagado.</p>
       <div className={styles.field}>
         <label htmlFor="finance-reason">Razón / contexto</label>
@@ -34,85 +128,27 @@ export function FinancialValidationPanel(props: FinancialValidationPanelProps) {
           placeholder="Explica saldo, mora informada, soporte pendiente o motivo de liberación."
         />
       </div>
-      {props.canUpdate ? (
-        <div className={styles.actions}>
-          <button
-            type="button"
-            disabled={!reason.trim()}
-            onClick={() => void props.onValidate('APPROVED', reason)}
-          >
-            Aprobar gestión
-          </button>
-          <button
-            type="button"
-            disabled={!reason.trim()}
-            onClick={() => void props.onValidate('REQUIRES_REVIEW', reason)}
-          >
-            Requiere revisión
-          </button>
-          <button
-            type="button"
-            disabled={!reason.trim()}
-            onClick={() => void props.onValidate('REJECTED', reason)}
-          >
-            Rechazar
-          </button>
-        </div>
-      ) : null}
+
+      {props.canUpdate ? <ValidationButtons onValidate={props.onValidate} reason={reason} /> : null}
 
       {props.canUpdate && !activeHold ? (
-        <>
-          <div className={styles.field}>
-            <label htmlFor="finance-hold-code">Código de retención</label>
-            <input
-              id="finance-hold-code"
-              value={holdCode}
-              onChange={(event) => setHoldCode(event.target.value.toUpperCase())}
-            />
-          </div>
-          <label>
-            <input
-              type="checkbox"
-              checked={requiresApproval}
-              onChange={(event) => setRequiresApproval(event.target.checked)}
-            />{' '}
-            Exigir aprobación independiente para liberar
-          </label>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              disabled={!reason.trim() || !holdCode.trim()}
-              onClick={() => void props.onHold(holdCode, reason, requiresApproval)}
-            >
-              Retener pedido
-            </button>
-          </div>
-        </>
+        <NewHoldControls
+          onHold={props.onHold}
+          reason={reason}
+          holdCode={holdCode}
+          requiresApproval={requiresApproval}
+          setHoldCode={setHoldCode}
+          setRequiresApproval={setRequiresApproval}
+        />
       ) : null}
 
       {props.canUpdate && activeHold ? (
-        <div className={styles.warning}>
-          <strong>Retención activa · {activeHold.reasonCode}</strong>
-          <p>{activeHold.reason}</p>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              disabled={!reason.trim()}
-              onClick={() => void props.onRelease(activeHold.id, reason)}
-            >
-              Liberar con trazabilidad
-            </button>
-            {activeHold.metadata.requiresApproval === true ? (
-              <button
-                type="button"
-                disabled={!reason.trim()}
-                onClick={() => void props.onRequestException(activeHold.id, reason)}
-              >
-                Solicitar excepción
-              </button>
-            ) : null}
-          </div>
-        </div>
+        <ActiveHoldControls
+          onRelease={props.onRelease}
+          onRequestException={props.onRequestException}
+          reason={reason}
+          hold={activeHold}
+        />
       ) : null}
     </section>
   );
