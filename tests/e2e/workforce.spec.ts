@@ -38,9 +38,15 @@ test('planner completes the activity lifecycle with required photo evidence', as
   await expect(page.getByText('Tratamiento especial QA')).toBeVisible();
 
   await page.getByRole('button', { name: 'Registrar actividad' }).click();
-  await page.getByRole('combobox', { name: 'Categoría', exact: true }).selectOption({ label: 'Despacho local' });
-  await page.getByRole('combobox', { name: 'Subcategoría', exact: true }).selectOption({ label: 'Cargue y entrega' });
-  await page.getByRole('combobox', { name: 'Actividad específica', exact: true }).selectOption({ label: 'Cargue' });
+  await page
+    .getByRole('combobox', { name: 'Categoría', exact: true })
+    .selectOption({ label: 'Despacho local' });
+  await page
+    .getByRole('combobox', { name: 'Subcategoría', exact: true })
+    .selectOption({ label: 'Cargue y entrega' });
+  await page
+    .getByRole('combobox', { name: 'Actividad específica', exact: true })
+    .selectOption({ label: 'Cargue' });
   await page.getByLabel('Inicio').fill('2026-09-29T07:00');
   await page.getByLabel('Fin').fill('2026-09-29T09:00');
   await page.getByRole('button', { name: 'Planificar actividad' }).click();
