@@ -45,8 +45,28 @@ jobs:
           path: crm-sbom.cdx.json
           retention-days: 90
 
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated local Supabase
+        run: supabase start
+      - name: Rebuild database from migrations and synthetic seed
+        run: supabase db reset
+      - name: Run pgTAP database and RLS tests
+        run: supabase test db
+      - name: Lint PostgreSQL functions
+        run: supabase db lint --level error --schema public,erp_supply,erp_private
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
+
   e2e-staging:
-    needs: quality
+    needs: [quality, database]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -106,7 +126,7 @@ jobs:
 
   deploy-pages:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [quality, e2e-staging, secret-scan, codeql, supply-chain]
+    needs: [quality, database, e2e-staging, secret-scan, codeql, supply-chain]
     runs-on: ubuntu-latest
     permissions:
       contents: read
