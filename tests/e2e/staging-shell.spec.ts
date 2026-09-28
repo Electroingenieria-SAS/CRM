@@ -33,10 +33,31 @@ test.describe('reference responsive widths', () => {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
       await page.goto('/');
 
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth > window.innerWidth,
-      );
-      expect(overflow).toBe(false);
+      const layout = await page.evaluate(() => {
+        const viewportWidth = window.innerWidth;
+        const documentWidth = document.documentElement.scrollWidth;
+        const offenders = Array.from(document.querySelectorAll<HTMLElement>('*'))
+          .map((element) => {
+            const rect = element.getBoundingClientRect();
+            return {
+              tag: element.tagName.toLowerCase(),
+              id: element.id,
+              className: element.className,
+              left: Math.round(rect.left * 100) / 100,
+              right: Math.round(rect.right * 100) / 100,
+              width: Math.round(rect.width * 100) / 100,
+            };
+          })
+          .filter((item) => item.right > viewportWidth + 0.5 || item.left < -0.5)
+          .slice(0, 10);
+
+        return { viewportWidth, documentWidth, offenders };
+      });
+
+      expect(
+        layout.documentWidth > layout.viewportWidth,
+        JSON.stringify(layout, null, 2),
+      ).toBe(false);
     });
   }
 });
