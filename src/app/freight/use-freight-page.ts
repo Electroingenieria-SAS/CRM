@@ -52,7 +52,9 @@ function createFreightPageActions(deps: FreightActionDependencies) {
         const response = await deps.application.freight.predict(input);
         deps.setResults(response.results);
       } catch (error) {
-        deps.setMessage(error instanceof Error ? error.message : 'No fue posible estimar el flete.');
+        deps.setMessage(
+          error instanceof Error ? error.message : 'No fue posible estimar el flete.',
+        );
       } finally {
         deps.setPredicting(false);
       }
@@ -85,18 +87,23 @@ export function useFreightPage() {
   const [predicting, setPredicting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const loadHistory = useCallback(async (query: FreightHistoryQuery) => {
-    if (!application) return;
-    setLoading(true);
-    setMessage(null);
-    try {
-      setHistory(await application.freight.listHistory(query));
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible consultar el histórico.');
-    } finally {
-      setLoading(false);
-    }
-  }, [application]);
+  const loadHistory = useCallback(
+    async (query: FreightHistoryQuery) => {
+      if (!application) return;
+      setLoading(true);
+      setMessage(null);
+      try {
+        setHistory(await application.freight.listHistory(query));
+      } catch (error) {
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible consultar el histórico.',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [application],
+  );
 
   useEffect(() => {
     if (!application) return;
@@ -115,7 +122,10 @@ export function useFreightPage() {
         setMetrics(workspace.metrics);
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible abrir Freight Intelligence.');
+        if (active)
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible abrir Freight Intelligence.',
+          );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -139,7 +149,12 @@ export function useFreightPage() {
   });
 
   return {
-    context, catalog, history, metrics, historyFilters, results,
+    context,
+    catalog,
+    history,
+    metrics,
+    historyFilters,
+    results,
     loading: application ? loading : false,
     predicting,
     message: application ? message : 'Este entorno no tiene un backend de staging configurado.',

@@ -38,7 +38,11 @@ function FreightResultCard({ result }: { result: FreightPredictionResult }) {
       <div className={styles.resultHeader}>
         <div>
           <p className="eyebrow">{result.carrierName ?? 'Modalidad sin transportadora'}</p>
-          <h3>{result.available && result.estimateMid != null ? money.format(result.estimateMid) : '—'}</h3>
+          <h3>
+            {result.available && result.estimateMid != null
+              ? money.format(result.estimateMid)
+              : '—'}
+          </h3>
         </div>
         <span className={styles.badge}>{evidenceLabels[result.evidenceLevel]}</span>
       </div>
@@ -89,12 +93,14 @@ export function FreightResults({ results }: { results: readonly FreightPredictio
       result.estimateMid != null &&
       result.estimateHigh != null &&
       result.sampleCount > 0
-        ? [{
-            low: result.estimateLow,
-            mid: result.estimateMid,
-            high: result.estimateHigh,
-            samples: result.sampleCount,
-          }]
+        ? [
+            {
+              low: result.estimateLow,
+              mid: result.estimateMid,
+              high: result.estimateHigh,
+              samples: result.sampleCount,
+            },
+          ]
         : [],
     ),
   );
@@ -111,20 +117,27 @@ export function FreightResults({ results }: { results: readonly FreightPredictio
             <span className={styles.badge}>{general.samples} muestras</span>
           </div>
           <div className={styles.range} aria-label="Rango general comparativo">
-            <div><span>Rango bajo</span><strong>{money.format(general.low)}</strong></div>
-            <div><span>Referencia</span><strong>{money.format(general.mid)}</strong></div>
-            <div><span>Rango alto</span><strong>{money.format(general.high)}</strong></div>
+            <div>
+              <span>Rango bajo</span>
+              <strong>{money.format(general.low)}</strong>
+            </div>
+            <div>
+              <span>Referencia</span>
+              <strong>{money.format(general.mid)}</strong>
+            </div>
+            <div>
+              <span>Rango alto</span>
+              <strong>{money.format(general.high)}</strong>
+            </div>
           </div>
           <p className={styles.explanation}>
-            Referencia ponderada por número de muestras entre transportadoras disponibles; no es una tarifa única.
+            Referencia ponderada por número de muestras entre transportadoras disponibles; no es una
+            tarifa única.
           </p>
         </article>
       ) : null}
       {results.map((result) => (
-        <FreightResultCard
-          result={result}
-          key={result.predictionId}
-        />
+        <FreightResultCard result={result} key={result.predictionId} />
       ))}
     </div>
   );

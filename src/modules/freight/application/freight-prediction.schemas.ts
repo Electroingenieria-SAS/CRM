@@ -41,14 +41,16 @@ export const freightPredictionResultSchema = z.object({
   sourceFrom: z.string().nullable().optional(),
   sourceTo: z.string().nullable().optional(),
   weightPosition: z.string().optional(),
-  newObservationDistribution: z.object({
-    mean: z.number().nullable(),
-    p25: z.number().nullable(),
-    p50: z.number().nullable(),
-    p75: z.number().nullable(),
-    p90: z.number().nullable(),
-    iqr: z.number().nullable(),
-  }).optional(),
+  newObservationDistribution: z
+    .object({
+      mean: z.number().nullable(),
+      p25: z.number().nullable(),
+      p50: z.number().nullable(),
+      p75: z.number().nullable(),
+      p90: z.number().nullable(),
+      iqr: z.number().nullable(),
+    })
+    .optional(),
   algorithmVersion: z.string(),
 });
 

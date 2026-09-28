@@ -37,11 +37,7 @@ export function AppShell({
         </div>
         <nav className={styles.nav}>
           {navigation.map((item) => (
-            <Link
-              href={item.href}
-              aria-current={item.current ? 'page' : undefined}
-              key={item.href}
-            >
+            <Link href={item.href} aria-current={item.current ? 'page' : undefined} key={item.href}>
               {item.label}
             </Link>
           ))}

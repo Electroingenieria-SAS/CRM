@@ -30,18 +30,24 @@ test('anonymous users are redirected away from Freight Intelligence', async ({ p
   await expect(page).toHaveURL(/\/login\/?$/);
 });
 
-test('freight workspace renders across configured browsers without horizontal overflow', async ({ page }) => {
+test('freight workspace renders across configured browsers without horizontal overflow', async ({
+  page,
+}) => {
   await login(page, sellerEmail);
   await page.getByRole('link', { name: 'Fletes' }).click();
   await expect(page).toHaveURL(/\/freight\/?$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Freight Intelligence' })).toBeVisible();
   await expect(page.getByText('749')).toBeVisible();
   await expect(page.getByText('despachos históricos')).toBeVisible();
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > window.innerWidth,
+  );
   expect(overflow).toBe(false);
 });
 
-test('seller obtains an explainable Armenia estimate and relevant history', async ({ page }, testInfo) => {
+test('seller obtains an explainable Armenia estimate and relevant history', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Full prediction journey runs once.');
   await login(page, sellerEmail);
   await page.getByRole('link', { name: 'Fletes' }).click();
@@ -59,7 +65,9 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await page.getByLabel('Transportadora', { exact: true }).nth(0).selectOption('');
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   await expect(page.getByTestId('freight-general-result')).toBeVisible();
-  await expect(page.getByTestId('freight-general-result')).toContainText(/Referencia general del destino/i);
+  await expect(page.getByTestId('freight-general-result')).toContainText(
+    /Referencia general del destino/i,
+  );
 
   await selectOptionContaining(page, 'Destino', 1, /Armenia/i);
   await selectOptionContaining(page, 'Departamento', 0, /Quind/i);
@@ -69,11 +77,15 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await expect(page.getByRole('table')).toContainText(/Colvanes/i);
 });
 
-test('auditor can inspect freight history but cannot request predictions', async ({ page }, testInfo) => {
+test('auditor can inspect freight history but cannot request predictions', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Authorization scenario runs once.');
   await login(page, auditorEmail);
   await page.getByRole('link', { name: 'Fletes' }).click();
-  await expect(page.getByText('Tu perfil tiene acceso de lectura, no de predicción.')).toBeVisible();
+  await expect(
+    page.getByText('Tu perfil tiene acceso de lectura, no de predicción.'),
+  ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Estimar flete' })).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 2, name: 'Histórico relevante' })).toBeVisible();
 });

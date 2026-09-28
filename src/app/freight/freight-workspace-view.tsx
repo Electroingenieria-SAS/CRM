@@ -60,7 +60,8 @@ export function FreightWorkspaceView(props: FreightWorkspaceViewProps) {
           <p className="eyebrow">Logística basada en evidencia</p>
           <h1>Freight Intelligence</h1>
           <p>
-            Estima costos con histórico real, fallback transparente y aprendizaje por costos finales.
+            Estima costos con histórico real, fallback transparente y aprendizaje por costos
+            finales.
           </p>
         </div>
         <span className={styles.badge}>{props.catalog.algorithmVersion}</span>
@@ -119,7 +120,9 @@ export function FreightWorkspaceView(props: FreightWorkspaceViewProps) {
             </div>
           </div>
           {props.predicting ? (
-            <p className={styles.status} role="status">Calculando con el histórico disponible…</p>
+            <p className={styles.status} role="status">
+              Calculando con el histórico disponible…
+            </p>
           ) : (
             <FreightResults results={props.results} />
           )}
@@ -127,7 +130,9 @@ export function FreightWorkspaceView(props: FreightWorkspaceViewProps) {
       </div>
 
       {props.loading ? (
-        <p className={styles.status} role="status">Consultando histórico…</p>
+        <p className={styles.status} role="status">
+          Consultando histórico…
+        </p>
       ) : (
         <FreightHistory
           history={props.history}

@@ -28,7 +28,9 @@ export function FreightHistory(props: FreightHistoryProps) {
       <div className={styles.sectionHeader}>
         <div>
           <h2 id="freight-history-title">Histórico relevante</h2>
-          <p>Agregados sanitizados y costos reales nuevos, nunca miles de filas en una sola carga.</p>
+          <p>
+            Agregados sanitizados y costos reales nuevos, nunca miles de filas en una sola carga.
+          </p>
         </div>
         <span className={styles.meta}>{props.history.pagination.totalItems} rutas históricas</span>
       </div>

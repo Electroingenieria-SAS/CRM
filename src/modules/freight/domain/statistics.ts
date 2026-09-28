@@ -45,9 +45,7 @@ export function quartiles(values: readonly number[]): QuartileSummary {
 export function removeIqrOutliers(values: readonly number[]): readonly number[] {
   if (values.length < 4) return [...values];
   const summary = quartiles(values);
-  return values.filter(
-    (value) => value >= summary.lowerFence && value <= summary.upperFence,
-  );
+  return values.filter((value) => value >= summary.lowerFence && value <= summary.upperFence);
 }
 
 export function freightRecencyFactor(ageDays: number): number {
@@ -65,12 +63,7 @@ export function classifyFreightEvidence(input: {
 }): FreightEvidenceLevel {
   const { scope, samples, relativeSpread, freshnessFactor } = input;
 
-  if (
-    scope === 'CITY' &&
-    samples >= 10 &&
-    relativeSpread <= 0.8 &&
-    freshnessFactor >= 0.85
-  ) {
+  if (scope === 'CITY' && samples >= 10 && relativeSpread <= 0.8 && freshnessFactor >= 0.85) {
     return 'HIGH';
   }
 
@@ -85,7 +78,6 @@ export function classifyFreightEvidence(input: {
 
   return samples > 0 ? 'LOW' : 'NONE';
 }
-
 
 export interface FreightEstimateSample {
   readonly low: number;

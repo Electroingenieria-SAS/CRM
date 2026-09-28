@@ -63,17 +63,12 @@ export function FreightHistoryPagination({ history, onPage }: PaginationProps) {
       <span className={styles.meta}>
         Página {page} de {Math.max(totalPages, 1)}
       </span>
-      <button
-        type="button"
-        disabled={page >= totalPages}
-        onClick={() => onPage(page + 1)}
-      >
+      <button type="button" disabled={page >= totalPages} onClick={() => onPage(page + 1)}>
         Siguiente
       </button>
     </div>
   );
 }
-
 
 export function FreightActualsTable({ history }: { history: FreightHistoryResponse }) {
   if (!history.recentActuals.length) return null;
@@ -95,7 +90,9 @@ export function FreightActualsTable({ history }: { history: FreightHistoryRespon
         <tbody>
           {history.recentActuals.map((row) => (
             <tr key={row.id}>
-              <td>{row.city} · {row.department}</td>
+              <td>
+                {row.city} · {row.department}
+              </td>
               <td>{row.carrierName}</td>
               <td>{money.format(row.actualCost)}</td>
               <td>{row.weightKg == null ? '—' : `${row.weightKg} kg`}</td>
