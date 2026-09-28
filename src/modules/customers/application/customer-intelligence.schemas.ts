@@ -57,6 +57,7 @@ export const customerIntelligenceDetailSchema = z.object({
   }),
   metrics: z.object({
     validOrderCount: z.coerce.number().int().nonnegative(),
+    observationCount: z.coerce.number().int().nonnegative(),
     paidAmount: z.coerce.number().nonnegative(),
     orderRank: z.coerce.number().int().positive(),
     paidRank: z.coerce.number().int().positive(),
