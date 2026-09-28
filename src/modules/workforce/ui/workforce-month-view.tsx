@@ -36,6 +36,16 @@ export function WorkforceMonthView({
   onOpen,
 }: WorkforceMonthViewProps) {
   const days = businessDays(from, to);
+  const firstBusinessWeekday = days[0]
+    ? new Date(`${days[0]}T12:00:00-05:00`).getUTCDay()
+    : 1;
+  const leading = Math.max(0, Math.min(4, firstBusinessWeekday - 1));
+  const cells: Array<string | null> = [
+    ...Array.from({ length: leading }, () => null),
+    ...days,
+  ];
+  while (cells.length % 5 !== 0) cells.push(null);
+
   const holidayMap = new Map(holidays.map((holiday) => [holiday.date, holiday.name]));
 
   return (
