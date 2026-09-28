@@ -1,0 +1,48 @@
+name: Normalize PR6 formatting
+
+on:
+  push:
+    branches:
+      - reconstruction/p1-auth-orders-ui-e2e
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: reconstruction/p1-auth-orders-ui-e2e
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Normalize touched PR6 files
+        run: >
+          npx prettier --write
+          src/app/orders/use-orders-page.ts
+          src/app/orders/orders-page-client.tsx
+          src/app/orders/orders-workspace-view.tsx
+          src/composition/browser-application.ts
+          src/modules/auth/application/auth-service.ts
+          src/modules/orders/ui/orders-filters.tsx
+          tests/e2e/authenticated-orders.spec.ts
+          docs/architecture/README.md
+          docs/architecture/orders-ui-e2e.md
+          docs/ADR/0001-modular-monolith-nextjs.md
+          docs/security/authentication.md
+      - name: Commit formatting
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             src/app/orders/use-orders-page.ts             src/app/orders/orders-page-client.tsx             src/app/orders/orders-workspace-view.tsx             src/composition/browser-application.ts             src/modules/auth/application/auth-service.ts             src/modules/orders/ui/orders-filters.tsx             tests/e2e/authenticated-orders.spec.ts             docs/architecture/README.md             docs/architecture/orders-ui-e2e.md             docs/ADR/0001-modular-monolith-nextjs.md             docs/security/authentication.md
+          git commit -m "style: normalize PR6 files with repository Prettier"
+          git push origin HEAD:reconstruction/p1-auth-orders-ui-e2e
