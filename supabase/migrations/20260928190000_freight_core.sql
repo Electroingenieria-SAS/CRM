@@ -74,7 +74,7 @@ create table erp_supply.freight_observations (
   created_by uuid references erp_supply.profiles(id),
   metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
-  unique nulls not distinct (organization_id, external_key)
+  unique (id, organization_id)
 );
 
 create table erp_supply.freight_predictions (
@@ -106,6 +106,7 @@ create table erp_supply.freight_predictions (
   diagnostics jsonb not null default '{}'::jsonb,
   created_by uuid not null references erp_supply.profiles(id),
   created_at timestamptz not null default now(),
+  unique (id, organization_id),
   check (
     result_status <> 'AVAILABLE'
     or (
@@ -121,14 +122,18 @@ create table erp_supply.freight_predictions (
 create table erp_supply.freight_prediction_outcomes (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references erp_supply.organizations(id) on delete cascade,
-  prediction_id uuid not null unique references erp_supply.freight_predictions(id) on delete cascade,
-  observation_id uuid not null unique references erp_supply.freight_observations(id) on delete cascade,
+  prediction_id uuid not null unique,
+  observation_id uuid not null unique,
   absolute_error numeric not null check (absolute_error >= 0),
   absolute_percentage_error numeric check (
     absolute_percentage_error is null or absolute_percentage_error >= 0
   ),
   signed_error numeric not null,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  foreign key (prediction_id, organization_id)
+    references erp_supply.freight_predictions(id, organization_id) on delete cascade,
+  foreign key (observation_id, organization_id)
+    references erp_supply.freight_observations(id, organization_id) on delete cascade
 );
 
 create index idx_freight_history_scope
@@ -140,6 +145,10 @@ create index idx_freight_observations_scope
   on erp_supply.freight_observations(
     organization_id, route_code, carrier_id, destination_id, observed_at desc
   );
+
+create unique index uq_freight_observation_external_key
+  on erp_supply.freight_observations(organization_id, external_key)
+  where external_key is not null;
 
 create index idx_freight_observations_order
   on erp_supply.freight_observations(organization_id, order_id)
@@ -206,6 +215,22 @@ with check (
     erp_private.can_access_module('freight','update')
     or erp_private.can_access_module('freight','admin')
   )
+  and exists (
+    select 1
+    from erp_supply.freight_carriers c
+    where c.id=carrier_id
+      and c.organization_id=erp_private.current_org_id()
+      and c.active
+  )
+  and (
+    order_id is null
+    or exists (
+      select 1
+      from erp_supply.orders o
+      where o.id=order_id
+        and o.organization_id=erp_private.current_org_id()
+    )
+  )
 );
 
 create policy freight_predictions_read
@@ -223,6 +248,25 @@ with check (
   organization_id = erp_private.current_org_id()
   and created_by = erp_private.current_profile_id()
   and erp_private.can_access_module('freight','create')
+  and (
+    carrier_id is null
+    or exists (
+      select 1
+      from erp_supply.freight_carriers c
+      where c.id=carrier_id
+        and c.organization_id=erp_private.current_org_id()
+        and c.active
+    )
+  )
+  and (
+    order_id is null
+    or exists (
+      select 1
+      from erp_supply.orders o
+      where o.id=order_id
+        and o.organization_id=erp_private.current_org_id()
+    )
+  )
 );
 
 create policy freight_outcomes_read
