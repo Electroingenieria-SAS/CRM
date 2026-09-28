@@ -85,3 +85,29 @@ export function classifyFreightEvidence(input: {
 
   return samples > 0 ? 'LOW' : 'NONE';
 }
+
+
+export interface FreightEstimateSample {
+  readonly low: number;
+  readonly mid: number;
+  readonly high: number;
+  readonly samples: number;
+}
+
+export function weightedFreightEstimate(
+  values: readonly FreightEstimateSample[],
+): FreightEstimateSample | null {
+  const usable = values.filter((value) => value.samples > 0);
+  const samples = usable.reduce((total, value) => total + value.samples, 0);
+  if (!samples) return null;
+
+  const weighted = (field: 'low' | 'mid' | 'high') =>
+    usable.reduce((total, value) => total + value[field] * value.samples, 0) / samples;
+
+  return {
+    low: weighted('low'),
+    mid: weighted('mid'),
+    high: weighted('high'),
+    samples,
+  };
+}
