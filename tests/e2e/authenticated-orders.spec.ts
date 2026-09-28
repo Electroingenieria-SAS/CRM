@@ -3,7 +3,7 @@ import { expect, test, type APIRequestContext, type Page } from '@playwright/tes
 const sellerEmail = 'qa-seller@example.test';
 const auditorEmail = 'qa-auditor@example.test';
 const recoveryEmail = 'qa-recovery@example.test';
-const mailpitUrl = 'http://127.0.0.1:54324';
+const mailpitUrl = 'http://127.0.0.1:55324';
 
 interface MailpitSearchResponse {
   messages?: Array<{ ID: string }>;
