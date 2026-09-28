@@ -1,0 +1,160 @@
+.weekWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.weekGrid {
+  display: grid;
+  min-width: 960px;
+  grid-template-columns: minmax(210px,1.2fr) repeat(5,minmax(140px,1fr));
+}
+
+.weekRow {
+  display: contents;
+}
+
+.corner,
+.dayHead,
+.person,
+.weekCell {
+  min-width: 0;
+  padding: 0.75rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.corner,
+.dayHead {
+  min-height: 70px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+}
+
+.dayHead {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.dayHead span,
+.dayHead small,
+.person span {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.person {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+}
+
+.weekCell {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-height: 120px;
+}
+
+.weekActivity,
+.monthItems button {
+  display: grid;
+  gap: 0.18rem;
+  width: 100%;
+  min-height: 46px;
+  padding: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.weekActivity:focus-visible,
+.monthItems button:focus-visible {
+  outline: 3px solid color-mix(in srgb,var(--brand) 25%,transparent);
+}
+
+.weekActivity span,
+.weekActivity small,
+.monthItems small,
+.available,
+.nonWorking {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.month {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.monthWeekdays,
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: var(--space-2);
+}
+
+.monthWeekdays span {
+  padding: 0.55rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.monthDay {
+  min-height: 155px;
+  padding: 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.monthDay > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.monthDay > header span {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  text-align: right;
+}
+
+.monthItems {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.monthItems > span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+@media (max-width: 760px) {
+  .weekWrap {
+    border: 0;
+    background: transparent;
+  }
+
+  .weekGrid {
+    min-width: 860px;
+  }
+
+  .monthWeekdays {
+    display: none;
+  }
+
+  .monthGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .monthDay {
+    min-height: auto;
+  }
+}
