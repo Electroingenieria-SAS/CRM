@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
+  orderWorkforceHealthResponseSchema,
   orderWorkforcePendingResponseSchema,
   outboxClaimResponseSchema,
 } from '@/modules/integrations/orders-workforce/application/orders-workforce.schemas';
@@ -18,6 +19,12 @@ function mapError(error: { code?: string; message?: string } | null): AppError {
 
 export class SupabaseOrderWorkforceOutboxRepository implements OrderWorkforceOutboxPort {
   constructor(private readonly client: SupabaseClient) {}
+
+  async health() {
+    const { data, error } = await this.client.rpc('erp_x_order_workforce_health');
+    if (error) throw mapError(error);
+    return orderWorkforceHealthResponseSchema.parse(data);
+  }
 
   async listPending(orderId?: string, limit = 20) {
     const { data, error } = await this.client.rpc('erp_x_order_workforce_pending', {
