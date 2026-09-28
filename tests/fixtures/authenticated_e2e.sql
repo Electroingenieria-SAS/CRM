@@ -146,7 +146,7 @@ select
   v.step_code,
   'QUEUED',
   'MEDIUM',
-  'QA',
+  'QA_BOT',
   false
 from erp_supply.organizations o
 cross join (
