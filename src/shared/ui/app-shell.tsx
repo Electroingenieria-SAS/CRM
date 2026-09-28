@@ -6,12 +6,19 @@ import styles from './app-shell.module.css';
 
 interface AppShellProps {
   userName: string;
+  currentSection?: 'orders' | 'customer-intelligence';
   organizationName: string;
   onSignOut(): Promise<void>;
   children: ReactNode;
 }
 
-export function AppShell({ userName, organizationName, onSignOut, children }: AppShellProps) {
+export function AppShell({
+  userName,
+  organizationName,
+  currentSection = 'orders',
+  onSignOut,
+  children,
+}: AppShellProps) {
   return (
     <div className={styles.shell}>
       <aside className={styles.sidebar} aria-label="Navegación principal">
@@ -23,8 +30,14 @@ export function AppShell({ userName, organizationName, onSignOut, children }: Ap
           </div>
         </div>
         <nav className={styles.nav}>
-          <Link href="/orders" aria-current="page">
+          <Link href="/orders" aria-current={currentSection === 'orders' ? 'page' : undefined}>
             Pedidos
+          </Link>
+          <Link
+            href="/customers/intelligence"
+            aria-current={currentSection === 'customer-intelligence' ? 'page' : undefined}
+          >
+            Clientes
           </Link>
         </nav>
         <div className={styles.account}>
