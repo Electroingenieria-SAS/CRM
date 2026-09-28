@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(26);
+select plan(28);
 
 select has_table('erp_supply','credit_requests','credit requests exist');
 select has_table('erp_supply','financial_validations','financial validations exist');
@@ -94,6 +94,18 @@ select is(
 select ok(
   not has_table_privilege('authenticated','erp_supply.financial_events','UPDATE'),
   'financial event ledger cannot be updated'
+);
+
+select ok(
+  not has_table_privilege('authenticated','erp_supply.financial_events','INSERT'),
+  'authenticated users cannot inject financial ledger events directly'
+);
+
+select is(
+  (select prosecdef from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='erp_private' and p.proname='finance_append_event'),
+  true,
+  'private ledger writer owns the privileged insert boundary'
 );
 
 select ok(
