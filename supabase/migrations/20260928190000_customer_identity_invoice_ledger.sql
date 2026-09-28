@@ -125,7 +125,11 @@ security definer
 set search_path=pg_catalog,erp_supply
 as $$
 begin
-  if new.customer_id is null
+  if tg_op='INSERT' then
+    new.customer_id:=erp_private.resolve_order_customer(
+      new.organization_id,new.id,new.client_document,new.client_name
+    );
+  elsif new.customer_id is null
      or new.client_document is distinct from old.client_document
      or new.client_name is distinct from old.client_name then
     new.customer_id:=erp_private.resolve_order_customer(
