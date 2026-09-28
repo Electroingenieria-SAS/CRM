@@ -19,12 +19,30 @@ function DetailMetrics({ detail }: { detail: CustomerIntelligenceDetail }) {
 
   return (
     <div className={styles.detailMetrics}>
-      <article><small>Segmento</small><strong>{metrics.segment}</strong></article>
-      <article><small>Score</small><strong>{metrics.score.toFixed(1)}</strong></article>
-      <article><small>Posición general</small><strong>#{metrics.overallRank}</strong></article>
-      <article><small>Valor pagado</small><strong>{currency.format(metrics.paidAmount)}</strong></article>
-      <article><small>Observaciones</small><strong>{metrics.observationCount}</strong></article>
-      <article><small>Soporte</small><strong>{metrics.supportLevel}</strong></article>
+      <article>
+        <small>Segmento</small>
+        <strong>{metrics.segment}</strong>
+      </article>
+      <article>
+        <small>Score</small>
+        <strong>{metrics.score.toFixed(1)}</strong>
+      </article>
+      <article>
+        <small>Posición general</small>
+        <strong>#{metrics.overallRank}</strong>
+      </article>
+      <article>
+        <small>Valor pagado</small>
+        <strong>{currency.format(metrics.paidAmount)}</strong>
+      </article>
+      <article>
+        <small>Observaciones</small>
+        <strong>{metrics.observationCount}</strong>
+      </article>
+      <article>
+        <small>Soporte</small>
+        <strong>{metrics.supportLevel}</strong>
+      </article>
       <article>
         <small>Primer pedido</small>
         <strong>{new Date(metrics.firstOrderAt).toLocaleDateString('es-CO')}</strong>
@@ -44,8 +62,8 @@ function SegmentExplanation({ detail }: { detail: CustomerIntelligenceDetail }) 
   return (
     <p className={styles.explanation}>
       Se clasifica usando exclusivamente {orderWeight}% de posición por cantidad de pedidos y{' '}
-      {paidWeight}% de posición por valor pagado en facturas registradas, netas de reversión.
-      Está en percentil {detail.metrics.frequencyPercentile.toFixed(1)} por pedidos y{' '}
+      {paidWeight}% de posición por valor pagado en facturas registradas, netas de reversión. Está en
+      percentil {detail.metrics.frequencyPercentile.toFixed(1)} por pedidos y{' '}
       {detail.metrics.paidPercentile.toFixed(1)} por pago.
       {detail.metrics.provisional
         ? ' La clasificación es provisional porque el soporte estadístico todavía es limitado.'
@@ -61,13 +79,20 @@ function SegmentHistory({ detail }: { detail: CustomerIntelligenceDetail }) {
       <table className={styles.history}>
         <thead>
           <tr>
-            <th>Fecha</th><th>De</th><th>A</th><th>Score</th><th>Pedidos</th><th>Pagado</th>
+            <th>Fecha</th>
+            <th>De</th>
+            <th>A</th>
+            <th>Score</th>
+            <th>Pedidos</th>
+            <th>Pagado</th>
           </tr>
         </thead>
         <tbody>
           {detail.history.map((entry) => (
             <tr key={entry.changedAt}>
-              <td data-label="Fecha">{new Date(entry.changedAt).toLocaleDateString('es-CO')}</td>
+              <td data-label="Fecha">
+                {new Date(entry.changedAt).toLocaleDateString('es-CO')}
+              </td>
               <td data-label="De">{entry.previousSegment ?? 'Inicial'}</td>
               <td data-label="A">{entry.segment}</td>
               <td data-label="Score">{entry.score.toFixed(1)}</td>
@@ -84,7 +109,9 @@ function SegmentHistory({ detail }: { detail: CustomerIntelligenceDetail }) {
 export function CustomerIntelligenceDetailPanel({ detail, onClose }: Props) {
   return (
     <section className={styles.detailPanel} aria-labelledby="customer-detail-title">
-      <button type="button" onClick={onClose}>Cerrar detalle</button>
+      <button type="button" onClick={onClose}>
+        Cerrar detalle
+      </button>
       <p className="eyebrow">Explicación del segmento</p>
       <h2 id="customer-detail-title">{detail.customer.name}</h2>
       <DetailMetrics detail={detail} />
