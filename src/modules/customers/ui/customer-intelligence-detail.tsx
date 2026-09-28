@@ -67,12 +67,12 @@ export function CustomerIntelligenceDetailPanel({ detail, onClose }: Props) {
         <tbody>
           {detail.history.map((entry) => (
             <tr key={entry.changedAt}>
-              <td>{new Date(entry.changedAt).toLocaleDateString('es-CO')}</td>
-              <td>{entry.previousSegment ?? 'Inicial'}</td>
-              <td>{entry.segment}</td>
-              <td>{entry.score.toFixed(1)}</td>
-              <td>{entry.validOrderCount}</td>
-              <td>{currency.format(entry.paidAmount)}</td>
+              <td data-label="Fecha">{new Date(entry.changedAt).toLocaleDateString('es-CO')}</td>
+              <td data-label="De">{entry.previousSegment ?? 'Inicial'}</td>
+              <td data-label="A">{entry.segment}</td>
+              <td data-label="Score">{entry.score.toFixed(1)}</td>
+              <td data-label="Pedidos">{entry.validOrderCount}</td>
+              <td data-label="Pagado">{currency.format(entry.paidAmount)}</td>
             </tr>
           ))}
         </tbody>
