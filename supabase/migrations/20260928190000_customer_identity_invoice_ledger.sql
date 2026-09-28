@@ -87,17 +87,63 @@ begin
   end if;
 
   if v_document is not null then
-    insert into erp_supply.customers(
-      organization_id,identity_kind,document,normalized_document,display_name
-    )
-    values(p_organization_id,'DOCUMENT',nullif(trim(p_document),''),v_document,v_name)
-    on conflict (organization_id,normalized_document)
-    do update set
-      document=coalesce(excluded.document,erp_supply.customers.document),
-      display_name=excluded.display_name,
-      active=true,
-      updated_at=now()
-    returning id into v_customer_id;
+    select c.id
+    into v_customer_id
+    from erp_supply.customers c
+    where c.organization_id=p_organization_id
+      and c.normalized_document=v_document
+    limit 1;
+
+    if v_customer_id is not null then
+      update erp_supply.customers
+      set document=coalesce(nullif(trim(p_document),''),document),
+          display_name=v_name,
+          active=true,
+          updated_at=now()
+      where id=v_customer_id;
+    else
+      select c.id
+      into v_customer_id
+      from erp_supply.customers c
+      where c.organization_id=p_organization_id
+        and c.provisional_order_id=p_order_id
+      for update;
+
+      if v_customer_id is not null then
+        begin
+          update erp_supply.customers
+          set identity_kind='DOCUMENT',
+              document=nullif(trim(p_document),''),
+              normalized_document=v_document,
+              provisional_order_id=null,
+              display_name=v_name,
+              active=true,
+              updated_at=now()
+          where id=v_customer_id
+          returning id into v_customer_id;
+        exception
+          when unique_violation then
+            select c.id
+            into v_customer_id
+            from erp_supply.customers c
+            where c.organization_id=p_organization_id
+              and c.normalized_document=v_document
+            limit 1;
+        end;
+      else
+        insert into erp_supply.customers(
+          organization_id,identity_kind,document,normalized_document,display_name
+        )
+        values(p_organization_id,'DOCUMENT',nullif(trim(p_document),''),v_document,v_name)
+        on conflict (organization_id,normalized_document)
+        do update set
+          document=coalesce(excluded.document,erp_supply.customers.document),
+          display_name=excluded.display_name,
+          active=true,
+          updated_at=now()
+        returning id into v_customer_id;
+      end if;
+    end if;
   else
     insert into erp_supply.customers(
       organization_id,identity_kind,provisional_order_id,display_name
