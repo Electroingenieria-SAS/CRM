@@ -24,6 +24,12 @@ describe('OrdersWorkforceAutomationService', () => {
   it('separates stable activity identity from event mutation idempotency', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       health: vi.fn(),
+      binding: vi.fn().mockResolvedValue({
+        orderTaskId: event.orderTaskId,
+        workforceActivityId: null,
+        status: 'UNBOUND',
+        contractVersion: '1.0.0',
+      }),
       listPending: vi.fn(),
       claim: vi.fn().mockResolvedValue({
         idempotent: false,
@@ -46,10 +52,14 @@ describe('OrdersWorkforceAutomationService', () => {
     const service = new OrdersWorkforceAutomationService(outbox, workforce);
     await service.processOutboxItem('00000000-0000-4000-8000-000000000006');
 
-    expect(workforce.applyOrderEvent).toHaveBeenCalledWith(event, {
-      activityKey: 'orders-workforce:00000000-0000-4000-8000-000000000002:activity',
-      eventKey: 'orders-workforce:event:42',
-    });
+    expect(workforce.applyOrderEvent).toHaveBeenCalledWith(
+      event,
+      {
+        activityKey: 'orders-workforce:00000000-0000-4000-8000-000000000002:activity',
+        eventKey: 'orders-workforce:event:42',
+      },
+      null,
+    );
     expect(outbox.markProcessed).toHaveBeenCalledTimes(1);
     expect(outbox.markFailed).not.toHaveBeenCalled();
   });
@@ -57,6 +67,12 @@ describe('OrdersWorkforceAutomationService', () => {
   it('does not call Workforce again when the outbox row is already processed', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       health: vi.fn(),
+      binding: vi.fn().mockResolvedValue({
+        orderTaskId: event.orderTaskId,
+        workforceActivityId: null,
+        status: 'UNBOUND',
+        contractVersion: '1.0.0',
+      }),
       listPending: vi.fn(),
       claim: vi.fn().mockResolvedValue({
         idempotent: true,
@@ -77,6 +93,12 @@ describe('OrdersWorkforceAutomationService', () => {
   it('marks the durable event failed when Workforce rejects the mutation', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       health: vi.fn(),
+      binding: vi.fn().mockResolvedValue({
+        orderTaskId: event.orderTaskId,
+        workforceActivityId: null,
+        status: 'UNBOUND',
+        contractVersion: '1.0.0',
+      }),
       listPending: vi.fn(),
       claim: vi.fn().mockResolvedValue({
         idempotent: false,
