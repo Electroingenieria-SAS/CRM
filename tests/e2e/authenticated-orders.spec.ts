@@ -1,9 +1,4 @@
-import {
-  expect,
-  test,
-  type APIRequestContext,
-  type Page,
-} from '@playwright/test';
+import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 
 const sellerEmail = 'qa-seller@example.test';
 const auditorEmail = 'qa-auditor@example.test';
@@ -51,7 +46,8 @@ async function latestRecoveryLink(request: APIRequestContext, email: string) {
   const htmlResponse = await request.get(`${mailpitUrl}/view/${messageId}.html`);
   const html = await htmlResponse.text();
   const match = html.match(/href=["']([^"']*\/auth\/v1\/verify[^"']*)["']/i);
-  if (!match?.[1]) throw new Error('Recovery email did not contain the expected verification link.');
+  if (!match?.[1])
+    throw new Error('Recovery email did not contain the expected verification link.');
 
   return match[1].replaceAll('&amp;', '&');
 }
@@ -89,7 +85,9 @@ test('sales user restores session, creates, filters and opens an order', async (
   await page.getByLabel('Longitud de corte *').fill('1.5');
   await page.getByRole('button', { name: 'Crear pedido', exact: true }).last().click();
 
-  await expect(page.getByRole('status')).toContainText(`Pedido ${orderNumber} creado correctamente.`);
+  await expect(page.getByRole('status')).toContainText(
+    `Pedido ${orderNumber} creado correctamente.`,
+  );
   await expect(page.getByText(orderNumber)).toBeVisible();
 
   await page.getByLabel('Buscar').fill(orderNumber);

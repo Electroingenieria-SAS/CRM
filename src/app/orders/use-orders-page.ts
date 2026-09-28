@@ -85,25 +85,28 @@ export function useOrdersPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
 
-  const loadOrders = useCallback(async (nextFilters: OrdersFilterValues) => {
-    if (!application) return;
-    setLoading(true);
-    setMessage(null);
-    setNotice(null);
-    try {
-      const response = await application.orders.list({
-        ...nextFilters,
-        page: 1,
-        pageSize: 50,
-        includeHistory: true,
-      });
-      setItems(response.items);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible cargar los pedidos.');
-    } finally {
-      setLoading(false);
-    }
-  }, [application]);
+  const loadOrders = useCallback(
+    async (nextFilters: OrdersFilterValues) => {
+      if (!application) return;
+      setLoading(true);
+      setMessage(null);
+      setNotice(null);
+      try {
+        const response = await application.orders.list({
+          ...nextFilters,
+          page: 1,
+          pageSize: 50,
+          includeHistory: true,
+        });
+        setItems(response.items);
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible cargar los pedidos.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [application],
+  );
 
   useEffect(() => {
     if (!application) return;

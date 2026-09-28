@@ -17,10 +17,7 @@ export function createBrowserApplication(): BrowserApplication | null {
   if (!client) return null;
 
   return {
-    auth: new AuthService(
-      new SupabaseAuthGateway(client),
-      new SupabaseSessionRepository(client),
-    ),
+    auth: new AuthService(new SupabaseAuthGateway(client), new SupabaseSessionRepository(client)),
     orders: new OrdersService(new SupabaseOrdersRepository(client)),
   };
 }

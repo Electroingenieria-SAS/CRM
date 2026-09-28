@@ -1,8 +1,5 @@
 import { ZodError } from 'zod';
-import type {
-  AuthGateway,
-  AuthSessionEvent,
-} from '@/modules/auth/application/auth-gateway';
+import type { AuthGateway, AuthSessionEvent } from '@/modules/auth/application/auth-gateway';
 import {
   passwordResetRequestSchema,
   passwordUpdateSchema,
