@@ -67,6 +67,22 @@ export function CustomerIntelligenceDetailPanel({ detail, onClose }: Props) {
           <strong>{currency.format(detail.metrics.paidAmount)}</strong>
         </article>
         <article>
+          <small>Observaciones</small>
+          <strong>{detail.metrics.observationCount}</strong>
+        </article>
+        <article>
+          <small>Soporte</small>
+          <strong>{detail.metrics.supportLevel}</strong>
+        </article>
+        <article>
+          <small>Primer pedido</small>
+          <strong>{new Date(detail.metrics.firstOrderAt).toLocaleDateString('es-CO')}</strong>
+        </article>
+        <article>
+          <small>Último pedido</small>
+          <strong>{new Date(detail.metrics.lastOrderAt).toLocaleDateString('es-CO')}</strong>
+        </article>
+        <article>
           <small>Soporte estadístico</small>
           <strong>{detail.metrics.supportLevel}</strong>
         </article>
