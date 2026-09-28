@@ -40,6 +40,7 @@ interface OrderActionsDependencies {
   closeCreation(): void;
   showDetail(detail: OrderDetailResponse): void;
   showMessage(message: string | null): void;
+  showNotice(message: string | null): void;
   goToLogin(): void;
 }
 
@@ -52,6 +53,7 @@ function createOrderActions(dependencies: OrderActionsDependencies) {
       await application.orders.create(input, crypto.randomUUID());
       dependencies.closeCreation();
       await dependencies.refresh();
+      dependencies.showNotice(`Pedido ${input.orderNumber} creado correctamente.`);
     },
     openDetail: async (orderId: string) => {
       if (!application) return;
@@ -80,12 +82,14 @@ export function useOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
 
   const loadOrders = useCallback(async (nextFilters: OrdersFilterValues) => {
     if (!application) return;
     setLoading(true);
     setMessage(null);
+    setNotice(null);
     try {
       const response = await application.orders.list({
         ...nextFilters,
@@ -141,6 +145,7 @@ export function useOrdersPage() {
     closeCreation: () => setCreating(false),
     showDetail: setDetail,
     showMessage: setMessage,
+    showNotice: setNotice,
     goToLogin: () => router.replace('/login'),
   });
   const unavailable = !application;
@@ -152,6 +157,7 @@ export function useOrdersPage() {
     loading: unavailable ? false : loading,
     creating,
     message: unavailable ? 'Este entorno no tiene un backend de staging configurado.' : message,
+    notice,
     detail,
     setFilters,
     setCreating,
