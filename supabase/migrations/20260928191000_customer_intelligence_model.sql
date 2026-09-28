@@ -156,7 +156,10 @@ begin
     dirty_since=excluded.dirty_since,
     dirty_reason=excluded.dirty_reason,
     updated_at=now();
-  return coalesce(new,old);
+  if tg_op='DELETE' then
+    return old;
+  end if;
+  return new;
 end;
 $$;
 
