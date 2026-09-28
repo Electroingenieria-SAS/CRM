@@ -38,7 +38,7 @@ test('planner completes the activity lifecycle with required photo evidence', as
   await expect(page.getByText('Tratamiento especial QA')).toBeVisible();
 
   await page.getByRole('button', { name: 'Registrar actividad' }).click();
-  await page.getByLabel('Categoría').selectOption({ label: 'Despacho local' });
+  await page.getByLabel('Categoría', { exact: true }).selectOption({ label: 'Despacho local' });
   await page.getByLabel('Subcategoría').selectOption({ label: 'Cargue y entrega' });
   await page.getByLabel('Actividad específica').selectOption({ label: 'Cargue' });
   await page.getByLabel('Inicio').fill('2026-09-29T07:00');
