@@ -7,6 +7,19 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Error de integración no identificado';
 }
 
+function automationKeys(
+  taskId: string | null,
+  orderId: string,
+  orderEventId: number | undefined,
+  dedupeKey: string | undefined,
+) {
+  const aggregate = taskId ?? orderId;
+  return {
+    activityKey: `orders-workforce:${aggregate}:activity`,
+    eventKey: `orders-workforce:event:${orderEventId ?? dedupeKey ?? aggregate}`,
+  };
+}
+
 export class OrdersWorkforceAutomationService {
   constructor(
     private readonly outbox: OrderWorkforceOutboxPort,
@@ -25,8 +38,13 @@ export class OrdersWorkforceAutomationService {
     }
 
     try {
-      const stableKey = 'orders-workforce:' + (claimed.event.orderTaskId ?? claimed.event.orderId);
-      const result = await this.workforce.applyOrderEvent(claimed.event, stableKey);
+      const keys = automationKeys(
+        claimed.event.orderTaskId,
+        claimed.event.orderId,
+        claimed.event.orderEventId,
+        claimed.dedupeKey,
+      );
+      const result = await this.workforce.applyOrderEvent(claimed.event, keys);
 
       await this.outbox.markProcessed(outboxId, result.activityId, {
         status: result.status,
