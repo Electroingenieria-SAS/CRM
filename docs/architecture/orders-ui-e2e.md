@@ -48,3 +48,39 @@ Playwright usa Auth real contra Supabase local:
 10. verifica logout y bloqueo de ruta anónima.
 
 Los proyectos Playwright configurados cubren Chromium, Firefox, WebKit, Pixel 7, iPhone 13 e iPad. Los smokes responsive adicionales mantienen 320, 375, 390, 430, 768, 1024, 1366 y 1920 px.
+
+
+## Composición y dirección de dependencias
+
+La UI de `src/app` no importa adaptadores de `src/infrastructure`.
+
+La composición se centraliza en `src/composition/browser-application.ts`:
+
+```text
+App / UI
+  ↓
+Application services + ports
+  ↓
+Composition root
+  ↓
+Infrastructure adapters
+  ↓
+Supabase
+```
+
+El gate `architecture:check` certifica esta restricción y pasó en el pipeline #105.
+
+## Evidencia CI
+
+PR #6 · commit `e1c4b9ca092d15f904379dc26be7851c00abf90c` · pipeline #105 (`36453408365`).
+
+Resultado:
+
+- Chromium, Firefox y WebKit: verde;
+- Pixel/Android: verde;
+- iPhone: verde;
+- tablet/WebKit: verde;
+- smoke de anchos 320, 375, 390, 430, 768, 1024, 1366 y 1920 px: verde;
+- E2E autenticado real con Supabase local: verde.
+
+Este resultado valida únicamente el vertical slice inicial de Auth + Pedidos. No implica que las etapas operativas posteriores del pedido estén migradas.
