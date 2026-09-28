@@ -153,7 +153,7 @@ begin
   )
   values(v_org,now(),v_reason,now())
   on conflict (organization_id) do update set
-    dirty_since=coalesce(erp_supply.customer_intelligence_state.dirty_since,excluded.dirty_since),
+    dirty_since=excluded.dirty_since,
     dirty_reason=excluded.dirty_reason,
     updated_at=now();
   return coalesce(new,old);
