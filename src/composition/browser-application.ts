@@ -11,6 +11,8 @@ export interface BrowserApplication {
 }
 
 export function createBrowserApplication(): BrowserApplication | null {
+  if (typeof window === 'undefined') return null;
+
   const client = createSupabaseBrowserClient();
   if (!client) return null;
 
