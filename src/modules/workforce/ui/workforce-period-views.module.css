@@ -1,13 +1,22 @@
-.weekWrap {
+.weekSection {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  box-sizing: border-box;
+}
+
+.desktopWeek {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
+}
+
+.mobileWeek {
+  display: none;
 }
 
 .weekGrid {
@@ -148,13 +157,50 @@
 }
 
 @media (max-width: 760px) {
-  .weekWrap {
-    border: 0;
-    background: transparent;
+  .desktopWeek {
+    display: none;
   }
 
-  .weekGrid {
-    min-width: 860px;
+  .mobileWeek {
+    display: grid;
+    gap: var(--space-3);
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mobileWeekPerson {
+    display: grid;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .mobileWeekPerson > header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .mobileWeekPerson > header span {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+
+  .mobileWeekDay {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border);
+  }
+
+  .mobileWeekDay h3 {
+    margin: 0;
+    font-size: 0.82rem;
+    text-transform: capitalize;
   }
 
   .monthWeekdays {
