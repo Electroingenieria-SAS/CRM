@@ -90,6 +90,15 @@ class InMemoryOutbox implements OrderWorkforceOutboxPort {
     this.events.set(id, event);
   }
 
+  async health() {
+    return {
+      summary: { pending: 0, processing: 0, processed: 0, failed: 0, staleProcessing: 0 },
+      pendingByStep: {},
+      oldestPendingAt: null,
+      contractVersion: '1.0.0',
+    };
+  }
+
   async listPending() {
     return [];
   }
