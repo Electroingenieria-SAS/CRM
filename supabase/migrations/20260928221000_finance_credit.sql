@@ -245,7 +245,7 @@ begin
     requested_term_days,status,requested_by,idempotency_key,metadata
   )
   values(
-    v_org,v_customer_id,v_order_id,v_number,round(v_amount,2),
+    v_org,v_customer_id,v_order_id,v_number,erp_private.finance_round_money(v_amount),
     v_term,'SUBMITTED',v_actor,trim(p_idempotency_key),
     case when jsonb_typeof(coalesce(p_payload->'metadata','{}'::jsonb))='object'
       then coalesce(p_payload->'metadata','{}'::jsonb) else '{}'::jsonb end
