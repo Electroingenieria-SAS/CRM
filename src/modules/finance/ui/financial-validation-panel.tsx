@@ -12,6 +12,7 @@ interface FinancialValidationPanelProps {
   onValidate(result: 'APPROVED' | 'REJECTED' | 'REQUIRES_REVIEW', reason: string): Promise<void>;
   onHold(reasonCode: string, reason: string, requiresApproval: boolean): Promise<void>;
   onRelease(holdId: string, reason: string): Promise<void>;
+  onRequestException(holdId: string, reason: string): Promise<void>;
 }
 
 export function FinancialValidationPanel(props: FinancialValidationPanelProps) {
@@ -93,13 +94,24 @@ export function FinancialValidationPanel(props: FinancialValidationPanelProps) {
         <div className={styles.warning}>
           <strong>Retención activa · {activeHold.reasonCode}</strong>
           <p>{activeHold.reason}</p>
-          <button
-            type="button"
-            disabled={!reason.trim()}
-            onClick={() => void props.onRelease(activeHold.id, reason)}
-          >
-            Liberar con trazabilidad
-          </button>
+          <div className={styles.actions}>
+            <button
+              type="button"
+              disabled={!reason.trim()}
+              onClick={() => void props.onRelease(activeHold.id, reason)}
+            >
+              Liberar con trazabilidad
+            </button>
+            {activeHold.metadata.requiresApproval === true ? (
+              <button
+                type="button"
+                disabled={!reason.trim()}
+                onClick={() => void props.onRequestException(activeHold.id, reason)}
+              >
+                Solicitar excepción
+              </button>
+            ) : null}
+          </div>
         </div>
       ) : null}
     </section>
