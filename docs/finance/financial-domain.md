@@ -166,6 +166,8 @@ Consume `erp_x_financial_gate` y recibe:
 
 La UI de Orders muestra solo el estado financiero compacto. Facturas, soportes, aprobaciones y detalle permanecen en Finanzas.
 
+Además, un trigger financiero de finalización veta el cambio de tareas `CARTERA`, `CAJA` y `CAJA_FACTURACION` a `COMPLETED` cuando `erp_x_financial_gate` no devuelve `APPROVED` o `RELEASED`. Finanzas no avanza Orders; únicamente impide que Orders salte el gate.
+
 ## Integración con Customer Intelligence
 
 El contrato `erp_x_finance_customer_paid` expone únicamente:
