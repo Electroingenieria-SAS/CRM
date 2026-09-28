@@ -11,6 +11,7 @@ import {
 describe('freight robust statistics', () => {
   it('calculates interpolated median and quartiles', () => {
     expect(percentile([10, 20, 30, 40], 0.5)).toBe(25);
+    expect(percentile([10, 20, 30, 40], 0.9)).toBe(37);
     expect(quartiles([10, 20, 30, 40]).iqr).toBe(15);
   });
 
