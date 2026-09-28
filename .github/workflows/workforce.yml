@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.118.0
       - name: Rebuild isolated database
         run: |
           supabase start
@@ -58,7 +58,7 @@ jobs:
       - run: npm ci
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.118.0
       - name: Start isolated Supabase and rebuild schema
         run: |
           supabase start
