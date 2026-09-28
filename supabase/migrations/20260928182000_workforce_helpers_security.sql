@@ -1,5 +1,26 @@
 begin;
 
+create or replace function erp_private.workforce_lock_idempotency(
+  p_organization_id uuid,
+  p_idempotency_key text
+)
+returns void
+language plpgsql
+volatile
+security definer
+set search_path = pg_catalog
+as $
+begin
+  if nullif(trim(p_idempotency_key),'') is null then
+    raise exception 'La clave de idempotencia es obligatoria' using errcode='22023';
+  end if;
+
+  perform pg_advisory_xact_lock(
+    hashtextextended(p_organization_id::text||':'||trim(p_idempotency_key),0)
+  );
+end;
+$;
+
 create or replace function erp_private.workforce_can_manage()
 returns boolean
 language sql
@@ -291,6 +312,7 @@ as $$
   limit 1
 $$;
 
+revoke all on function erp_private.workforce_lock_idempotency(uuid,text) from public,anon;
 revoke all on function erp_private.workforce_can_manage() from public,anon;
 revoke all on function erp_private.workforce_can_manage_profile(uuid) from public,anon;
 revoke all on function erp_private.workforce_is_working_instant(uuid,timestamptz) from public,anon;
@@ -300,6 +322,7 @@ revoke all on function erp_private.workforce_time_signal(uuid) from public,anon;
 revoke all on function erp_private.workforce_occupancy_status(uuid,timestamptz) from public,anon;
 revoke all on function erp_private.workforce_pick_assignee(uuid,timestamptz,timestamptz) from public,anon;
 
+grant execute on function erp_private.workforce_lock_idempotency(uuid,text) to authenticated;
 grant execute on function erp_private.workforce_can_manage() to authenticated;
 grant execute on function erp_private.workforce_can_manage_profile(uuid) to authenticated;
 grant execute on function erp_private.workforce_is_working_instant(uuid,timestamptz) to authenticated;
