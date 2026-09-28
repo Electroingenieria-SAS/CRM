@@ -74,3 +74,18 @@ export const workforceAutomationResultSchema = z.object({
 export type OrderWorkforceEvent = z.infer<typeof orderWorkforceEventSchema>;
 export type OrderWorkforceOutboxItem = z.infer<typeof orderWorkforceOutboxItemSchema>;
 export type WorkforceAutomationResult = z.infer<typeof workforceAutomationResultSchema>;
+
+export const orderWorkforceHealthResponseSchema = z.object({
+  summary: z.object({
+    pending: z.number().int().nonnegative(),
+    processing: z.number().int().nonnegative(),
+    processed: z.number().int().nonnegative(),
+    failed: z.number().int().nonnegative(),
+    staleProcessing: z.number().int().nonnegative(),
+  }),
+  pendingByStep: z.record(z.string(), z.number().int().nonnegative()),
+  oldestPendingAt: z.string().nullable(),
+  contractVersion: z.string(),
+});
+
+export type OrderWorkforceHealth = z.infer<typeof orderWorkforceHealthResponseSchema>;
