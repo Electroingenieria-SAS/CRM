@@ -51,7 +51,6 @@ La recuperación real utiliza Mailpit del stack local para capturar el correo ge
 
 Producción no participa en estas pruebas.
 
-
 ## Evidencia de validación
 
 Validado en el PR #6 sobre el commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`.

@@ -49,7 +49,6 @@ Playwright usa Auth real contra Supabase local:
 
 Los proyectos Playwright configurados cubren Chromium, Firefox, WebKit, Pixel 7, iPhone 13 e iPad. Los smokes responsive adicionales mantienen 320, 375, 390, 430, 768, 1024, 1366 y 1920 px.
 
-
 ## Composición y dirección de dependencias
 
 La UI de `src/app` no importa adaptadores de `src/infrastructure`.
