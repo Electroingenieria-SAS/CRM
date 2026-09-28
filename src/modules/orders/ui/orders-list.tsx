@@ -3,6 +3,7 @@ import styles from './orders-list.module.css';
 
 interface OrdersListProps {
   items: OrderListItem[];
+  onSelect(orderId: string): void;
 }
 
 function statusLabel(status: string) {
@@ -18,7 +19,7 @@ function statusLabel(status: string) {
   return labels[status] ?? status;
 }
 
-export function OrdersList({ items }: OrdersListProps) {
+export function OrdersList({ items, onSelect }: OrdersListProps) {
   if (!items.length) {
     return (
       <section className={styles.empty} aria-live="polite">
@@ -32,20 +33,22 @@ export function OrdersList({ items }: OrdersListProps) {
     <div className={styles.list}>
       {items.map((order) => (
         <article className={styles.row} key={order.id}>
-          <div className={styles.identity}>
-            <span>{order.stepName}</span>
-            <strong>{order.orderNumber}</strong>
-            <small>{order.clientName} · {order.orderType} · {order.paymentCondition}</small>
-          </div>
-          <dl className={styles.metrics}>
-            <div><dt>Estado</dt><dd>{statusLabel(order.status)}</dd></div>
-            <div><dt>Responsable</dt><dd>{order.assigneeName ?? 'En cola'}</dd></div>
-            <div><dt>Vendedor</dt><dd>{order.sellerName ?? '—'}</dd></div>
-            <div><dt>Ruta</dt><dd>{order.route}</dd></div>
-          </dl>
-          <span className={styles.priority} data-priority={order.priority}>
-            {order.priority === 'MEDIUM' ? 'Prioridad automática' : order.priority}
-          </span>
+          <button className={styles.open} type="button" onClick={() => onSelect(order.id)}>
+            <div className={styles.identity}>
+              <span>{order.stepName}</span>
+              <strong>{order.orderNumber}</strong>
+              <small>{order.clientName} · {order.orderType} · {order.paymentCondition}</small>
+            </div>
+            <dl className={styles.metrics}>
+              <div><dt>Estado</dt><dd>{statusLabel(order.status)}</dd></div>
+              <div><dt>Responsable</dt><dd>{order.assigneeName ?? 'En cola'}</dd></div>
+              <div><dt>Vendedor</dt><dd>{order.sellerName ?? '—'}</dd></div>
+              <div><dt>Ruta</dt><dd>{order.route}</dd></div>
+            </dl>
+            <span className={styles.priority} data-priority={order.priority}>
+              {order.priority === 'MEDIUM' ? 'Prioridad automática' : order.priority}
+            </span>
+          </button>
         </article>
       ))}
     </div>
