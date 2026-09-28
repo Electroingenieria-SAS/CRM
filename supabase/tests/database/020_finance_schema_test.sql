@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(24);
 
 select has_table('erp_supply','credit_requests','credit requests exist');
 select has_table('erp_supply','financial_validations','financial validations exist');
@@ -36,6 +36,18 @@ select is(
    where n.nspname='public' and p.proname='erp_x_finance_register_invoice'),
   false,
   'invoice API is SECURITY INVOKER'
+);
+
+select is(
+  erp_private.finance_round_money(100.005::numeric),
+  100.01::numeric,
+  'COP rounding is centralized in PostgreSQL'
+);
+
+select is(
+  erp_private.finance_round_money(100.004::numeric),
+  100.00::numeric,
+  'COP rounding is deterministic to two decimals'
 );
 
 select is(
