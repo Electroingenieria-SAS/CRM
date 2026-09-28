@@ -1,12 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   createBrowserApplication,
   type BrowserApplication,
 } from '@/composition/browser-application';
-import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type {
   CreateOrderInput,
   OrderDetailResponse,
@@ -14,6 +13,7 @@ import type {
 } from '@/modules/orders/application/order.schemas';
 import type { OrdersFilterValues } from '@/modules/orders/ui/orders-filters';
 import { useOrderWorkflowActions } from './use-order-workflow-actions';
+import { useOrdersBootstrap } from './use-orders-bootstrap';
 
 const initialFilters: OrdersFilterValues = {
   search: '',
@@ -21,19 +21,6 @@ const initialFilters: OrdersFilterValues = {
   orderType: '',
   route: '',
 };
-
-async function loadInitialWorkspace(application: BrowserApplication) {
-  const context = await application.auth.restoreContext();
-  if (!context) return null;
-
-  const firstPage = await application.orders.list({
-    page: 1,
-    pageSize: 50,
-    includeHistory: true,
-  });
-
-  return { context, items: firstPage.items };
-}
 
 interface OrderActionsDependencies {
   application: BrowserApplication | null;
@@ -109,39 +96,14 @@ export function useOrdersPage() {
     [application],
   );
 
-  useEffect(() => {
-    if (!application) return;
-
-    const app = application;
-    let active = true;
-    const unsubscribe = app.auth.onSessionChange((event) => {
-      if (event.type === 'signed_out') router.replace('/login');
-    });
-
-    void loadInitialWorkspace(app)
-      .then((workspace) => {
-        if (!active) return;
-        if (!workspace) {
-          router.replace('/login');
-          return;
-        }
-        setContext(workspace.context);
-        setItems(workspace.items);
-      })
-      .catch((error) => {
-        if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
-        }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-      unsubscribe();
-    };
-  }, [application, router]);
+  useOrdersBootstrap({
+    application,
+    setContext,
+    setItems,
+    setMessage,
+    setLoading,
+    goToLogin: () => router.replace('/login'),
+  });
 
   const reloadOrder = useCallback(
     async (orderId: string) => {
