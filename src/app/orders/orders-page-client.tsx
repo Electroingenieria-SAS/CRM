@@ -30,6 +30,7 @@ export function OrdersPageClient() {
       message={page.message}
       notice={page.notice}
       detail={page.detail}
+      financialGate={page.financialGate}
       workflowBusy={page.workflowBusy}
       onFiltersChange={page.setFilters}
       onSearch={page.search}
@@ -37,7 +38,7 @@ export function OrdersPageClient() {
       onCancelCreate={() => page.setCreating(false)}
       onCreate={page.createOrder}
       onOpenDetail={(orderId) => void page.openDetail(orderId)}
-      onCloseDetail={() => page.setDetail(null)}
+      onCloseDetail={page.closeDetail}
       onWorkflowSimpleAction={page.simpleAction}
       onAssign={page.assign}
       onBlock={page.block}
