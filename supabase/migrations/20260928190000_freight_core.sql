@@ -372,4 +372,9 @@ revoke all on function erp_private.freight_norm(text) from public, anon, authent
 revoke all on function erp_private.freight_city_key(text) from public, anon, authenticated;
 revoke all on function erp_private.freight_department_key(text) from public, anon, authenticated;
 
+-- SECURITY INVOKER public RPCs may call these private normalization helpers.
+-- The erp_private schema is not exposed as a PostgREST API schema.
+grant execute on function erp_private.freight_norm(text) to authenticated;
+grant execute on function erp_private.freight_department_key(text) to authenticated;
+
 commit;
