@@ -67,9 +67,9 @@ export class AuthService {
     return this.gateway.signOut();
   }
 
-  requestPasswordReset(input: PasswordResetRequest, redirectTo?: string): Promise<void> {
+  async requestPasswordReset(input: PasswordResetRequest, redirectTo?: string): Promise<void> {
     const request = parseInput(() => passwordResetRequestSchema.parse(input));
-    return this.gateway.requestPasswordReset(request, redirectTo);
+    await this.gateway.requestPasswordReset(request, redirectTo);
   }
 
   async preparePasswordRecovery(input: PasswordRecoveryInput): Promise<void> {
@@ -89,9 +89,9 @@ export class AuthService {
     }
   }
 
-  updatePassword(input: PasswordUpdate): Promise<void> {
+  async updatePassword(input: PasswordUpdate): Promise<void> {
     const password = parseInput(() => passwordUpdateSchema.parse(input));
-    return this.gateway.updatePassword(password);
+    await this.gateway.updatePassword(password);
   }
 
   onSessionChange(listener: (event: AuthSessionEvent) => void): () => void {
