@@ -61,7 +61,7 @@ create table erp_supply.customer_intelligence_runs (
   total_paid numeric(20,2) not null default 0 check (total_paid >= 0),
   started_at timestamptz not null default now(),
   completed_at timestamptz,
-  error_code text,
+  error_code text
 );
 
 create index idx_customer_intelligence_run_fingerprint
