@@ -26,10 +26,6 @@ begin
   if exists(select 1 from erp_supply.order_events where organization_id=v_order.organization_id and idempotency_key=p_idempotency_key) then
     return jsonb_build_object('success',true,'idempotent',true,'orderId',v_order.id,'version',v_order.version);
   end if;
-  if v_order.version<>p_expected_version then
-    raise exception 'El pedido cambió mientras estaba abierto. Actualiza la pantalla.' using errcode='40001';
-  end if;
-
   select * into v_task from erp_supply.order_tasks
   where order_id=v_order.id and status in('QUEUED','ASSIGNED')
   order by sequence_no desc limit 1 for update;
@@ -37,6 +33,9 @@ begin
 
   if v_task.assigned_profile_id is not null and v_task.assigned_profile_id<>v_actor then
     raise exception 'Esta tarea ya fue tomada por otro usuario.' using errcode='40001';
+  end if;
+  if v_order.version<>p_expected_version then
+    raise exception 'El pedido cambió mientras estaba abierto. Actualiza la pantalla.' using errcode='40001';
   end if;
   if not erp_private.workflow_actor_can(v_task.step_code,'CLAIM',v_task.assigned_profile_id) then
     raise exception 'No estás autorizado para tomar esta tarea' using errcode='42501';
