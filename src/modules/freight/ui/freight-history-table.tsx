@@ -73,3 +73,38 @@ export function FreightHistoryPagination({ history, onPage }: PaginationProps) {
     </div>
   );
 }
+
+
+export function FreightActualsTable({ history }: { history: FreightHistoryResponse }) {
+  if (!history.recentActuals.length) return null;
+
+  return (
+    <div className={styles.tableWrap}>
+      <table className={styles.table}>
+        <caption>Costos reales recientes incorporados al aprendizaje</caption>
+        <thead>
+          <tr>
+            <th>Destino</th>
+            <th>Transportadora</th>
+            <th>Costo real</th>
+            <th>Peso</th>
+            <th>Modalidad</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {history.recentActuals.map((row) => (
+            <tr key={row.id}>
+              <td>{row.city} · {row.department}</td>
+              <td>{row.carrierName}</td>
+              <td>{money.format(row.actualCost)}</td>
+              <td>{row.weightKg == null ? '—' : `${row.weightKg} kg`}</td>
+              <td>{row.route}</td>
+              <td>{row.observedAt.slice(0, 10)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
