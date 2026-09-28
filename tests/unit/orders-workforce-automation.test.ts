@@ -23,6 +23,7 @@ const event = {
 describe('OrdersWorkforceAutomationService', () => {
   it('separates stable activity identity from event mutation idempotency', async () => {
     const outbox: OrderWorkforceOutboxPort = {
+      health: vi.fn(),
       listPending: vi.fn(),
       claim: vi.fn().mockResolvedValue({
         idempotent: false,
@@ -55,6 +56,7 @@ describe('OrdersWorkforceAutomationService', () => {
 
   it('does not call Workforce again when the outbox row is already processed', async () => {
     const outbox: OrderWorkforceOutboxPort = {
+      health: vi.fn(),
       listPending: vi.fn(),
       claim: vi.fn().mockResolvedValue({
         idempotent: true,
@@ -74,6 +76,7 @@ describe('OrdersWorkforceAutomationService', () => {
 
   it('marks the durable event failed when Workforce rejects the mutation', async () => {
     const outbox: OrderWorkforceOutboxPort = {
+      health: vi.fn(),
       listPending: vi.fn(),
       claim: vi.fn().mockResolvedValue({
         idempotent: false,
