@@ -19,6 +19,17 @@ function parseIso(value: string): Date {
   return new Date(`${value}T12:00:00-05:00`);
 }
 
+function parseYearMonth(value: string): { year: number; month: number } {
+  const match = /^(\d{4})-(\d{2})-\d{2}$/.exec(value);
+  if (!match?.[1] || !match[2]) throw new Error('Fecha de calendario inválida.');
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) throw new Error('Fecha de calendario inválida.');
+
+  return { year, month };
+}
+
 export function shiftIsoDate(value: string, days: number): string {
   const date = parseIso(value);
   date.setUTCDate(date.getUTCDate() + days);
@@ -37,7 +48,7 @@ export function workforceRange(mode: WorkforceCalendarMode, anchor: string) {
     return { from, to: shiftIsoDate(from, 4) };
   }
 
-  const [year, month] = anchor.split('-').map(Number);
+  const { year, month } = parseYearMonth(anchor);
   const first = `${year}-${String(month).padStart(2, '0')}-01`;
   const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
   return {
@@ -54,7 +65,7 @@ export function navigateWorkforceAnchor(
   if (mode === 'day') return shiftIsoDate(anchor, direction);
   if (mode === 'week') return shiftIsoDate(anchor, direction * 7);
 
-  const [year, month] = anchor.split('-').map(Number);
+  const { year, month } = parseYearMonth(anchor);
   const target = new Date(Date.UTC(year, month - 1 + direction, 15));
   return isoDate(target);
 }
