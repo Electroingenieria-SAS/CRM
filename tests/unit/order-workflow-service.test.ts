@@ -26,6 +26,29 @@ function repository(): OrderWorkflowRepository {
 }
 
 describe('order workflow service', () => {
+  it('notifies the integration observer after an operational mutation', async () => {
+    const repo = repository();
+    const observer = { onWorkflowMutation: vi.fn().mockResolvedValue(undefined) };
+    const service = new OrderWorkflowService(repo, observer);
+
+    const result = await service.claim('order-1', 1, 'claim-observed');
+
+    expect(observer.onWorkflowMutation).toHaveBeenCalledWith(result);
+  });
+
+  it('keeps the committed Orders mutation valid when the integration attempt fails', async () => {
+    const repo = repository();
+    const observer = {
+      onWorkflowMutation: vi.fn().mockRejectedValue(new Error('workforce unavailable')),
+    };
+    const service = new OrderWorkflowService(repo, observer);
+
+    await expect(service.claim('order-1', 1, 'claim-durable')).resolves.toMatchObject({
+      success: true,
+      orderId: '00000000-0000-0000-0000-000000000001',
+    });
+  });
+
   it('requires a valid version and idempotency key for claims', async () => {
     const repo = repository();
     const service = new OrderWorkflowService(repo);
