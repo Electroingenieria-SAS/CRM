@@ -1,3 +1,5 @@
+import styles from './create-order-form.module.css';
+
 interface CatalogOption {
   code: string;
   name: string;
@@ -60,7 +62,7 @@ export function OrderBasicsFields({
         <span>Ciudad *</span>
         <input name="clientCity" required maxLength={120} />
       </label>
-      <label>
+      <label className={styles.wide}>
         <span>Dirección de entrega *</span>
         <input name="clientAddress" required minLength={5} maxLength={500} />
       </label>
@@ -68,7 +70,7 @@ export function OrderBasicsFields({
         <span>Teléfono</span>
         <input name="clientPhone" type="tel" inputMode="tel" maxLength={60} />
       </label>
-      <label>
+      <label className={styles.check}>
         <input name="requiresPurchase" type="checkbox" />
         <span>Requiere compra o abastecimiento</span>
       </label>
