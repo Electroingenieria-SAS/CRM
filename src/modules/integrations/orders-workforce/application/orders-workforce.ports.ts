@@ -1,4 +1,5 @@
 import type {
+  OrderWorkforceBinding,
   OrderWorkforceEvent,
   OrderWorkforceHealth,
   OrderWorkforceOutboxItem,
@@ -7,6 +8,7 @@ import type {
 
 export interface OrderWorkforceOutboxPort {
   health(): Promise<OrderWorkforceHealth>;
+  binding(orderTaskId: string): Promise<OrderWorkforceBinding>;
   listPending(orderId?: string, limit?: number): Promise<readonly OrderWorkforceOutboxItem[]>;
   claim(outboxId: string): Promise<{
     readonly idempotent: boolean;
@@ -38,5 +40,6 @@ export interface WorkforceAutomationPort {
   applyOrderEvent(
     event: OrderWorkforceEvent,
     keys: WorkforceAutomationKeys,
+    existingActivityId: string | null,
   ): Promise<WorkforceAutomationResult>;
 }
