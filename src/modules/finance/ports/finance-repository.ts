@@ -3,6 +3,7 @@ import type {
   CreditRequestInput,
   CustomerPaidProjection,
   FinanceQueue,
+  FinancialApprovalQueue,
   FinancialGate,
   OrderFinancialSummary,
 } from '@/modules/finance/application/finance.schemas';
@@ -52,6 +53,14 @@ export interface SupportInput {
   metadata?: Record<string, unknown>;
 }
 
+export interface FinancialExceptionInput {
+  orderId: string;
+  holdId?: string;
+  requestType: 'CREDIT_EXCEPTION' | 'RELEASE_EXCEPTION' | 'PAYMENT_EXCEPTION';
+  reason: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface FinanceRepository {
   listCredit(query?: QueueQuery): Promise<CreditQueue>;
   createCredit(input: CreditRequestInput, key: string): Promise<void>;
@@ -61,6 +70,9 @@ export interface FinanceRepository {
   validateOrder(input: FinancialValidationInput, key: string): Promise<void>;
   createHold(input: CreateHoldInput, key: string): Promise<string>;
   releaseHold(holdId: string, reason: string, key: string): Promise<void>;
+  listApprovals(query?: QueueQuery): Promise<FinancialApprovalQueue>;
+  requestException(input: FinancialExceptionInput, key: string): Promise<string>;
+  decideException(approvalId: string, decision: 'APPROVED' | 'REJECTED', reason: string, key: string): Promise<void>;
   registerSupport(orderId: string, invoiceId: string | undefined, input: SupportInput, key: string): Promise<string>;
   validateSupport(supportId: string, decision: 'VALIDATED' | 'REJECTED', reason: string, key: string): Promise<void>;
   registerInvoice(orderId: string, input: InvoiceInput, key: string): Promise<string>;
