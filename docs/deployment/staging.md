@@ -34,3 +34,16 @@ Un cambio de base de datos puede considerarse candidato a producción únicament
 - no aparecen hallazgos nuevos de Security Advisor;
 - existe rollback/forward-fix documentado;
 - la matriz de paridad identifica el impacto funcional.
+
+## E2E autenticado
+
+El pipeline no almacena contraseñas QA. Para cada ejecución:
+
+1. Supabase local se reconstruye desde cero.
+2. GitHub Actions genera una contraseña aleatoria en memoria.
+3. La contraseña se pasa a `psql` como variable y el fixture crea usuarios/identidades sintéticos.
+4. Next.js recibe únicamente la URL local y la clave publishable local.
+5. Playwright prueba login, RBAC, creación, consulta, detalle y logout.
+6. El entorno local se destruye al finalizar.
+
+La contraseña efímera y la conexión local nunca se versionan ni se reutilizan.

@@ -1,5 +1,9 @@
-import type { Session, SupabaseClient } from '@supabase/supabase-js';
-import type { AuthGateway, AuthSession } from '@/modules/auth/application/auth-gateway';
+import type { AuthChangeEvent, Session, SupabaseClient } from '@supabase/supabase-js';
+import type {
+  AuthGateway,
+  AuthSession,
+  AuthSessionEvent,
+} from '@/modules/auth/application/auth-gateway';
 import {
   passwordResetRequestSchema,
   passwordUpdateSchema,
@@ -18,8 +22,17 @@ function toAuthSession(session: Session): AuthSession {
   };
 }
 
+function errorMessage(error: unknown): string {
+  return String((error as { message?: unknown })?.message ?? '').toLowerCase();
+}
+
+function isEnumerationSafeRecoveryError(error: unknown): boolean {
+  const message = errorMessage(error);
+  return message.includes('user not found') || message.includes('email not found');
+}
+
 function toAuthenticationError(error: unknown): AppError {
-  const message = String((error as { message?: unknown })?.message ?? '').toLowerCase();
+  const message = errorMessage(error);
 
   if (
     message.includes('invalid login credentials') ||
@@ -34,6 +47,18 @@ function toAuthenticationError(error: unknown): AppError {
   }
 
   if (
+    message.includes('expired') ||
+    message.includes('invalid flow state') ||
+    message.includes('code verifier') ||
+    message.includes('pkce')
+  ) {
+    return new AppError(
+      'AUTHENTICATION',
+      'El enlace de recuperación no es válido o ya expiró. Solicita uno nuevo.',
+    );
+  }
+
+  if (
     message.includes('failed to fetch') ||
     message.includes('networkerror') ||
     message.includes('load failed')
@@ -45,6 +70,12 @@ function toAuthenticationError(error: unknown): AppError {
   }
 
   return new AppError('AUTHENTICATION', 'No fue posible completar la autenticación.');
+}
+
+function toSessionEvent(event: AuthChangeEvent, session: Session | null): AuthSessionEvent | null {
+  if (event === 'SIGNED_OUT') return { type: 'signed_out' };
+  if (!session || event === 'INITIAL_SESSION') return null;
+  return { type: 'session_changed', session: toAuthSession(session) };
 }
 
 export class SupabaseAuthGateway implements AuthGateway {
@@ -74,12 +105,34 @@ export class SupabaseAuthGateway implements AuthGateway {
     const { error } = await this.client.auth.resetPasswordForEmail(email, {
       ...(redirectTo ? { redirectTo } : {}),
     });
-    if (error) throw toAuthenticationError(error);
+
+    if (error && !isEnumerationSafeRecoveryError(error)) {
+      throw toAuthenticationError(error);
+    }
+  }
+
+  async exchangeRecoveryCode(code: string, flowId?: string): Promise<AuthSession> {
+    const { data, error } = await this.client.auth.exchangeCodeForSession(
+      code,
+      flowId ? { flowId } : undefined,
+    );
+
+    if (error || !data.session) throw toAuthenticationError(error);
+    return toAuthSession(data.session);
   }
 
   async updatePassword(input: PasswordUpdate): Promise<void> {
     const { password } = passwordUpdateSchema.parse(input);
     const { error } = await this.client.auth.updateUser({ password });
     if (error) throw toAuthenticationError(error);
+  }
+
+  onSessionChange(listener: (event: AuthSessionEvent) => void): () => void {
+    const { data } = this.client.auth.onAuthStateChange((event, session) => {
+      const nextEvent = toSessionEvent(event, session);
+      if (nextEvent) listener(nextEvent);
+    });
+
+    return () => data.subscription.unsubscribe();
   }
 }

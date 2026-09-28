@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { LoginPageClient } from './login/login-page-client';
+import { LoginPageClient } from '@/app/login/login-page-client';
 
 function LoginFallback() {
   return (
@@ -12,7 +12,7 @@ function LoginFallback() {
   );
 }
 
-export default function HomePage() {
+export default function LoginPage() {
   return (
     <Suspense fallback={<LoginFallback />}>
       <LoginPageClient />

@@ -2,36 +2,38 @@
 
 `✓` significa validado con evidencia; `—` aún no migrado.
 
-| Funcionalidad                      |   CRM fuente   |  CRM nuevo   |     Tests     | Mobile | Seguridad | Estado                 |
-| ---------------------------------- | :------------: | :----------: | :-----------: | :----: | :-------: | ---------------------- |
-| Shell/base técnica                 |       ✓        |      ✓       |       ✓       |   ✓    |     ✓     | Validado en staging    |
-| Login / sesión                     |       ✓        | Base técnica |     Unit      |   —    | En curso  | Implementación parcial |
-| Recuperación de contraseña         | Fuente parcial | Base técnica |     Unit      |   —    | En curso  | Implementación parcial |
-| Dashboard / centro de operaciones  |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Pedidos / ventas                   |       ✓        |  Núcleo/API  | Unit + DB/RLS |   —    | En curso  | Implementación parcial |
-| Segmentación de clientes           |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Inteligencia/predicción de fletes  |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Crédito                            |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Cartera                            |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Caja                               |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Compras                            |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Recepción                          |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Alistamiento                       |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Corte                              |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Facturación                        |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Despachos / entrega / satisfacción |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Inventario                         |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Workforce / jornada / cronograma   |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Excepciones / aprobaciones         |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| VSM / tiempos                      |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Reportes / analítica               |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Histórico/importaciones            |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Auditoría                          |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| Administración / roles             |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
-| PACO asistente                     |       ✓        |      —       |       —       |   —    |     —     | Pendiente              |
+| Funcionalidad                      |   CRM fuente   |    CRM nuevo    |        Tests        | Mobile | Seguridad | Estado                 |
+| ---------------------------------- | :------------: | :-------------: | :-----------------: | :----: | :-------: | ---------------------- |
+| Shell/base técnica                 |       ✓        |        ✓        |          ✓          |   ✓    |     ✓     | Validado en staging    |
+| Login / sesión                     |       ✓        |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging    |
+| Recuperación de contraseña         | Fuente parcial |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging    |
+| Dashboard / centro de operaciones  |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado |
+| Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Inteligencia/predicción de fletes  |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Crédito                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Cartera                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Caja                               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Compras                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Corte                              |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Facturación                        |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Despachos / entrega / satisfacción |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Workforce / jornada / cronograma   |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Excepciones / aprobaciones         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Histórico/importaciones            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Auditoría                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Administración / roles             |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| PACO asistente                     |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
 
-> “Base técnica” no equivale a paridad: faltan pantallas, integración con entorno no productivo, E2E autenticado, MFA/administración y pruebas de autorización antes de validar estas filas.
+> “Base técnica” no equivale a paridad. Auth/sesión/recuperación ya están validados en staging; MFA y administración siguen perteneciendo a un bloque posterior de seguridad/administración.
 
-> Pedidos tiene ya núcleo SQL/API, integridad, idempotencia y capa Application/Repository. Sigue sin marcarse `Validado` hasta completar UI, recorrido autenticado, responsive del módulo y paridad de acciones operativas.
+> Pedidos tiene validado el vertical slice inicial: núcleo SQL/API, integridad, idempotencia, Application/Repository, UI, responsive, RBAC/RLS y E2E autenticado. Claim, asignación, inicio, bloqueo, finalización, aprobaciones y demás workflow operativo siguen fuera de este slice.
+
+> Evidencia: PR #6, commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`, pipeline #105 (`36453408365`) completamente verde, incluido `e2e-authenticated`.

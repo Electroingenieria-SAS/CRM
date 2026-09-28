@@ -98,3 +98,27 @@ p {
     animation-iteration-count: 1 !important;
   }
 }
+
+.stack-form {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.stack-form label {
+  display: grid;
+  gap: var(--space-2);
+  font-weight: 700;
+}
+
+.stack-form input,
+.stack-form select,
+.stack-form textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.9rem;
+  background: var(--surface);
+  color: var(--text);
+}

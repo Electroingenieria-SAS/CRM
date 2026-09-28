@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-test('staging shell renders without horizontal overflow', async ({ page }) => {
+test('private CRM root renders login without horizontal overflow', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'CRM empresarial' })).toBeVisible();
-  await expect(page.getByText('staging seguro')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
+  await expect(page.getByLabel('Correo')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ingresar' })).toBeDisabled();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth,
@@ -15,7 +16,7 @@ test('semantic landmarks and language are present', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.getByRole('main')).toHaveCount(1);
-  await expect(page.getByRole('heading', { level: 2 })).toHaveCount(5);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 });
 
 test('keyboard navigation exposes a visible focus target', async ({ page }) => {
@@ -47,17 +48,6 @@ test.describe('reference responsive widths', () => {
               right: Math.round(rect.right * 100) / 100,
               width: Math.round(rect.width * 100) / 100,
               text: element.textContent?.slice(0, 120) ?? '',
-              parentTag: element.parentElement?.tagName.toLowerCase() ?? '',
-              parentClass: element.parentElement?.className ?? '',
-              computed: {
-                display: getComputedStyle(element).display,
-                width: getComputedStyle(element).width,
-                maxWidth: getComputedStyle(element).maxWidth,
-                whiteSpace: getComputedStyle(element).whiteSpace,
-                wordBreak: getComputedStyle(element).wordBreak,
-                overflowWrap: getComputedStyle(element).overflowWrap,
-                fontSize: getComputedStyle(element).fontSize,
-              },
             };
           })
           .filter((item) => item.right > viewportWidth + 0.5 || item.left < -0.5)
