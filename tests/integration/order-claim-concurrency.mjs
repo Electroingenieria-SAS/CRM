@@ -105,4 +105,56 @@ if (claimEvents.length !== 1) {
   throw new Error(`Expected one claim event, found ${claimEvents.length}`);
 }
 
-console.log('CONCURRENCY OK · exactly one coordinator claimed the task.');
+const winnerClient = a.error ? coordinatorB : coordinatorA;
+const claimedVersion = finalDetail.order.version;
+
+const { data: started, error: startError } = await winnerClient.rpc('erp_x_start_order_task', {
+  p_order_id: created.orderId,
+  p_expected_version: claimedVersion,
+  p_idempotency_key: `start-${orderNumber}`,
+});
+
+if (startError || !started?.success) {
+  throw new Error(`Could not start claimed task: ${startError?.message ?? 'unknown'}`);
+}
+
+const completeKey = `complete-${orderNumber}`;
+const completeArgs = {
+  p_order_id: created.orderId,
+  p_result_code: 'QA_COMPLETE',
+  p_detail: 'Concurrency/idempotency certification',
+  p_expected_version: started.version,
+  p_idempotency_key: completeKey,
+};
+
+const firstComplete = await winnerClient.rpc('erp_x_complete_order_task', completeArgs);
+if (firstComplete.error || !firstComplete.data?.success || firstComplete.data.idempotent) {
+  throw new Error(`First completion failed: ${firstComplete.error?.message ?? 'invalid result'}`);
+}
+
+const repeatedComplete = await winnerClient.rpc('erp_x_complete_order_task', completeArgs);
+if (repeatedComplete.error || repeatedComplete.data?.idempotent !== true) {
+  throw new Error(
+    `Repeated completion was not idempotent: ${repeatedComplete.error?.message ?? 'invalid result'}`,
+  );
+}
+
+const { data: afterComplete, error: afterError } = await winnerClient.rpc('erp_x_get_order', {
+  p_order_id: created.orderId,
+});
+if (afterError) throw afterError;
+
+const completionEvents = (afterComplete.events ?? []).filter(
+  (event) => event.event_type === 'ORDER_TASK_COMPLETED',
+);
+if (completionEvents.length !== 1) {
+  throw new Error(`Expected one completion event, found ${completionEvents.length}`);
+}
+
+if ((afterComplete.tasks ?? []).length !== 2) {
+  throw new Error(`Expected exactly two sequential tasks after one advance, found ${afterComplete.tasks?.length}`);
+}
+
+console.log(
+  'CONCURRENCY + IDEMPOTENCY OK · one claimant, one completion event, one workflow advance.',
+);
