@@ -34,6 +34,43 @@ async function loadInitialWorkspace(application: BrowserApplication) {
   return { context, items: firstPage.items };
 }
 
+interface OrderActionsDependencies {
+  application: BrowserApplication | null;
+  refresh(): Promise<void>;
+  closeCreation(): void;
+  showDetail(detail: OrderDetailResponse): void;
+  showMessage(message: string | null): void;
+  goToLogin(): void;
+}
+
+function createOrderActions(dependencies: OrderActionsDependencies) {
+  const { application } = dependencies;
+
+  return {
+    createOrder: async (input: CreateOrderInput) => {
+      if (!application) return;
+      await application.orders.create(input, crypto.randomUUID());
+      dependencies.closeCreation();
+      await dependencies.refresh();
+    },
+    openDetail: async (orderId: string) => {
+      if (!application) return;
+      dependencies.showMessage(null);
+      try {
+        dependencies.showDetail(await application.orders.get(orderId));
+      } catch (error) {
+        dependencies.showMessage(
+          error instanceof Error ? error.message : 'No fue posible cargar el pedido.',
+        );
+      }
+    },
+    signOut: async () => {
+      await application?.auth.signOut();
+      dependencies.goToLogin();
+    },
+  };
+}
+
 export function useOrdersPage() {
   const router = useRouter();
   const application = useMemo(() => createBrowserApplication(), []);
@@ -98,28 +135,14 @@ export function useOrdersPage() {
     };
   }, [application, router]);
 
-  async function createOrder(input: CreateOrderInput) {
-    if (!application) return;
-    await application.orders.create(input, crypto.randomUUID());
-    setCreating(false);
-    await loadOrders(initialFilters);
-  }
-
-  async function openDetail(orderId: string) {
-    if (!application) return;
-    setMessage(null);
-    try {
-      setDetail(await application.orders.get(orderId));
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible cargar el pedido.');
-    }
-  }
-
-  async function signOut() {
-    await application?.auth.signOut();
-    router.replace('/login');
-  }
-
+  const actions = createOrderActions({
+    application,
+    refresh: () => loadOrders(initialFilters),
+    closeCreation: () => setCreating(false),
+    showDetail: setDetail,
+    showMessage: setMessage,
+    goToLogin: () => router.replace('/login'),
+  });
   const unavailable = !application;
 
   return {
@@ -134,9 +157,7 @@ export function useOrdersPage() {
     setCreating,
     setDetail,
     search: () => loadOrders(filters),
-    createOrder,
-    openDetail,
-    signOut,
+    ...actions,
   };
 }
 
