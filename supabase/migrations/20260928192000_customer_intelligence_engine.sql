@@ -98,7 +98,18 @@ begin
   from pg_temp.ci_customer_base;
 
   select md5(
-    v_config.version||'|'||
+    concat_ws('|',
+      v_config.version,
+      v_config.order_weight::text,
+      v_config.paid_weight::text,
+      v_config.normal_min_score::text,
+      v_config.premium_min_score::text,
+      v_config.urgent_min_score::text,
+      v_config.minimum_population_clients::text,
+      v_config.minimum_population_orders::text,
+      v_config.medium_support_orders::text,
+      v_config.high_support_orders::text
+    )||'|'||
     coalesce(string_agg(
       md5(concat_ws('|',
         customer_id::text,
