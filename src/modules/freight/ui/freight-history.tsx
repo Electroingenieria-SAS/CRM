@@ -24,6 +24,14 @@ interface FreightHistoryProps {
 
 export function FreightHistory(props: FreightHistoryProps) {
   const { history, filters } = props;
+  const departments = Array.from(
+    new Map(
+      props.destinations.map((destination) => [
+        destination.departmentKey,
+        { key: destination.departmentKey, name: destination.department },
+      ]),
+    ).values(),
+  ).sort((a, b) => a.name.localeCompare(b.name, 'es'));
 
   return (
     <section className={styles.section} aria-labelledby="freight-history-title">
@@ -55,6 +63,23 @@ export function FreightHistory(props: FreightHistoryProps) {
             {props.destinations.map((destination) => (
               <option value={destination.id} key={destination.id}>
                 {destination.city} — {destination.department}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="history-department">Departamento</label>
+          <select
+            id="history-department"
+            value={filters.departmentKey ?? ''}
+            onChange={(event) =>
+              props.onFiltersChange({ ...filters, departmentKey: event.target.value || undefined })
+            }
+          >
+            <option value="">Todos</option>
+            {departments.map((department) => (
+              <option value={department.key} key={department.key}>
+                {department.name}
               </option>
             ))}
           </select>
