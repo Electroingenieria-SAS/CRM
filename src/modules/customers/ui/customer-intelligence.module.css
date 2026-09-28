@@ -1,0 +1,240 @@
+.filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(140px, 220px) auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 0.8rem;
+  font: inherit;
+}
+
+.ranking {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.customerCard {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.5fr) repeat(4, minmax(90px, 0.6fr));
+  gap: var(--space-3);
+  align-items: center;
+  min-height: 76px;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.customerCard:hover,
+.customerCard:focus-visible {
+  border-color: var(--brand);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+
+.customerName {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.customerName strong {
+  font-size: 0.98rem;
+}
+
+.customerName span,
+.metric small,
+.segment small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.metric,
+.segment {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.metric strong {
+  font-size: 0.92rem;
+}
+
+.segment strong {
+  width: max-content;
+  max-width: 100%;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.76rem;
+}
+
+.provisional {
+  color: var(--warning);
+  font-size: 0.72rem;
+}
+
+.paretoLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.5fr);
+  gap: var(--space-4);
+}
+
+.chartPanel,
+.detailPanel {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.chartPanel h3,
+.detailPanel h2,
+.detailPanel h3 {
+  margin-top: 0;
+}
+
+.chart {
+  width: 100%;
+  min-height: 260px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.legend span::before {
+  content: '—';
+  margin-right: 0.35rem;
+  color: var(--brand);
+  font-weight: 900;
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.summary article,
+.detailMetrics article {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--brand-soft);
+}
+
+.summary small,
+.detailMetrics small {
+  display: block;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.detailMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.explanation {
+  margin: var(--space-4) 0;
+  padding: var(--space-3);
+  border-left: 4px solid var(--brand);
+  background: var(--brand-soft);
+}
+
+.history {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history th,
+.history td {
+  padding: 0.65rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-5);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .customerCard {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .customerName {
+    grid-column: 1 / -1;
+  }
+
+  .paretoLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .detailMetrics {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .customerCard {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detailMetrics {
+    grid-template-columns: 1fr;
+  }
+
+  .history thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .history tr {
+    display: grid;
+    gap: 0.15rem;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .history td {
+    padding: 0.2rem 0;
+    border: 0;
+  }
+}
