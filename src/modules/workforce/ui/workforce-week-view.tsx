@@ -5,6 +5,7 @@ import type {
   WorkforceActivitySummary,
   WorkforcePerson,
 } from '@/modules/workforce/application/workforce.schemas';
+import { occupancyLabel } from '@/modules/workforce/domain/workforce-metrics';
 import {
   activityStatusLabel,
   timeSignalLabel,
