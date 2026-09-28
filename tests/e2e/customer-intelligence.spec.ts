@@ -48,13 +48,13 @@ test('customer intelligence main journey is explainable and filterable', async (
     page.getByRole('heading', { level: 3, name: 'Evolución de segmento' }),
   ).toBeVisible();
 
-  await page.getByLabel('Segmento').selectOption('PREMIUM');
+  await page.getByRole('combobox', { name: 'Segmento' }).selectOption('PREMIUM');
   await page.getByRole('button', { name: 'Aplicar filtros' }).click();
   await expect(page.getByText('Cliente Sintético Premium')).toBeVisible();
   await expect(page.getByText('Cliente Sintético Básico')).toHaveCount(0);
 
   await page.getByLabel('Buscar cliente').fill('900001');
-  await page.getByLabel('Segmento').selectOption('');
+  await page.getByRole('combobox', { name: 'Segmento' }).selectOption('');
   await page.getByRole('button', { name: 'Aplicar filtros' }).click();
   await expect(page.getByText('Cliente Sintético Urgente')).toBeVisible();
 });
