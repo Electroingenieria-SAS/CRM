@@ -117,7 +117,7 @@
   padding: var(--space-5);
 }
 
-.baseline code {
+.baselineCommit {
   display: block;
   width: 100%;
   min-width: 0;
