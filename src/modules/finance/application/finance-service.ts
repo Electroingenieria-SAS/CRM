@@ -19,6 +19,10 @@ function requiredKey(value: string) {
 export class FinanceService {
   constructor(private readonly repository: FinanceRepository) {}
 
+  searchCustomers(search: string) {
+    return this.repository.searchCustomers(search.trim());
+  }
+
   listCredit(query: QueueQuery = {}) {
     return this.repository.listCredit(query);
   }
