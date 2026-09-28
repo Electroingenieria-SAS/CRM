@@ -75,25 +75,31 @@ insert into erp_supply.role_module_permissions(
 ('jefe_logistica','freight',true,true,true,true,false),
 ('gerencia','freight',true,true,false,true,false),
 ('ventas','credit',true,true,false,false,false),
-('cartera','credit',true,false,true,true,false),
-('cartera','cartera',true,true,true,true,false),
-('cartera','approvals',true,true,false,false,false),
-('caja','caja',true,true,true,false,false),
-('caja','billing',true,true,true,false,false),
-('caja','approvals',true,true,false,false,false),
-('gerencia','credit',true,false,false,true,false),
-('gerencia','cartera',true,false,false,true,false),
-('gerencia','caja',true,false,false,true,false),
-('gerencia','approvals',true,true,true,true,false),
-('auditoria','credit',true,false,false,false,false),
-('auditoria','cartera',true,false,false,false,false),
-('auditoria','caja',true,false,false,false,false),
-('auditoria','approvals',true,false,false,false,false),
 ('ventas','customer_intelligence',true,false,false,false,false),
 ('gerencia','customer_intelligence',true,false,false,false,false),
 ('auditoria','customer_intelligence',true,false,false,false,false),
 ('jefe_logistica','customer_intelligence',true,false,false,false,false)
 on conflict (role_code,module_code) do nothing;
+
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
+select
+  r.code,
+  'workforce',
+  true,
+  true,
+  true,
+  r.code in ('super_admin','gerencia','jefe_logistica','lider_logistica'),
+  r.code in ('super_admin','gerencia','jefe_logistica','lider_logistica')
+from erp_supply.roles r
+where r.active
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_create=excluded.can_create,
+  can_update=excluded.can_update,
+  can_approve=excluded.can_approve,
+  can_admin=excluded.can_admin;
 
 insert into erp_supply.role_module_permissions(
   role_code,module_code,can_read,can_create,can_update,can_approve,can_admin

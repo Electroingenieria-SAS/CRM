@@ -1,0 +1,112 @@
+name: Workforce quality and local integration
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: workforce-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  workforce-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Validate architecture, types, lint, format and unit tests
+        run: npm run validate
+
+  workforce-database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Rebuild isolated database
+        run: |
+          supabase start
+          supabase db reset
+      - name: Run pgTAP
+        run: supabase test db
+      - name: Lint Workforce database contracts
+        run: supabase db lint --level error --schema public,erp_supply,erp_private
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup
+
+  workforce-e2e:
+    needs: [workforce-quality, workforce-database]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Start isolated Supabase and rebuild schema
+        run: |
+          supabase start
+          supabase db reset
+      - name: Prepare ephemeral QA credentials
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
+          LOCAL_SECRET_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
+          if [ -z "${API_URL:-}" ] || [ -z "${PUBLIC_KEY:-}" ] || [ -z "${LOCAL_SECRET_KEY:-}" ] || [ -z "${DB_URL:-}" ]; then
+            echo "Supabase local status did not expose the required runtime values."
+            exit 1
+          fi
+          E2E_PASSWORD="$(openssl rand -base64 30 | tr -d '\n' | tr '/+' 'Aa')"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "DB_URL=$DB_URL"
+            echo "SUPABASE_LOCAL_SECRET_KEY=$LOCAL_SECRET_KEY"
+            echo "E2E_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
+      - name: Create synthetic Auth users
+        run: node tests/fixtures/create-authenticated-e2e-users.mjs
+      - name: Attach shared synthetic CRM profiles
+        run: psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/fixtures/authenticated_e2e.sql
+      - name: Apply Workforce-only synthetic policy fixture
+        run: psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/fixtures/workforce_e2e.sql
+      - name: Prove lifecycle concurrency
+        run: node tests/integration/workforce-concurrency.mjs
+      - name: Install required browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Workforce authenticated desktop and iPhone journeys
+        run: >
+          npx playwright test tests/e2e/workforce.spec.ts
+          --project=desktop-chromium
+          --project=mobile-iphone
+          --project=mobile-android
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: workforce-playwright-report
+          path: playwright-report/
+          retention-days: 14
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup

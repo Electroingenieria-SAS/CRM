@@ -69,6 +69,9 @@ function navigationFor(context: SessionContext): AppShellNavigationItem[] {
   if (hasModuleCapability(context, 'freight', 'read')) {
     items.push({ href: '/freight', label: 'Fletes' });
   }
+  if (hasModuleCapability(context, 'workforce', 'read')) {
+    items.push({ href: '/workforce', label: 'Jornada' });
+  }
   if (hasModuleCapability(context, 'credit', 'read')) {
     items.push({ href: '/finance/credit', label: 'Crédito' });
   }
