@@ -33,7 +33,9 @@ export function useFinanceApprovalsPage() {
   }, [session.application]);
 
   useEffect(() => {
-    if (session.context) void load(initialQuery);
+    if (!session.context) return;
+    const timer = window.setTimeout(() => void load(initialQuery), 0);
+    return () => window.clearTimeout(timer);
   }, [session.context, load]);
 
   async function decide(id: string, decision: 'APPROVED' | 'REJECTED', reason: string) {
