@@ -62,7 +62,7 @@ from erp_supply.organizations o
 join auth.users u on u.email='qa-coordinator-b@example.test'
 where o.code='EI';
 
-do $
+do $$
 begin
   if (select count(*) from erp_supply.profiles where employee_code like 'QA-%') <> 5 then
     raise exception 'Synthetic Auth users were not linked to all CRM profiles';
