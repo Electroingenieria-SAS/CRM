@@ -19,7 +19,9 @@
     "architecture:check": "node scripts/check-architecture.mjs",
     "security:secrets": "node scripts/check-secrets.mjs",
     "security:history": "node scripts/check-history-secrets.mjs",
-    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run architecture:check && npm run security:secrets && npm run security:history && npm run test && npm run build"
+    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run architecture:check && npm run architecture:cycles && npm run security:secrets && npm run security:history && npm run test && npm run build && npm run performance:budget",
+    "architecture:cycles": "node scripts/check-import-cycles.mjs",
+    "performance:budget": "node scripts/check-performance-budget.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
