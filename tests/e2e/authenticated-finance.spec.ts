@@ -68,10 +68,18 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
 
   await login(page, carteraEmail);
   await page.getByRole('link', { name: 'Crédito' }).click();
-  const creditRow = page.getByRole('row').filter({ hasText: 'Cliente Crédito E2E' });
+  const creditRow = page
+    .getByRole('row')
+    .filter({ hasText: 'Cliente Crédito E2E' })
+    .filter({ hasText: 'SUBMITTED' })
+    .first();
   await expect(creditRow).toBeVisible();
   await creditRow.getByRole('button', { name: 'Tomar' }).click();
-  const reviewedRow = page.getByRole('row').filter({ hasText: 'Cliente Crédito E2E' });
+  const reviewedRow = page
+    .getByRole('row')
+    .filter({ hasText: 'Cliente Crédito E2E' })
+    .filter({ hasText: 'UNDER_REVIEW' })
+    .first();
   await reviewedRow
     .getByLabel('Justificación')
     .fill('Crédito revisado con información disponible.');
@@ -133,7 +141,7 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   await page.getByRole('button', { name: 'Registrar soporte' }).click();
   await expect(page.getByRole('status')).toContainText('Soporte financiero referenciado');
   await page.getByRole('button', { name: 'Validar soporte' }).click();
-  await page.getByLabel('Factura').fill('FIN-E2E-INV-001');
+  await page.getByLabel('Factura', { exact: true }).fill('FIN-E2E-INV-001');
   await page.getByLabel('Valor pagado registrado (COP)').fill('120000');
   await page.getByLabel('Soporte validado').selectOption({ index: 1 });
   await page.getByRole('button', { name: 'Registrar factura pagada' }).click();
