@@ -7,6 +7,7 @@ import {
   type BrowserApplication,
 } from '@/composition/browser-application';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
+import type { FinancialGate } from '@/modules/finance/application/finance.schemas';
 import type {
   CreateOrderInput,
   OrderDetailResponse,
@@ -28,6 +29,7 @@ interface OrderActionsDependencies {
   refresh(): Promise<void>;
   closeCreation(): void;
   showDetail(detail: OrderDetailResponse): void;
+  showFinancialGate(gate: FinancialGate): void;
   showMessage(message: string | null): void;
   showNotice(message: string | null): void;
   goToLogin(): void;
@@ -48,7 +50,12 @@ function createOrderActions(dependencies: OrderActionsDependencies) {
       if (!application) return;
       dependencies.showMessage(null);
       try {
-        dependencies.showDetail(await application.orders.get(orderId));
+        const [detail, financialGate] = await Promise.all([
+          application.orders.get(orderId),
+          application.finance.gate(orderId),
+        ]);
+        dependencies.showDetail(detail);
+        dependencies.showFinancialGate(financialGate);
       } catch (error) {
         dependencies.showMessage(
           error instanceof Error ? error.message : 'No fue posible cargar el pedido.',
@@ -73,6 +80,7 @@ export function useOrdersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
+  const [financialGate, setFinancialGate] = useState<FinancialGate | null>(null);
   const goToLogin = useCallback(() => router.replace('/login'), [router]);
 
   const loadOrders = useCallback(
@@ -110,7 +118,12 @@ export function useOrdersPage() {
   const reloadOrder = useCallback(
     async (orderId: string) => {
       if (!application) return;
-      setDetail(await application.orders.get(orderId));
+      const [nextDetail, nextGate] = await Promise.all([
+        application.orders.get(orderId),
+        application.finance.gate(orderId),
+      ]);
+      setDetail(nextDetail);
+      setFinancialGate(nextGate);
     },
     [application],
   );
@@ -120,6 +133,7 @@ export function useOrdersPage() {
     refresh: () => loadOrders(initialFilters),
     closeCreation: () => setCreating(false),
     showDetail: setDetail,
+    showFinancialGate: setFinancialGate,
     showMessage: setMessage,
     showNotice: setNotice,
     goToLogin,
@@ -145,9 +159,14 @@ export function useOrdersPage() {
     message: unavailable ? 'Este entorno no tiene un backend de staging configurado.' : message,
     notice,
     detail,
+    financialGate,
     setFilters,
     setCreating,
     setDetail,
+    closeDetail: () => {
+      setDetail(null);
+      setFinancialGate(null);
+    },
     search: () => loadOrders(filters),
     ...actions,
     ...workflow,
