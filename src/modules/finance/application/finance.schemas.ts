@@ -25,6 +25,15 @@ export const creditRequestInputSchema = z.object({
   }
 });
 
+export const financeCustomerSearchSchema = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    document: z.string().nullable(),
+  })),
+  contractVersion: z.string(),
+});
+
 export const creditQueueItemSchema = z.object({
   id: z.string().uuid(),
   requestNumber: z.string(),
@@ -188,6 +197,7 @@ export const customerPaidProjectionSchema = z.object({
 });
 
 export type CreditRequestInput = z.input<typeof creditRequestInputSchema>;
+export type FinanceCustomerSearch = z.infer<typeof financeCustomerSearchSchema>;
 export type CreditQueue = z.infer<typeof creditQueueSchema>;
 export type FinanceQueue = z.infer<typeof financeQueueSchema>;
 export type FinanceQueueItem = z.infer<typeof financeQueueItemSchema>;
