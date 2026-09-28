@@ -110,6 +110,7 @@
   padding: 0.45rem;
 }
 
+.cancelField,
 .danger {
   grid-column: 1 / -1;
 }
