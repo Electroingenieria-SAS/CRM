@@ -112,3 +112,44 @@ insert into erp_supply.workflow_steps(
 ('CLOSURE','Cierre y verificación','shipping','CLOSURE',2,130,false,true,'{"phase":"closure"}'),
 ('CLOSED','Pedido cerrado','orders','CLOSED',null,140,true,true,'{"phase":"terminal"}')
 on conflict (code) do nothing;
+
+
+-- Synthetic profile used only by local/CI integration tests.
+insert into erp_supply.profiles(
+  organization_id,email,display_name,employee_code,active,is_system,preferences
+)
+select id,'e2e.sales@example.test','Ventas E2E','E2E-VENTAS',true,false,'{"synthetic":true}'::jsonb
+from erp_supply.organizations
+where code='EI'
+on conflict (organization_id,email) do nothing;
+
+insert into erp_supply.profile_roles(profile_id,role_code,is_primary)
+select p.id,'ventas',true
+from erp_supply.profiles p
+where p.email='e2e.sales@example.test'
+on conflict (profile_id,role_code) do nothing;
+
+create or replace function public.e2e_bind_user(
+  p_email text,
+  p_auth_user_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = pg_catalog, erp_supply
+as $$
+begin
+  update erp_supply.profiles
+  set auth_user_id=p_auth_user_id,
+      updated_at=now()
+  where email=lower(trim(p_email))
+    and preferences->>'synthetic'='true';
+
+  if not found then
+    raise exception 'Synthetic E2E profile not found';
+  end if;
+end;
+$$;
+
+revoke all on function public.e2e_bind_user(text,uuid) from public,anon,authenticated;
+grant execute on function public.e2e_bind_user(text,uuid) to service_role;
