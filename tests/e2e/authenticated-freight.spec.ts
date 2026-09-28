@@ -9,6 +9,14 @@ function password() {
   return value;
 }
 
+async function selectOptionContaining(page: Page, label: string, occurrence: number, text: RegExp) {
+  const select = page.getByLabel(label, { exact: true }).nth(occurrence);
+  const option = select.locator('option').filter({ hasText: text }).first();
+  const value = await option.getAttribute('value');
+  if (!value) throw new Error(`No option matching ${text} was found for ${label}.`);
+  await select.selectOption(value);
+}
+
 async function login(page: Page, email: string) {
   await page.goto('/login');
   await page.getByLabel('Correo').fill(email);
@@ -38,8 +46,8 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await login(page, sellerEmail);
   await page.getByRole('link', { name: 'Fletes' }).click();
   await page.getByLabel('Buscar destino').fill('Armenia');
-  await page.getByLabel('Destino', { exact: true }).nth(0).selectOption({ label: /Armenia/i });
-  await page.getByLabel('Transportadora', { exact: true }).nth(0).selectOption({ label: /Colvanes/i });
+  await selectOptionContaining(page, 'Destino', 0, /Armenia/i);
+  await selectOptionContaining(page, 'Transportadora', 0, /Colvanes/i);
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   const result = page.getByTestId('freight-result').first();
   await expect(result).toBeVisible();
@@ -47,8 +55,8 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await expect(result).toContainText(/fallback CITY/i);
   await expect(result).not.toContainText(/Sin evidencia suficiente/i);
   await expect(result.getByLabel('Rango histórico esperado')).toBeVisible();
-  await page.getByLabel('Destino', { exact: true }).nth(1).selectOption({ label: /Armenia/i });
-  await page.getByLabel('Transportadora', { exact: true }).nth(1).selectOption({ label: /Colvanes/i });
+  await selectOptionContaining(page, 'Destino', 1, /Armenia/i);
+  await selectOptionContaining(page, 'Transportadora', 1, /Colvanes/i);
   await page.getByRole('button', { name: 'Filtrar histórico' }).click();
   await expect(page.getByRole('table')).toContainText(/Armenia/i);
   await expect(page.getByRole('table')).toContainText(/Colvanes/i);
