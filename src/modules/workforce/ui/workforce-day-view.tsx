@@ -115,7 +115,9 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
                 </div>
                 <span data-occupancy={person.occupancy}>{occupancyLabel(person.occupancy)}</span>
               </header>
-              {currentActivity ? <p className={styles.currentActivity}>Actual: {currentActivity.title}</p> : null}
+              {currentActivity ? (
+                <p className={styles.currentActivity}>Actual: {currentActivity.title}</p>
+              ) : null}
               <div className={styles.mobileTimeline}>
                 {workforceDaySlots.map((slot, index) => {
                   const rows = activitiesForSlot(personActivities, index);
