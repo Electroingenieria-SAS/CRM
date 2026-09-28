@@ -40,9 +40,6 @@ begin
   if v_activity.version<>p_expected_version then
     raise exception 'La actividad cambió; actualiza la vista antes de continuar' using errcode='40001';
   end if;
-  if not erp_private.workforce_is_working_instant(v_org,now()) then
-    raise exception 'No puedes iniciar una actividad fuera de la jornada laboral' using errcode='22023';
-  end if;
   if exists(
     select 1 from erp_supply.workforce_activities other
     where other.organization_id=v_org
@@ -169,9 +166,6 @@ begin
   end if;
   if v_activity.version<>p_expected_version then
     raise exception 'La actividad cambió; actualiza la vista antes de continuar' using errcode='40001';
-  end if;
-  if not erp_private.workforce_is_working_instant(v_org,now()) then
-    raise exception 'No puedes reanudar una actividad fuera de la jornada laboral' using errcode='22023';
   end if;
 
   update erp_supply.workforce_activities
