@@ -28,6 +28,7 @@ export function OrdersPageClient() {
       loading={page.loading}
       creating={page.creating}
       message={page.message}
+      notice={page.notice}
       detail={page.detail}
       onFiltersChange={page.setFilters}
       onSearch={page.search}
