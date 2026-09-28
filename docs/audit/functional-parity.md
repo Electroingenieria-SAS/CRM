@@ -37,3 +37,6 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 > Pedidos tiene validado el vertical slice inicial: núcleo SQL/API, integridad, idempotencia, Application/Repository, UI, responsive, RBAC/RLS y E2E autenticado. Claim, asignación, inicio, bloqueo, finalización, aprobaciones y demás workflow operativo siguen fuera de este slice.
 
 > Evidencia: PR #6, commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`, pipeline #105 (`36453408365`) completamente verde, incluido `e2e-authenticated`.
+
+
+| Customer Intelligence / Pareto | CRM viejo V11.39.x | CRM nuevo 1.0.0 | Unit + pgTAP + E2E | Responsive | RLS/RBAC | Implementado; pendiente CI final del PR |
