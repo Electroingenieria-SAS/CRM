@@ -5,6 +5,7 @@ import {
   percentile,
   quartiles,
   removeIqrOutliers,
+  weightedFreightEstimate,
 } from '@/modules/freight/domain/statistics';
 
 describe('freight robust statistics', () => {
@@ -44,5 +45,13 @@ describe('freight robust statistics', () => {
         freshnessFactor: 0.85,
       }),
     ).toBe('MEDIUM');
+  });
+  it('builds a sample-weighted general destination reference', () => {
+    expect(
+      weightedFreightEstimate([
+        { low: 10_000, mid: 20_000, high: 30_000, samples: 3 },
+        { low: 20_000, mid: 30_000, high: 40_000, samples: 1 },
+      ]),
+    ).toEqual({ low: 12_500, mid: 22_500, high: 32_500, samples: 4 });
   });
 });
