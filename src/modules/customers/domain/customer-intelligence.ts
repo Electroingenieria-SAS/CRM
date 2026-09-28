@@ -112,38 +112,37 @@ export function effectiveInvoicePaid(
 
 export interface ParetoPoint {
   readonly customerId: string;
-  readonly overallRank: number;
-  readonly cumulativeOrdersPct: number;
-  readonly cumulativePaidPct: number;
+  readonly customerPct: number;
+  readonly cumulativePct: number;
 }
 
-export function buildPareto(rows: CustomerMetricInput[]): ParetoPoint[] {
-  const scored = calculateCustomerScores(rows).sort(
+function factorPareto(
+  rows: CustomerMetricInput[],
+  factor: 'orderCount' | 'paidAmount',
+): ParetoPoint[] {
+  const sorted = [...rows].sort(
     (left, right) =>
-      right.score - left.score ||
-      right.paidAmount - left.paidAmount ||
+      right[factor] - left[factor] ||
       right.orderCount - left.orderCount ||
+      right.paidAmount - left.paidAmount ||
       left.customerId.localeCompare(right.customerId),
   );
-  const totalOrders = scored.reduce((total, row) => total + row.orderCount, 0);
-  const totalPaid = scored.reduce((total, row) => total + row.paidAmount, 0);
-  let cumulativeOrders = 0;
-  let cumulativePaid = 0;
-  let previousKey = '';
-  let rank = 0;
+  const total = sorted.reduce((sum, row) => sum + row[factor], 0);
+  let cumulative = 0;
 
-  return scored.map((row, index) => {
-    const key = [row.score, row.paidAmount, row.orderCount].join('|');
-    if (key !== previousKey) rank = index + 1;
-    previousKey = key;
-    cumulativeOrders += row.orderCount;
-    cumulativePaid += row.paidAmount;
-
+  return sorted.map((row, index) => {
+    cumulative += row[factor];
     return {
       customerId: row.customerId,
-      overallRank: rank,
-      cumulativeOrdersPct: totalOrders ? (100 * cumulativeOrders) / totalOrders : 0,
-      cumulativePaidPct: totalPaid ? (100 * cumulativePaid) / totalPaid : 0,
+      customerPct: (100 * (index + 1)) / Math.max(sorted.length, 1),
+      cumulativePct: total ? (100 * cumulative) / total : 0,
     };
   });
+}
+
+export function buildPareto(rows: CustomerMetricInput[]) {
+  return {
+    ordersSeries: factorPareto(rows, 'orderCount'),
+    paidSeries: factorPareto(rows, 'paidAmount'),
+  };
 }
