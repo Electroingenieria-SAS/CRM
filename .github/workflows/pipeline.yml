@@ -158,6 +158,7 @@ jobs:
           tests/e2e/operational-order-workflow.spec.ts
           tests/e2e/authenticated-freight.spec.ts
           tests/e2e/customer-intelligence.spec.ts
+          tests/e2e/orders-workforce-integration.spec.ts
       - name: Upload authenticated Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
