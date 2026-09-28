@@ -143,6 +143,46 @@ select is(
   'same textual name without document is not merged'
 );
 
+
+insert into erp_supply.invoices(
+  organization_id,order_id,invoice_number,amount,reversed_amount,status,
+  reversal_reason,reversed_at,registered_by
+)
+select o.organization_id,o.id,'FAC-PARTIAL-'||o.order_number,100000,40000,
+       'PARTIALLY_REVERSED','Ajuste sintético',now(),
+       '43000000-0000-0000-0000-000000000002'
+from erp_supply.orders o
+where o.organization_id='42000000-0000-0000-0000-000000000001'
+  and o.order_number='CI-T-3-1';
+
+insert into erp_supply.orders(
+  organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
+  client_name,client_document,client_city,client_address,seller_profile_id,current_step_code,
+  status,priority,source,is_test
+) values
+('42000000-0000-0000-0000-000000000001','CI-CANCELLED-HUGE','PVC','CASH','LOCAL_DISPATCH',
+ 'Cliente Test 5','NIT-5','Cali','Calle Test','43000000-0000-0000-0000-000000000002',
+ 'RECEPCION_PEDIDO','CANCELLED','MEDIUM','ERP',false),
+('42000000-0000-0000-0000-000000000001','CI-DRAFT-HUGE','PVC','CASH','LOCAL_DISPATCH',
+ 'Cliente Test 5','NIT-5','Cali','Calle Test','43000000-0000-0000-0000-000000000002',
+ 'RECEPCION_PEDIDO','DRAFT','MEDIUM','ERP',false);
+
+insert into erp_supply.invoices(
+  organization_id,order_id,invoice_number,amount,status,registered_by
+)
+select o.organization_id,o.id,'FAC-'||o.order_number,9999999,'REGISTERED',
+       '43000000-0000-0000-0000-000000000002'
+from erp_supply.orders o
+where o.order_number in ('CI-CANCELLED-HUGE','CI-DRAFT-HUGE');
+
+select is(
+  (select count(*) from erp_supply.customer_intelligence_algorithm_versions
+   where organization_id='42000000-0000-0000-0000-000000000002'
+     and version='1.0.0' and active),
+  1::bigint,
+  'new organizations receive the default active algorithm'
+);
+
 select set_config(
   'request.jwt.claims',
   '{"sub":"41000000-0000-0000-0000-000000000001","role":"authenticated","email":"ci-admin@example.test"}',
@@ -160,6 +200,61 @@ select is(
    where organization_id='42000000-0000-0000-0000-000000000001' and status='COMPLETED'),
   1::bigint,
   'first recalculation creates one completed run'
+);
+
+select is(
+  (select c.valid_order_count
+   from erp_supply.customer_intelligence_current c
+   join erp_supply.customers cu on cu.id=c.customer_id
+   where c.organization_id='42000000-0000-0000-0000-000000000001'
+     and cu.normalized_document='NIT5'),
+  7::bigint,
+  'draft and cancelled orders do not increase valid order count'
+);
+
+select is(
+  (select c.paid_amount
+   from erp_supply.customer_intelligence_current c
+   join erp_supply.customers cu on cu.id=c.customer_id
+   where c.organization_id='42000000-0000-0000-0000-000000000001'
+     and cu.normalized_document='NIT5'),
+  3500000::numeric,
+  'invoices attached to draft and cancelled orders do not inflate paid amount'
+);
+
+select is(
+  (select c.paid_amount
+   from erp_supply.customer_intelligence_current c
+   join erp_supply.customers cu on cu.id=c.customer_id
+   where c.organization_id='42000000-0000-0000-0000-000000000001'
+     and cu.normalized_document='NIT3'),
+  460000::numeric,
+  'registered invoices plus net partial reversal define paid amount'
+);
+
+select ok(
+  (select c.provisional
+   from erp_supply.customer_intelligence_current c
+   join erp_supply.customers cu on cu.id=c.customer_id
+   where c.organization_id='42000000-0000-0000-0000-000000000001'
+     and cu.normalized_document='9001234'),
+  'customer with only two observations remains provisional'
+);
+
+select is(
+  (select c.paid_amount
+   from erp_supply.customer_intelligence_current c
+   join erp_supply.customers cu on cu.id=c.customer_id
+   where c.organization_id='42000000-0000-0000-0000-000000000001'
+     and cu.normalized_document='9001234'),
+  0::numeric,
+  'customer without registered invoices has zero paid value'
+);
+
+select ok(
+  jsonb_array_length(public.erp_x_customer_intelligence_pareto()->'ordersSeries') > 0
+  and jsonb_array_length(public.erp_x_customer_intelligence_pareto()->'paidSeries') > 0,
+  'Pareto returns independent order and paid series'
 );
 
 select is(
@@ -237,6 +332,14 @@ select ok(
     where schemaname='erp_supply' and indexname='idx_invoices_customer_intelligence'
   ),
   'invoice intelligence index exists'
+);
+
+select ok(
+  exists(
+    select 1 from pg_indexes
+    where schemaname='erp_supply' and indexname='idx_customer_intelligence_run_fingerprint'
+  ),
+  'dataset fingerprint lookup index exists'
 );
 
 select * from finish();
