@@ -32,6 +32,7 @@ insert into erp_supply.modules(code,name,description,icon,sort_order,active) val
 ('cutting','Corte','Colas de corte, chipas y desperdicio','scissors',100,true),
 ('billing','Facturación','Facturas, soportes y liberación','receipt-text',110,true),
 ('shipping','Despachos','Rutas locales, nacionales y recogidas','truck',120,true),
+('freight','Inteligencia de fletes','Predicción explicable, histórico y aprendizaje de costos','route',125,true),
 ('inventory','Inventario','Existencias, lotes, ubicaciones y movimientos','boxes',130,true),
 ('workforce','Mi jornada y actividades','Actividades, planificación y evidencias','timer',135,true),
 ('approvals','Aprobaciones','Excepciones, cancelaciones y reaperturas','shield-check',140,true),
@@ -64,7 +65,14 @@ insert into erp_supply.role_module_permissions(
 ('lider_logistica','orders',true,false,true,true,false),
 ('recepcion_mercancia','orders',true,false,false,false,false),
 ('ventas','orders',true,true,true,false,false),
-('ventas','sales',true,true,true,false,false)
+('ventas','sales',true,true,true,false,false),
+('ventas','freight',true,true,false,false,false),
+('auditoria','freight',true,false,false,false,false),
+('aux_logistica','freight',true,true,false,false,false),
+('coordinador_logistico','freight',true,true,true,false,false),
+('lider_logistica','freight',true,true,true,false,false),
+('jefe_logistica','freight',true,true,true,true,false),
+('gerencia','freight',true,true,false,true,false)
 on conflict (role_code,module_code) do nothing;
 
 insert into erp_supply.role_module_permissions(
