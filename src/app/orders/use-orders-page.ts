@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createBrowserApplication } from '@/composition/browser-application';
+import {
+  createBrowserApplication,
+  type BrowserApplication,
+} from '@/composition/browser-application';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type {
   CreateOrderInput,
@@ -18,6 +21,19 @@ const initialFilters: OrdersFilterValues = {
   route: '',
 };
 
+async function loadInitialWorkspace(application: BrowserApplication) {
+  const context = await application.auth.restoreContext();
+  if (!context) return null;
+
+  const firstPage = await application.orders.list({
+    page: 1,
+    pageSize: 50,
+    includeHistory: true,
+  });
+
+  return { context, items: firstPage.items };
+}
+
 export function useOrdersPage() {
   const router = useRouter();
   const application = useMemo(() => createBrowserApplication(), []);
@@ -29,34 +45,27 @@ export function useOrdersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
 
-  const loadOrders = useCallback(
-    async (nextFilters: OrdersFilterValues) => {
-      if (!application) return;
-      setLoading(true);
-      setMessage(null);
-      try {
-        const response = await application.orders.list({
-          ...nextFilters,
-          page: 1,
-          pageSize: 50,
-          includeHistory: true,
-        });
-        setItems(response.items);
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible cargar los pedidos.');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [application],
-  );
+  const loadOrders = useCallback(async (nextFilters: OrdersFilterValues) => {
+    if (!application) return;
+    setLoading(true);
+    setMessage(null);
+    try {
+      const response = await application.orders.list({
+        ...nextFilters,
+        page: 1,
+        pageSize: 50,
+        includeHistory: true,
+      });
+      setItems(response.items);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No fue posible cargar los pedidos.');
+    } finally {
+      setLoading(false);
+    }
+  }, [application]);
 
   useEffect(() => {
-    if (!application) {
-      setMessage('Este entorno no tiene un backend de staging configurado.');
-      setLoading(false);
-      return;
-    }
+    if (!application) return;
 
     const app = application;
     let active = true;
@@ -64,34 +73,24 @@ export function useOrdersPage() {
       if (event.type === 'signed_out') router.replace('/login');
     });
 
-    async function boot() {
-      try {
-        const nextContext = await app.auth.restoreContext();
-        if (!nextContext) {
+    void loadInitialWorkspace(app)
+      .then((workspace) => {
+        if (!active) return;
+        if (!workspace) {
           router.replace('/login');
           return;
         }
-
-        const firstPage = await app.orders.list({
-          page: 1,
-          pageSize: 50,
-          includeHistory: true,
-        });
-
-        if (active) {
-          setContext(nextContext);
-          setItems(firstPage.items);
-        }
-      } catch (error) {
+        setContext(workspace.context);
+        setItems(workspace.items);
+      })
+      .catch((error) => {
         if (active) {
           setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
         }
-      } finally {
+      })
+      .finally(() => {
         if (active) setLoading(false);
-      }
-    }
-
-    void boot();
+      });
 
     return () => {
       active = false;
@@ -121,13 +120,15 @@ export function useOrdersPage() {
     router.replace('/login');
   }
 
+  const unavailable = !application;
+
   return {
     context,
     items,
     filters,
-    loading,
+    loading: unavailable ? false : loading,
     creating,
-    message,
+    message: unavailable ? 'Este entorno no tiene un backend de staging configurado.' : message,
     detail,
     setFilters,
     setCreating,
