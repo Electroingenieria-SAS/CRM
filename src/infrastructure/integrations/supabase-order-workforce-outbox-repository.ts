@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
+  orderWorkforceBindingSchema,
   orderWorkforceHealthResponseSchema,
   orderWorkforcePendingResponseSchema,
   outboxClaimResponseSchema,
@@ -24,6 +25,14 @@ export class SupabaseOrderWorkforceOutboxRepository implements OrderWorkforceOut
     const { data, error } = await this.client.rpc('erp_x_order_workforce_health');
     if (error) throw mapError(error);
     return orderWorkforceHealthResponseSchema.parse(data);
+  }
+
+  async binding(orderTaskId: string) {
+    const { data, error } = await this.client.rpc('erp_x_order_workforce_binding', {
+      p_order_task_id: orderTaskId,
+    });
+    if (error) throw mapError(error);
+    return orderWorkforceBindingSchema.parse(data);
   }
 
   async listPending(orderId?: string, limit = 20) {
