@@ -16,11 +16,34 @@ function password() {
 }
 
 async function login(page: Page, email: string, userPassword = password()) {
+  const browserErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(`console: ${message.text()}`);
+  });
+  page.on('requestfailed', (request) => {
+    browserErrors.push(
+      `request: ${request.method()} ${request.url()} · ${request.failure()?.errorText ?? 'failed'}`,
+    );
+  });
+
   await page.goto('/login');
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(userPassword);
   await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page).toHaveURL(/\/orders\/?$/);
+
+  try {
+    await expect(page).toHaveURL(/\/orders\/?$/);
+  } catch (error) {
+    const feedback = await page.locator('[role="status"], [role="alert"]').allTextContents();
+    throw new Error(
+      [
+        error instanceof Error ? error.message : 'Login did not navigate to orders.',
+        `UI feedback: ${feedback.join(' | ') || 'none'}`,
+        `Browser failures: ${browserErrors.join(' | ') || 'none'}`,
+      ].join('\n'),
+    );
+  }
+
   await expect(
     page.getByRole('heading', { level: 1, name: 'Control integral de pedidos' }),
   ).toBeVisible();
