@@ -38,6 +38,7 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
   const [assignee, setAssignee] = useState(props.detail.activity.assigneeProfileId);
   const [reason, setReason] = useState('');
   const [result, setResult] = useState('');
+  const [cancelReason, setCancelReason] = useState('');
   const options = evidenceOptions(props.detail.activity.evidencePolicy);
   const [evidenceType, setEvidenceType] = useState<(typeof options)[number][0]>(options[0][0]);
 
@@ -145,17 +146,23 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
           ) : null}
 
           {!['COMPLETED', 'CANCELLED'].includes(activity.status) ? (
-            <button
-              type="button"
-              className={styles.danger}
-              disabled={props.busy}
-              onClick={() => {
-                const cancellation = window.prompt('Motivo de cancelación');
-                if (cancellation?.trim()) void props.onCancel(cancellation);
-              }}
-            >
-              Cancelar actividad
-            </button>
+            <>
+              <label className={styles.cancelField}>
+                Motivo de cancelación
+                <input
+                  value={cancelReason}
+                  onChange={(event) => setCancelReason(event.target.value)}
+                />
+              </label>
+              <button
+                type="button"
+                className={styles.danger}
+                disabled={props.busy || !cancelReason.trim()}
+                onClick={() => void props.onCancel(cancelReason)}
+              >
+                Cancelar actividad
+              </button>
+            </>
           ) : null}
         </section>
 
