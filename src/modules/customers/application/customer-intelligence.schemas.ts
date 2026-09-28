@@ -9,6 +9,7 @@ export const customerIntelligenceRowSchema = z.object({
   customerDocument: z.string().nullable(),
   identityKind: z.enum(['DOCUMENT', 'PROVISIONAL_ORDER']),
   validOrderCount: z.coerce.number().int().nonnegative(),
+  observationCount: z.coerce.number().int().nonnegative(),
   paidAmount: z.coerce.number().nonnegative(),
   orderRank: z.coerce.number().int().positive(),
   paidRank: z.coerce.number().int().positive(),
