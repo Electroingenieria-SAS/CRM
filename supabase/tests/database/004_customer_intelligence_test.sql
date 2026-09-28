@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(33);
+select plan(39);
 
 select has_table('erp_supply','customers','stable customer identity table exists');
 select has_table('erp_supply','invoices','invoice payment ledger exists');
@@ -142,6 +142,30 @@ select is(
   'same textual name without document is not merged'
 );
 
+create temporary table ci_identity_before as
+select id order_id,customer_id
+from erp_supply.orders
+where order_number='CI-NODOC-A';
+
+update erp_supply.orders
+set client_document='901.555-1'
+where order_number='CI-NODOC-A';
+
+select is(
+  (select o.customer_id
+   from erp_supply.orders o
+   where o.order_number='CI-NODOC-A'),
+  (select b.customer_id from ci_identity_before b),
+  'provisional customer keeps the same id when a stable document arrives'
+);
+
+select is(
+  (select c.identity_kind
+   from erp_supply.customers c
+   where c.id=(select b.customer_id from ci_identity_before b)),
+  'DOCUMENT',
+  'provisional identity is promoted to document identity'
+);
 
 insert into erp_supply.invoices(
   organization_id,order_id,invoice_number,amount,reversed_amount,status,
@@ -273,6 +297,76 @@ select ok(
   (select count(*) from erp_supply.customer_intelligence_history
    where organization_id='42000000-0000-0000-0000-000000000001') > 0,
   'initial segment history is preserved'
+);
+
+create temporary table ci_nit1_before as
+select c.customer_id,c.segment
+from erp_supply.customer_intelligence_current c
+join erp_supply.customers cu on cu.id=c.customer_id
+where c.organization_id='42000000-0000-0000-0000-000000000001'
+  and cu.normalized_document='NIT1';
+
+reset role;
+
+insert into erp_supply.orders(
+  organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
+  client_name,client_document,client_city,client_address,seller_profile_id,current_step_code,
+  status,priority,source,is_test,created_at,updated_at
+)
+select
+  '42000000-0000-0000-0000-000000000001',
+  'CI-EVOLVE-'||g,'PVC','CASH','LOCAL_DISPATCH',
+  'Cliente Test 1','NIT-1','Cali','Calle Test',
+  '43000000-0000-0000-0000-000000000002',
+  'CLOSED','CLOSED','MEDIUM','ERP',false,
+  now()+g*interval '1 second',now()
+from generate_series(1,20) g;
+
+insert into erp_supply.invoices(
+  organization_id,order_id,invoice_number,amount,status,registered_by
+)
+select o.organization_id,o.id,'FAC-'||o.order_number,1000000,'REGISTERED',
+       '43000000-0000-0000-0000-000000000002'
+from erp_supply.orders o
+where o.order_number like 'CI-EVOLVE-%';
+
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"41000000-0000-0000-0000-000000000001","role":"authenticated","email":"ci-admin@example.test"}',
+  true
+);
+set local role authenticated;
+
+select is(
+  (public.erp_x_customer_intelligence_recalculate()->>'reused')::boolean,
+  false,
+  'changed orders and invoices create a new calculation'
+);
+
+select is(
+  (select count(*) from erp_supply.customer_intelligence_runs
+   where organization_id='42000000-0000-0000-0000-000000000001' and status='COMPLETED'),
+  2::bigint,
+  'changed dataset creates a second completed run'
+);
+
+select ok(
+  (select c.segment
+   from erp_supply.customer_intelligence_current c
+   join erp_supply.customers cu on cu.id=c.customer_id
+   where c.organization_id='42000000-0000-0000-0000-000000000001'
+     and cu.normalized_document='NIT1')
+  is distinct from
+  (select b.segment from ci_nit1_before b),
+  'segment evolves automatically after new orders and registered invoices'
+);
+
+select ok(
+  (select count(*)
+   from erp_supply.customer_intelligence_history h
+   where h.organization_id='42000000-0000-0000-0000-000000000001'
+     and h.customer_id=(select b.customer_id from ci_nit1_before b)) >= 2,
+  'segment evolution is preserved in history'
 );
 
 reset role;
