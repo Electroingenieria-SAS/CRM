@@ -163,8 +163,8 @@ begin
   normalized as (
     select
       b.*,
-      dense_rank() over(order by b.valid_order_count desc,b.customer_id)::integer order_rank,
-      dense_rank() over(order by b.paid_amount desc,b.customer_id)::integer paid_rank,
+      dense_rank() over(order by b.valid_order_count desc)::integer order_rank,
+      dense_rank() over(order by b.paid_amount desc)::integer paid_rank,
       case
         when count(*) over()=1 then 0.5
         else percent_rank() over(order by b.valid_order_count)::numeric
@@ -190,7 +190,7 @@ begin
   scored as (
     select
       s.*,
-      dense_rank() over(order by s.score desc,s.paid_amount desc,s.valid_order_count desc,s.customer_id)::integer overall_rank,
+      dense_rank() over(order by s.score desc,s.paid_amount desc,s.valid_order_count desc)::integer overall_rank,
       case
         when count(*) over()=1 then 50::numeric
         else round(100*percent_rank() over(order by s.score),2)
@@ -202,12 +202,12 @@ begin
         then round(100*s.paid_amount/s.total_paid,3)::numeric
         else 0::numeric end paid_share_pct,
       round(100*sum(s.valid_order_count) over(
-        order by s.valid_order_count desc,s.customer_id
+        order by s.score desc,s.paid_amount desc,s.valid_order_count desc,s.customer_id
         rows between unbounded preceding and current row
       )::numeric/nullif(s.sample_orders,0),3)::numeric cumulative_orders_pct,
       case when s.total_paid>0
         then round(100*sum(s.paid_amount) over(
-          order by s.paid_amount desc,s.customer_id
+          order by s.score desc,s.paid_amount desc,s.valid_order_count desc,s.customer_id
           rows between unbounded preceding and current row
         )/s.total_paid,3)::numeric
         else 0::numeric end cumulative_paid_pct
@@ -276,8 +276,8 @@ begin
   normalized as (
     select
       b.*,
-      dense_rank() over(order by b.valid_order_count desc,b.customer_id)::integer order_rank,
-      dense_rank() over(order by b.paid_amount desc,b.customer_id)::integer paid_rank,
+      dense_rank() over(order by b.valid_order_count desc)::integer order_rank,
+      dense_rank() over(order by b.paid_amount desc)::integer paid_rank,
       case when count(*) over()=1 then 0.5
         else percent_rank() over(order by b.valid_order_count)::numeric end frequency_norm,
       case when count(*) over()=1 then 0.5
@@ -297,7 +297,7 @@ begin
   scored as (
     select
       s.*,
-      dense_rank() over(order by s.score desc,s.paid_amount desc,s.valid_order_count desc,s.customer_id)::integer overall_rank,
+      dense_rank() over(order by s.score desc,s.paid_amount desc,s.valid_order_count desc)::integer overall_rank,
       case when count(*) over()=1 then 50::numeric
         else round(100*percent_rank() over(order by s.score),2) end percentile,
       round(100*s.frequency_norm,2)::numeric frequency_percentile,
@@ -305,11 +305,11 @@ begin
       round(100*s.valid_order_count::numeric/nullif(s.sample_orders,0),3)::numeric order_share_pct,
       case when s.total_paid>0 then round(100*s.paid_amount/s.total_paid,3)::numeric else 0::numeric end paid_share_pct,
       round(100*sum(s.valid_order_count) over(
-        order by s.valid_order_count desc,s.customer_id
+        order by s.score desc,s.paid_amount desc,s.valid_order_count desc,s.customer_id
         rows between unbounded preceding and current row
       )::numeric/nullif(s.sample_orders,0),3)::numeric cumulative_orders_pct,
       case when s.total_paid>0 then round(100*sum(s.paid_amount) over(
-        order by s.paid_amount desc,s.customer_id
+        order by s.score desc,s.paid_amount desc,s.valid_order_count desc,s.customer_id
         rows between unbounded preceding and current row
       )/s.total_paid,3)::numeric else 0::numeric end cumulative_paid_pct
     from scored0 s
