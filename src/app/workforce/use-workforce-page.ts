@@ -179,11 +179,16 @@ export function useWorkforcePage() {
     create: async (input: CreateWorkforceActivityInput) => {
       if (!application) return;
       setBusy(true);
+      setMessage(null);
       try {
         await application.workforce.create(input, crypto.randomUUID());
         setCreating(false);
         await reloadCurrent();
         setNotice('Actividad planificada correctamente.');
+      } catch (error) {
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible planificar la actividad.',
+        );
       } finally {
         setBusy(false);
       }
