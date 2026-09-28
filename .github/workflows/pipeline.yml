@@ -113,6 +113,65 @@ jobs:
         if: always()
         run: supabase stop --no-backup
 
+
+  e2e-authenticated:
+    needs: [quality, database]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated Supabase and rebuild schema
+        run: |
+          supabase start
+          supabase db reset
+      - name: Prepare ephemeral QA credentials
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
+          if [ -z "${API_URL:-}" ] || [ -z "${PUBLIC_KEY:-}" ] || [ -z "${DB_URL:-}" ]; then
+            echo "Supabase local status did not expose the required runtime values."
+            exit 1
+          fi
+          E2E_PASSWORD="$(openssl rand -base64 30 | tr -d '\n' | tr '/+' 'Aa')"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "DB_URL=$DB_URL"
+            echo "E2E_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
+      - name: Create synthetic authenticated users
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -v e2e_password="$E2E_PASSWORD"
+          -f supabase/tests/fixtures/authenticated_e2e.sql
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - name: Authenticated orders journeys
+        run: npx playwright test tests/e2e/authenticated-orders.spec.ts
+      - name: Upload authenticated Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: authenticated-playwright-report
+          path: playwright-report/
+          retention-days: 14
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
+
   secret-scan:
     runs-on: ubuntu-latest
     steps:
@@ -152,7 +211,7 @@ jobs:
 
   deploy-pages:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [quality, database, e2e-staging, secret-scan, codeql, supply-chain]
+    needs: [quality, database, e2e-staging, e2e-authenticated, secret-scan, codeql, supply-chain]
     runs-on: ubuntu-latest
     permissions:
       contents: read
