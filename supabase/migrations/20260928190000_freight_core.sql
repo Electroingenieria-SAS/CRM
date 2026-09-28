@@ -322,7 +322,14 @@ immutable
 set search_path = pg_catalog, erp_private
 as $$
   with normalized as (
-    select trim(regexp_replace(erp_private.freight_norm(p_value), '\s+', ' ', 'g')) value
+    select trim(
+      regexp_replace(
+        erp_private.freight_norm(split_part(coalesce(p_value,''),',',1)),
+        '\s+',
+        ' ',
+        'g'
+      )
+    ) value
   )
   select case
     when value in (
@@ -332,6 +339,7 @@ as $$
     when value in ('GUADALAJARA DE BUGA','BUGA') then 'BUGA'
     when value in ('SANTA CRUZ DE LORICA','LORICA') then 'LORICA'
     when value = 'SANTIAGO DE CALI' then 'CALI'
+    when value in ('ARMENIA Q','ARMENIA QUINDIO') then 'ARMENIA'
     when value = 'SAN JOSE DE CUCUTA' then 'CUCUTA'
     when value like 'SAN VICENTE DEL CHUCU%'
       or value like 'SAN VICENTE DE CHUCURI%' then 'SAN VICENTE DE CHUCURI'
