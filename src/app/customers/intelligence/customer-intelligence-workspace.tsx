@@ -58,7 +58,7 @@ export function CustomerIntelligenceWorkspace(props: Props) {
           <p className="eyebrow">Customer Intelligence</p>
           <h1>Ranking y Pareto de clientes</h1>
           <p>
-            Clasificación automática y explicable basada únicamente en cantidad de pedidos y valor
+            Clasificación automática y explicable basada únicamente en volumen de pedidos válidos y valor
             efectivamente pagado mediante facturas registradas.
           </p>
         </div>
