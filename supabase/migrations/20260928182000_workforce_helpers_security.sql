@@ -179,16 +179,17 @@ security definer
 set search_path = pg_catalog, erp_supply, erp_private
 as $$
   select case
+    when a.actual_start is null then 'NORMAL'
     when erp_private.workforce_business_seconds(
       a.organization_id,
-      coalesce(a.actual_start,a.planned_start),
-      coalesce(a.actual_end,case when a.status in('IN_PROGRESS','BLOCKED') then now() else a.planned_end end)
+      a.actual_start,
+      coalesce(a.actual_end,now())
     ) > 3600 then 'OVER_60_MINUTES'
     else 'NORMAL'
   end
   from erp_supply.workforce_activities a
   where a.id=p_activity_id
-$$;
+$;
 
 create or replace function erp_private.workforce_occupancy_status(
   p_profile_id uuid,
