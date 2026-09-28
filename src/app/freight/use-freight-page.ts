@@ -23,14 +23,53 @@ const initialHistoryFilters: FreightHistoryQuery = { page: 1, pageSize: 25 };
 async function loadWorkspace(application: BrowserApplication) {
   const context = await application.auth.restoreContext();
   if (!context) return null;
-
   const [catalog, history, metrics] = await Promise.all([
     application.freight.getCatalog(),
     application.freight.listHistory(initialHistoryFilters),
     application.freight.getMetrics(),
   ]);
-
   return { context, catalog, history, metrics };
+}
+
+interface FreightActionDependencies {
+  application: BrowserApplication | null;
+  historyFilters: FreightHistoryQuery;
+  loadHistory(query: FreightHistoryQuery): Promise<void>;
+  setHistoryFilters(filters: FreightHistoryQuery): void;
+  setResults(results: FreightPredictionResult[]): void;
+  setPredicting(value: boolean): void;
+  setMessage(message: string | null): void;
+  goToLogin(): void;
+}
+
+function createFreightPageActions(deps: FreightActionDependencies) {
+  return {
+    predict: async (input: FreightPredictionInput) => {
+      if (!deps.application) return;
+      deps.setPredicting(true);
+      deps.setMessage(null);
+      try {
+        const response = await deps.application.freight.predict(input);
+        deps.setResults(response.results);
+      } catch (error) {
+        deps.setMessage(error instanceof Error ? error.message : 'No fue posible estimar el flete.');
+      } finally {
+        deps.setPredicting(false);
+      }
+    },
+    searchHistory: () => {
+      void deps.loadHistory({ ...deps.historyFilters, page: 1 });
+    },
+    pageHistory: (page: number) => {
+      const next = { ...deps.historyFilters, page };
+      deps.setHistoryFilters(next);
+      void deps.loadHistory(next);
+    },
+    signOut: async () => {
+      await deps.application?.auth.signOut();
+      deps.goToLogin();
+    },
+  };
 }
 
 export function useFreightPage() {
@@ -46,27 +85,22 @@ export function useFreightPage() {
   const [predicting, setPredicting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const loadHistory = useCallback(
-    async (query: FreightHistoryQuery) => {
-      if (!application) return;
-      setLoading(true);
-      setMessage(null);
-      try {
-        const response = await application.freight.listHistory(query);
-        setHistory(response);
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible consultar el histórico.');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [application],
-  );
+  const loadHistory = useCallback(async (query: FreightHistoryQuery) => {
+    if (!application) return;
+    setLoading(true);
+    setMessage(null);
+    try {
+      setHistory(await application.freight.listHistory(query));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No fue posible consultar el histórico.');
+    } finally {
+      setLoading(false);
+    }
+  }, [application]);
 
   useEffect(() => {
     if (!application) return;
     let active = true;
-
     const unsubscribe = application.auth.onSessionChange((event) => {
       if (event.type === 'signed_out') router.replace('/login');
     });
@@ -74,19 +108,14 @@ export function useFreightPage() {
     void loadWorkspace(application)
       .then((workspace) => {
         if (!active) return;
-        if (!workspace) {
-          router.replace('/login');
-          return;
-        }
+        if (!workspace) return router.replace('/login');
         setContext(workspace.context);
         setCatalog(workspace.catalog);
         setHistory(workspace.history);
         setMetrics(workspace.metrics);
       })
       .catch((error) => {
-        if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Freight Intelligence.');
-        }
+        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible abrir Freight Intelligence.');
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -98,49 +127,23 @@ export function useFreightPage() {
     };
   }, [application, router]);
 
-  async function predict(input: FreightPredictionInput) {
-    if (!application) return;
-    setPredicting(true);
-    setMessage(null);
-    try {
-      const response = await application.freight.predict(input);
-      setResults(response.results);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible estimar el flete.');
-    } finally {
-      setPredicting(false);
-    }
-  }
-
-  function searchHistory() {
-    void loadHistory({ ...historyFilters, page: 1 });
-  }
-
-  function pageHistory(page: number) {
-    const next = { ...historyFilters, page };
-    setHistoryFilters(next);
-    void loadHistory(next);
-  }
-
-  async function signOut() {
-    await application?.auth.signOut();
-    router.replace('/login');
-  }
+  const actions = createFreightPageActions({
+    application,
+    historyFilters,
+    loadHistory,
+    setHistoryFilters,
+    setResults,
+    setPredicting,
+    setMessage,
+    goToLogin: () => router.replace('/login'),
+  });
 
   return {
-    context,
-    catalog,
-    history,
-    metrics,
-    historyFilters,
-    results,
+    context, catalog, history, metrics, historyFilters, results,
     loading: application ? loading : false,
     predicting,
     message: application ? message : 'Este entorno no tiene un backend de staging configurado.',
     setHistoryFilters,
-    predict,
-    searchHistory,
-    pageHistory,
-    signOut,
+    ...actions,
   };
 }
