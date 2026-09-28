@@ -105,6 +105,11 @@
   font-weight: 800;
 }
 
+.monthSpacer {
+  min-height: 155px;
+  border-radius: var(--radius-md);
+}
+
 .monthDay {
   min-height: 155px;
   padding: 0.7rem;
@@ -152,6 +157,10 @@
 
   .monthGrid {
     grid-template-columns: 1fr;
+  }
+
+  .monthSpacer {
+    display: none;
   }
 
   .monthDay {
