@@ -12,14 +12,11 @@ export function useFinanceSession() {
   const router = useRouter();
   const application = useMemo(() => createBrowserApplication(), []);
   const [context, setContext] = useState<SessionContext | null>(null);
-  const [loadingSession, setLoadingSession] = useState(true);
+  const [loadingSession, setLoadingSession] = useState(Boolean(application));
   const [sessionError, setSessionError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!application) {
-      setLoadingSession(false);
-      return;
-    }
+    if (!application) return;
 
     let active = true;
     const unsubscribe = application.auth.onSessionChange((event) => {
