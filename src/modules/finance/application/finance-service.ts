@@ -3,6 +3,7 @@ import type {
   CreateHoldInput,
   FinanceDomain,
   FinanceRepository,
+  FinancialExceptionInput,
   FinancialValidationInput,
   InvoiceInput,
   QueueQuery,
@@ -55,6 +56,25 @@ export class FinanceService {
   releaseHold(holdId: string, reason: string, key: string) {
     if (!reason.trim()) throw new Error('La liberación requiere una razón.');
     return this.repository.releaseHold(holdId, reason.trim(), requiredKey(key));
+  }
+
+  listApprovals(query: QueueQuery = {}) {
+    return this.repository.listApprovals(query);
+  }
+
+  requestException(input: FinancialExceptionInput, key: string) {
+    if (!input.reason.trim()) throw new Error('La excepción requiere una justificación.');
+    return this.repository.requestException(input, requiredKey(key));
+  }
+
+  decideException(
+    approvalId: string,
+    decision: 'APPROVED' | 'REJECTED',
+    reason: string,
+    key: string,
+  ) {
+    if (!reason.trim()) throw new Error('La decisión requiere una justificación.');
+    return this.repository.decideException(approvalId, decision, reason.trim(), requiredKey(key));
   }
 
   registerSupport(orderId: string, invoiceId: string | undefined, input: SupportInput, key: string) {
