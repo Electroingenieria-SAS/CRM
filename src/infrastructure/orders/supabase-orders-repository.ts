@@ -1,9 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   createOrderResponseSchema,
+  orderDetailResponseSchema,
   orderListResponseSchema,
   type CreateOrderInput,
   type CreateOrderResponse,
+  type OrderDetailResponse,
   type OrderListResponse,
 } from '@/modules/orders/application/order.schemas';
 import type {
@@ -19,6 +21,10 @@ function mapRepositoryError(error: { message?: string; code?: string } | null): 
 
   if (error?.code === '23505') {
     return new AppError('BUSINESS_RULE', 'Ya existe un pedido con ese número.');
+  }
+
+  if (error?.code === 'P0002') {
+    return new AppError('BUSINESS_RULE', 'El pedido solicitado no existe o no es visible.');
   }
 
   return new AppError('DATABASE', 'No fue posible completar la operación de pedidos.');
@@ -41,6 +47,15 @@ export class SupabaseOrdersRepository implements OrdersRepository {
 
     if (error) throw mapRepositoryError(error);
     return orderListResponseSchema.parse(data);
+  }
+
+  async get(orderId: string): Promise<OrderDetailResponse> {
+    const { data, error } = await this.client.rpc('erp_x_get_order', {
+      p_order_id: orderId,
+    });
+
+    if (error) throw mapRepositoryError(error);
+    return orderDetailResponseSchema.parse(data);
   }
 
   async create(input: CreateOrderInput, idempotencyKey: string): Promise<CreateOrderResponse> {
