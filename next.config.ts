@@ -3,6 +3,30 @@ import type { NextConfig } from 'next';
 const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 const basePath = isGitHubPages ? '/CRM' : '';
 
+function configuredSupabaseConnectSources(): string[] {
+  const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  if (!configuredUrl) return [];
+
+  try {
+    const url = new URL(configuredUrl);
+    if (!['http:', 'https:'].includes(url.protocol)) return [];
+
+    const sources = [url.origin];
+    const realtimeProtocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+    sources.push(`${realtimeProtocol}//${url.host}`);
+    return sources;
+  } catch {
+    return [];
+  }
+}
+
+const connectSources = [
+  "'self'",
+  'https://*.supabase.co',
+  'wss://*.supabase.co',
+  ...configuredSupabaseConnectSources(),
+];
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -13,7 +37,7 @@ const contentSecurityPolicy = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline'",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  `connect-src ${connectSources.join(' ')}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
 ].join('; ');
