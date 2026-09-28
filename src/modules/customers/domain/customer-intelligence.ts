@@ -79,6 +79,35 @@ export function calculateCustomerScores(
   });
 }
 
+export interface RankedCustomerMetricScore extends CustomerMetricScore {
+  readonly overallRank: number;
+}
+
+export function rankCustomerScores(
+  rows: CustomerMetricInput[],
+  config: CustomerIntelligenceConfig = CUSTOMER_INTELLIGENCE_V1,
+): RankedCustomerMetricScore[] {
+  const ordered = [...calculateCustomerScores(rows, config)].sort(
+    (left, right) =>
+      right.score - left.score ||
+      right.paidAmount - left.paidAmount ||
+      right.orderCount - left.orderCount ||
+      left.customerId.localeCompare(right.customerId),
+  );
+
+  let denseRank = 0;
+  let previousKey = '';
+
+  return ordered.map((row) => {
+    const key = row.score + '|' + row.paidAmount + '|' + row.orderCount;
+    if (key !== previousKey) {
+      denseRank += 1;
+      previousKey = key;
+    }
+    return { ...row, overallRank: denseRank };
+  });
+}
+
 export function orderPriorityForSegment(segment: CustomerSegment) {
   switch (segment) {
     case 'URGENT':
