@@ -1,5 +1,6 @@
 'use client';
 
+import { occupancyLabel } from '@/modules/workforce/domain/workforce-metrics';
 import type {
   WorkforceActivitySummary,
   WorkforcePerson,
@@ -70,7 +71,7 @@ export function WorkforceWeekView({
           <div className={styles.weekRow} role="row" key={person.id}>
             <div className={styles.person} role="rowheader">
               <strong>{person.name}</strong>
-              <span>{person.occupancy}</span>
+              <span>{occupancyLabel(person.occupancy)}</span>
             </div>
             {days.map((day) => {
               const rows = activities.filter(
