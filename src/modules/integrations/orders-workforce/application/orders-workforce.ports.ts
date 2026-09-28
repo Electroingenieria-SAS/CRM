@@ -9,6 +9,7 @@ export interface OrderWorkforceOutboxPort {
   claim(outboxId: string): Promise<{
     readonly idempotent: boolean;
     readonly event?: OrderWorkforceEvent;
+    readonly dedupeKey?: string;
     readonly workforceActivityId?: string | null;
   }>;
   markProcessed(
@@ -23,9 +24,14 @@ export interface OrderWorkforceOutboxPort {
   }>;
 }
 
+export interface WorkforceAutomationKeys {
+  readonly activityKey: string;
+  readonly eventKey: string;
+}
+
 export interface WorkforceAutomationPort {
   applyOrderEvent(
     event: OrderWorkforceEvent,
-    idempotencyKey: string,
+    keys: WorkforceAutomationKeys,
   ): Promise<WorkforceAutomationResult>;
 }
