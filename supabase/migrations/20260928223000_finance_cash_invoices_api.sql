@@ -165,7 +165,6 @@ as $$
 declare
   v_org uuid:=erp_private.current_org_id();
   v_actor uuid:=erp_private.current_profile_id();
-  v_order erp_supply.orders%rowtype;
   v_invoice erp_supply.invoices%rowtype;
   v_number text:=nullif(trim(coalesce(p_payload->>'invoiceNumber','')),'');
   v_amount numeric:=nullif(p_payload->>'amount','')::numeric;
@@ -196,10 +195,8 @@ begin
     );
   end if;
 
-  select * into v_order
-  from erp_supply.orders
-  where id=p_order_id and organization_id=v_org;
-  if not found then raise exception 'Pedido no encontrado' using errcode='22023'; end if;
+  -- Reuse the audited Orders boundary instead of depending on direct Orders RLS.
+  perform public.erp_x_financial_gate(p_order_id);
 
   if v_number is null then raise exception 'Número de factura requerido' using errcode='22023'; end if;
   if v_amount is null or v_amount<=0 then
