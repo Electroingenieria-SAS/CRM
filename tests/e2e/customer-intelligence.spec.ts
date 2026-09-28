@@ -59,6 +59,29 @@ test('customer intelligence main journey is explainable and filterable', async (
   await expect(page.getByText('Cliente Sintético Urgente')).toBeVisible();
 });
 
+test('customer intelligence remains usable at reference widths', async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name !== 'desktop-chromium',
+    'Reference-width sweep runs once; configured projects provide cross-browser/device smoke.',
+  );
+
+  await login(page);
+
+  for (const width of [320, 375, 390, 430, 768, 1024, 1366, 1920]) {
+    await page.setViewportSize({ width, height: width <= 430 ? 760 : 900 });
+    await page.goto('/customers/intelligence');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Ranking y Pareto de clientes' }),
+    ).toBeVisible();
+    await expect(page.getByLabel('Ranking de clientes')).toBeVisible();
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
+    expect(overflow, 'horizontal overflow at ' + width + 'px').toBe(false);
+  }
+});
+
 test('customer intelligence smoke has no accidental horizontal overflow', async ({ page }) => {
   await login(page);
   await page.goto('/customers/intelligence');
