@@ -94,3 +94,23 @@ test('customer intelligence supports all reference viewport widths', async ({ pa
     expect(overflow, 'horizontal overflow at ' + width + 'px').toBe(false);
   }
 });
+
+test('customer intelligence fits all reference responsive widths', async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name !== 'desktop-chromium',
+    'Reference-width matrix runs once; other engines keep the smoke journey.',
+  );
+
+  await login(page);
+
+  for (const width of [320, 375, 390, 430, 768, 1024, 1366, 1920]) {
+    await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
+    await page.goto('/customers/intelligence');
+    await expect(page.getByLabel('Ranking de clientes')).toBeVisible();
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
+    expect(overflow, `unexpected horizontal overflow at ${width}px`).toBe(false);
+  }
+});
