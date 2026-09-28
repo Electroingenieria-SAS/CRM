@@ -29,7 +29,7 @@ export function CustomerRanking({ items, onSelect }: Props) {
   }
 
   return (
-    <div className={styles.ranking} aria-label="Ranking de clientes">
+    <div className={styles.ranking}>
       {items.map((customer) => (
         <button
           key={customer.customerId}
