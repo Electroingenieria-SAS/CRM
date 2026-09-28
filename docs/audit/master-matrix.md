@@ -43,7 +43,6 @@ Corte: 2026-09-28 · baseline fuente `4bdceeaa54847581f83e9425aa0310aae8b0547d`.
 | CUST-004 | P1 | Pago real | El legado permitía valor facturado como fallback. | Inflar ranking con valores no pagados según la nueva regla. | Factura registrada = pago; reversión resta valor; sin fallback a cartera/cotización. | Ledger invoices + ADR-0003. | Implementado |
 | CUST-005 | P1 | Histórico | Sobrescribir segmento impide explicar evolución. | Falta de trazabilidad. | Snapshot actual + historia solo cuando cambia el segmento. | customer_intelligence_history. | Implementado |
 
-
 | FIN-001 | P0 | Payment truth | El legado terminó mezclando validaciones y dinero pagado. | Customer Intelligence o decisiones pueden inflar pagos. | Factura registrada neta de reversos es la única fuente monetaria; `financial_validations` no tiene `amount`. | `docs/finance/financial-domain.md`, pgTAP 020/021, ADR-0004. | Implementado |
 | FIN-002 | P0 | Segregación | Solicitante y aprobador no deben coincidir en excepciones. | Autoaprobación de excepciones financieras. | Constraint + RPC guard; aplica también a `super_admin`. | pgTAP 021 + E2E financiero. | Implementado |
 | FIN-003 | P0 | Concurrencia | Retries o decisiones simultáneas pueden duplicar dinero/estado. | Doble factura, doble decisión o soporte inconsistente. | Idempotency key + índice único + advisory transaction lock + row locks. | `tests/integration/finance-concurrency.mjs`. | Implementado |

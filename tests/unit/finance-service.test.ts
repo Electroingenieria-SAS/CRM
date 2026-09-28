@@ -91,20 +91,11 @@ describe('finance service', () => {
     const service = new FinanceService(repository());
 
     expect(() =>
-      service.releaseHold(
-        '66666666-6666-4666-8666-666666666666',
-        ' ',
-        'release-1',
-      ),
+      service.releaseHold('66666666-6666-4666-8666-666666666666', ' ', 'release-1'),
     ).toThrow('La liberación requiere una razón.');
 
     expect(() =>
-      service.reverseInvoice(
-        '77777777-7777-4777-8777-777777777777',
-        100,
-        '',
-        'reverse-1',
-      ),
+      service.reverseInvoice('77777777-7777-4777-8777-777777777777', 100, '', 'reverse-1'),
     ).toThrow('El reverso requiere una razón.');
   });
 

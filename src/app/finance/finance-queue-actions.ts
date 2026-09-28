@@ -29,10 +29,7 @@ function decisionActions(
   state: FinanceQueueActionState,
 ) {
   return {
-    validate: async (
-      result: 'APPROVED' | 'REJECTED' | 'REQUIRES_REVIEW',
-      reason: string,
-    ) => {
+    validate: async (result: 'APPROVED' | 'REJECTED' | 'REQUIRES_REVIEW', reason: string) => {
       if (!state.selected) return;
       await application.finance.validateOrder(
         { orderId: state.selected.orderId, type: domain, result, reason },

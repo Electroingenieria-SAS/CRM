@@ -48,7 +48,9 @@ const { data: created, error: createError } = await seller.rpc('erp_x_create_ord
 });
 
 if (createError || !created?.orderId) {
-  throw new Error('Could not create finance concurrency order: ' + (createError?.message ?? 'missing id'));
+  throw new Error(
+    'Could not create finance concurrency order: ' + (createError?.message ?? 'missing id'),
+  );
 }
 
 const invoiceKey = 'invoice-' + orderNumber;
@@ -84,9 +86,7 @@ const { data: summary, error: summaryError } = await adminA.rpc('erp_x_finance_o
 });
 if (summaryError) throw summaryError;
 if (summary.invoices?.length !== 1 || Number(summary.paidAmount) !== 125000.01) {
-  throw new Error(
-    'Invoice concurrency/rounding invariant failed: ' + JSON.stringify(summary),
-  );
+  throw new Error('Invoice concurrency/rounding invariant failed: ' + JSON.stringify(summary));
 }
 
 const supportKey = 'support-' + orderNumber;
@@ -101,7 +101,9 @@ const { data: support, error: supportError } = await cajaA.rpc('erp_x_finance_ad
   p_idempotency_key: supportKey,
 });
 if (supportError || !support?.supportId) {
-  throw new Error('Could not create concurrent support fixture: ' + (supportError?.message ?? 'missing id'));
+  throw new Error(
+    'Could not create concurrent support fixture: ' + (supportError?.message ?? 'missing id'),
+  );
 }
 
 const [supportA, supportB] = await Promise.all([
@@ -150,7 +152,9 @@ const { data: credit, error: creditError } = await seller.rpc(
   },
 );
 if (creditError || !credit?.requestId) {
-  throw new Error('Could not create credit concurrency fixture: ' + (creditError?.message ?? 'missing id'));
+  throw new Error(
+    'Could not create credit concurrency fixture: ' + (creditError?.message ?? 'missing id'),
+  );
 }
 
 const [creditA, creditB] = await Promise.all([

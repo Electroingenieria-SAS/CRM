@@ -23,7 +23,10 @@ import { AppError } from '@/shared/errors/app-error';
 
 function mapFinanceError(error: { code?: string; message?: string } | null) {
   if (error?.code === '42501') {
-    return new AppError('AUTHORIZATION', error.message ?? 'No tienes permisos para esta operación financiera.');
+    return new AppError(
+      'AUTHORIZATION',
+      error.message ?? 'No tienes permisos para esta operación financiera.',
+    );
   }
   if (error?.code === '22023' || error?.code === '23514') {
     return new AppError('VALIDATION', error.message ?? 'Los datos financieros no son válidos.');
@@ -32,13 +35,17 @@ function mapFinanceError(error: { code?: string; message?: string } | null) {
     return new AppError('BUSINESS_RULE', 'La operación financiera ya existe o fue procesada.');
   }
   if (error?.code === '40001') {
-    return new AppError('BUSINESS_RULE', 'La información cambió mientras estaba abierta. Actualiza e inténtalo de nuevo.');
+    return new AppError(
+      'BUSINESS_RULE',
+      'La información cambió mientras estaba abierta. Actualiza e inténtalo de nuevo.',
+    );
   }
   return new AppError('DATABASE', 'No fue posible completar la operación financiera.');
 }
 
 function identifier(data: unknown, field: string) {
-  if (!data || typeof data !== 'object') throw new AppError('DATABASE', 'Respuesta financiera inválida.');
+  if (!data || typeof data !== 'object')
+    throw new AppError('DATABASE', 'Respuesta financiera inválida.');
   const value = (data as Record<string, unknown>)[field];
   if (typeof value !== 'string') throw new AppError('DATABASE', 'Respuesta financiera incompleta.');
   return value;
@@ -83,7 +90,12 @@ export class SupabaseFinanceRepository implements FinanceRepository {
     if (error) throw mapFinanceError(error);
   }
 
-  async decideCredit(requestId: string, decision: 'APPROVED' | 'REJECTED', reason: string, key: string) {
+  async decideCredit(
+    requestId: string,
+    decision: 'APPROVED' | 'REJECTED',
+    reason: string,
+    key: string,
+  ) {
     const { error } = await this.client.rpc('erp_x_finance_decide_credit_request', {
       p_request_id: requestId,
       p_decision: decision,
@@ -164,7 +176,12 @@ export class SupabaseFinanceRepository implements FinanceRepository {
     return identifier(data, 'approvalId');
   }
 
-  async decideException(approvalId: string, decision: 'APPROVED' | 'REJECTED', reason: string, key: string) {
+  async decideException(
+    approvalId: string,
+    decision: 'APPROVED' | 'REJECTED',
+    reason: string,
+    key: string,
+  ) {
     const { error } = await this.client.rpc('erp_x_finance_decide_exception', {
       p_approval_id: approvalId,
       p_decision: decision,
@@ -174,7 +191,12 @@ export class SupabaseFinanceRepository implements FinanceRepository {
     if (error) throw mapFinanceError(error);
   }
 
-  async registerSupport(orderId: string, invoiceId: string | undefined, input: SupportInput, key: string) {
+  async registerSupport(
+    orderId: string,
+    invoiceId: string | undefined,
+    input: SupportInput,
+    key: string,
+  ) {
     const { data, error } = await this.client.rpc('erp_x_finance_add_support', {
       p_order_id: orderId,
       p_invoice_id: invoiceId ?? null,
@@ -185,7 +207,12 @@ export class SupabaseFinanceRepository implements FinanceRepository {
     return identifier(data, 'supportId');
   }
 
-  async validateSupport(supportId: string, decision: 'VALIDATED' | 'REJECTED', reason: string, key: string) {
+  async validateSupport(
+    supportId: string,
+    decision: 'VALIDATED' | 'REJECTED',
+    reason: string,
+    key: string,
+  ) {
     const { error } = await this.client.rpc('erp_x_finance_validate_support', {
       p_support_id: supportId,
       p_decision: decision,
@@ -225,7 +252,9 @@ export class SupabaseFinanceRepository implements FinanceRepository {
   }
 
   async orderSummary(orderId: string) {
-    const { data, error } = await this.client.rpc('erp_x_finance_order_summary', { p_order_id: orderId });
+    const { data, error } = await this.client.rpc('erp_x_finance_order_summary', {
+      p_order_id: orderId,
+    });
     if (error) throw mapFinanceError(error);
     return orderFinancialSummarySchema.parse(data);
   }
@@ -237,7 +266,9 @@ export class SupabaseFinanceRepository implements FinanceRepository {
   }
 
   async customerPaid(customerId: string) {
-    const { data, error } = await this.client.rpc('erp_x_finance_customer_paid', { p_customer_id: customerId });
+    const { data, error } = await this.client.rpc('erp_x_finance_customer_paid', {
+      p_customer_id: customerId,
+    });
     if (error) throw mapFinanceError(error);
     return customerPaidProjectionSchema.parse(data);
   }

@@ -52,8 +52,16 @@ export function CreditWorkspace(props: CreditWorkspaceProps) {
           </div>
         </header>
 
-        {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
-        {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
+        {props.message ? (
+          <p className={styles.error} role="alert">
+            {props.message}
+          </p>
+        ) : null}
+        {props.notice ? (
+          <p className={styles.notice} role="status">
+            {props.notice}
+          </p>
+        ) : null}
 
         {canCreate ? (
           <CreditRequestForm
@@ -91,7 +99,9 @@ export function CreditWorkspace(props: CreditWorkspaceProps) {
               <option value="APPROVED">Aprobadas</option>
               <option value="REJECTED">Rechazadas</option>
             </select>
-            <button type="button" onClick={() => props.onSearch(props.query)}>Buscar</button>
+            <button type="button" onClick={() => props.onSearch(props.query)}>
+              Buscar
+            </button>
           </div>
           <CreditQueueTable
             queue={props.queue}

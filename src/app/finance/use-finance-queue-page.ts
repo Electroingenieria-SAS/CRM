@@ -6,10 +6,7 @@ import type {
   FinanceQueueItem,
   OrderFinancialSummary,
 } from '@/modules/finance/application/finance.schemas';
-import type {
-  FinanceDomain,
-  QueueQuery,
-} from '@/modules/finance/ports/finance-repository';
+import type { FinanceDomain, QueueQuery } from '@/modules/finance/ports/finance-repository';
 import { useFinanceSession } from '@/app/finance/use-finance-session';
 import { createFinanceQueueActions } from './finance-queue-actions';
 
@@ -25,32 +22,38 @@ export function useFinanceQueuePage(domain: FinanceDomain) {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const load = useCallback(async (next: QueueQuery) => {
-    if (!session.application) return;
-    setBusy(true);
-    setMessage(null);
-    try {
-      setQueue(await session.application.finance.listQueue(domain, next));
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible consultar la cola.');
-    } finally {
-      setBusy(false);
-    }
-  }, [domain, session.application]);
+  const load = useCallback(
+    async (next: QueueQuery) => {
+      if (!session.application) return;
+      setBusy(true);
+      setMessage(null);
+      try {
+        setQueue(await session.application.finance.listQueue(domain, next));
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible consultar la cola.');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [domain, session.application],
+  );
 
-  const select = useCallback(async (orderId: string) => {
-    if (!session.application) return;
-    setBusy(true);
-    try {
-      const detail = await session.application.finance.orderSummary(orderId);
-      setSummary(detail);
-      setSelected((current) => current?.orderId === orderId ? current : null);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible consultar el pedido.');
-    } finally {
-      setBusy(false);
-    }
-  }, [session.application]);
+  const select = useCallback(
+    async (orderId: string) => {
+      if (!session.application) return;
+      setBusy(true);
+      try {
+        const detail = await session.application.finance.orderSummary(orderId);
+        setSummary(detail);
+        setSelected((current) => (current?.orderId === orderId ? current : null));
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible consultar el pedido.');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [session.application],
+  );
 
   useEffect(() => {
     if (!session.context) return;

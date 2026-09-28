@@ -6,9 +6,7 @@ export function financeNavigation(
   context: SessionContext,
   current: 'credit' | 'cartera' | 'caja' | 'approvals',
 ): AppShellNavigationItem[] {
-  const items: AppShellNavigationItem[] = [
-    { href: '/orders', label: 'Pedidos' },
-  ];
+  const items: AppShellNavigationItem[] = [{ href: '/orders', label: 'Pedidos' }];
 
   if (hasModuleCapability(context, 'credit', 'read')) {
     items.push({ href: '/finance/credit', label: 'Crédito', current: current === 'credit' });

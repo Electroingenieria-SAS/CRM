@@ -72,7 +72,9 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   await expect(creditRow).toBeVisible();
   await creditRow.getByRole('button', { name: 'Tomar' }).click();
   const reviewedRow = page.getByRole('row').filter({ hasText: 'Cliente Crédito E2E' });
-  await reviewedRow.getByLabel('Justificación').fill('Crédito revisado con información disponible.');
+  await reviewedRow
+    .getByLabel('Justificación')
+    .fill('Crédito revisado con información disponible.');
   await reviewedRow.getByRole('button', { name: 'Aprobar' }).click();
   await expect(reviewedRow).toContainText('APPROVED');
 
@@ -82,11 +84,15 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   const carteraRow = page.getByRole('row').filter({ hasText: 'FIN-E2E-CARTERA' });
   await carteraRow.getByRole('button', { name: 'Revisar' }).click();
   await expect(page.getByRole('heading', { name: 'Resumen financiero' })).toBeVisible();
-  await page.getByLabel('Razón / contexto').fill('Mora reportada externamente; requiere excepción.');
+  await page
+    .getByLabel('Razón / contexto')
+    .fill('Mora reportada externamente; requiere excepción.');
   await page.getByLabel('Exigir aprobación independiente para liberar').check();
   await page.getByRole('button', { name: 'Retener pedido' }).click();
   await expect(page.getByRole('status')).toContainText('Pedido retenido');
-  await page.getByLabel('Razón / contexto').fill('Solicito liberación con autorización de Gerencia.');
+  await page
+    .getByLabel('Razón / contexto')
+    .fill('Solicito liberación con autorización de Gerencia.');
   await page.getByRole('button', { name: 'Solicitar excepción' }).click();
   await expect(page.getByRole('status')).toContainText('Excepción enviada');
   await logout(page);
@@ -104,7 +110,11 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   await page.getByRole('link', { name: 'Cartera' }).click();
   await page.getByLabel('Buscar en Cartera').fill('FIN-E2E-CARTERA');
   await page.getByRole('button', { name: 'Buscar' }).click();
-  await page.getByRole('row').filter({ hasText: 'FIN-E2E-CARTERA' }).getByRole('button', { name: 'Revisar' }).click();
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'FIN-E2E-CARTERA' })
+    .getByRole('button', { name: 'Revisar' })
+    .click();
   await page.getByLabel('Razón / contexto').fill('Liberación aprobada por Gerencia.');
   await page.getByRole('button', { name: 'Liberar con trazabilidad' }).click();
   await expect(page.getByRole('status')).toContainText('Retención liberada');
@@ -114,7 +124,11 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   await page.getByRole('link', { name: 'Caja' }).click();
   await page.getByLabel('Buscar en Caja').fill('FIN-E2E-CAJA');
   await page.getByRole('button', { name: 'Buscar' }).click();
-  await page.getByRole('row').filter({ hasText: 'FIN-E2E-CAJA' }).getByRole('button', { name: 'Revisar' }).click();
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'FIN-E2E-CAJA' })
+    .getByRole('button', { name: 'Revisar' })
+    .click();
   await page.getByLabel('Referencia del soporte').fill('qa://finance/support-e2e');
   await page.getByRole('button', { name: 'Registrar soporte' }).click();
   await expect(page.getByRole('status')).toContainText('Soporte financiero referenciado');
@@ -128,7 +142,10 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
 });
 
 test('auditor can inspect finance but cannot mutate', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'desktop-chromium', 'Read-only authorization scenario runs once.');
+  test.skip(
+    testInfo.project.name !== 'desktop-chromium',
+    'Read-only authorization scenario runs once.',
+  );
 
   await login(page, auditorEmail);
   await page.goto('/finance/cash');

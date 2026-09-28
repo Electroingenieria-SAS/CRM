@@ -11,7 +11,11 @@ export function CreditPageClient() {
       <main id="main-content" className="centered-page">
         <section className="surface" aria-live="polite">
           <p className="eyebrow">Finanzas</p>
-          <h1>{page.loadingSession || page.busy ? 'Cargando Crédito…' : 'No fue posible abrir Crédito'}</h1>
+          <h1>
+            {page.loadingSession || page.busy
+              ? 'Cargando Crédito…'
+              : 'No fue posible abrir Crédito'}
+          </h1>
           {page.message ? <p role="alert">{page.message}</p> : null}
         </section>
       </main>

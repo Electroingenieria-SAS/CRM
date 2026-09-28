@@ -19,18 +19,23 @@ export function useFinanceApprovalsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const load = useCallback(async (next: QueueQuery) => {
-    if (!session.application) return;
-    setBusy(true);
-    setMessage(null);
-    try {
-      setQueue(await session.application.finance.listApprovals(next));
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible consultar aprobaciones.');
-    } finally {
-      setBusy(false);
-    }
-  }, [session.application]);
+  const load = useCallback(
+    async (next: QueueQuery) => {
+      if (!session.application) return;
+      setBusy(true);
+      setMessage(null);
+      try {
+        setQueue(await session.application.finance.listApprovals(next));
+      } catch (error) {
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible consultar aprobaciones.',
+        );
+      } finally {
+        setBusy(false);
+      }
+    },
+    [session.application],
+  );
 
   useEffect(() => {
     if (!session.context) return;

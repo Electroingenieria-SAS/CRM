@@ -14,7 +14,9 @@ export function FinanceQueuePageClient({ domain }: { domain: FinanceDomain }) {
         <section className="surface" aria-live="polite">
           <p className="eyebrow">Finanzas</p>
           <h1>
-            {page.loadingSession || page.busy ? 'Cargando ' + title + '…' : 'No fue posible abrir ' + title}
+            {page.loadingSession || page.busy
+              ? 'Cargando ' + title + '…'
+              : 'No fue posible abrir ' + title}
           </h1>
           {page.message ? <p role="alert">{page.message}</p> : null}
         </section>

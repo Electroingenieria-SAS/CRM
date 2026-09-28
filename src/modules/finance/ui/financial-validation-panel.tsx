@@ -15,35 +15,45 @@ interface FinancialValidationPanelProps {
   onRequestException(holdId: string, reason: string): Promise<void>;
 }
 
-function ValidationButtons(props: Pick<
-  FinancialValidationPanelProps,
-  'onValidate'
-> & { reason: string }) {
+function ValidationButtons(
+  props: Pick<FinancialValidationPanelProps, 'onValidate'> & { reason: string },
+) {
   return (
     <div className={styles.actions}>
-      <button type="button" disabled={!props.reason.trim()} onClick={() => void props.onValidate('APPROVED', props.reason)}>
+      <button
+        type="button"
+        disabled={!props.reason.trim()}
+        onClick={() => void props.onValidate('APPROVED', props.reason)}
+      >
         Aprobar gestión
       </button>
-      <button type="button" disabled={!props.reason.trim()} onClick={() => void props.onValidate('REQUIRES_REVIEW', props.reason)}>
+      <button
+        type="button"
+        disabled={!props.reason.trim()}
+        onClick={() => void props.onValidate('REQUIRES_REVIEW', props.reason)}
+      >
         Requiere revisión
       </button>
-      <button type="button" disabled={!props.reason.trim()} onClick={() => void props.onValidate('REJECTED', props.reason)}>
+      <button
+        type="button"
+        disabled={!props.reason.trim()}
+        onClick={() => void props.onValidate('REJECTED', props.reason)}
+      >
         Rechazar
       </button>
     </div>
   );
 }
 
-function NewHoldControls(props: Pick<
-  FinancialValidationPanelProps,
-  'onHold'
-> & {
-  reason: string;
-  holdCode: string;
-  requiresApproval: boolean;
-  setHoldCode(value: string): void;
-  setRequiresApproval(value: boolean): void;
-}) {
+function NewHoldControls(
+  props: Pick<FinancialValidationPanelProps, 'onHold'> & {
+    reason: string;
+    holdCode: string;
+    requiresApproval: boolean;
+    setHoldCode(value: string): void;
+    setRequiresApproval(value: boolean): void;
+  },
+) {
   return (
     <>
       <div className={styles.field}>
@@ -75,10 +85,12 @@ function NewHoldControls(props: Pick<
   );
 }
 
-function ActiveHoldControls(props: Pick<
-  FinancialValidationPanelProps,
-  'onRelease' | 'onRequestException'
-> & { reason: string; hold: OrderFinancialSummary['activeHolds'][number] }) {
+function ActiveHoldControls(
+  props: Pick<FinancialValidationPanelProps, 'onRelease' | 'onRequestException'> & {
+    reason: string;
+    hold: OrderFinancialSummary['activeHolds'][number];
+  },
+) {
   return (
     <div className={styles.warning}>
       <strong>Retención activa · {props.hold.reasonCode}</strong>

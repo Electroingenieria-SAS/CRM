@@ -8,29 +8,33 @@ export const financialDecisionSchema = z.enum([
   'RELEASED',
 ]);
 
-export const creditRequestInputSchema = z.object({
-  customerId: z.string().uuid().optional(),
-  orderId: z.string().uuid().optional(),
-  requestNumber: z.string().trim().max(120).optional(),
-  requestedAmount: z.number().positive(),
-  requestedTermDays: z.number().int().positive(),
-  metadata: z.record(z.string(), z.unknown()).default({}),
-}).superRefine((value, context) => {
-  if (!value.customerId && !value.orderId) {
-    context.addIssue({
-      code: 'custom',
-      path: ['customerId'],
-      message: 'Debes indicar cliente o pedido.',
-    });
-  }
-});
+export const creditRequestInputSchema = z
+  .object({
+    customerId: z.string().uuid().optional(),
+    orderId: z.string().uuid().optional(),
+    requestNumber: z.string().trim().max(120).optional(),
+    requestedAmount: z.number().positive(),
+    requestedTermDays: z.number().int().positive(),
+    metadata: z.record(z.string(), z.unknown()).default({}),
+  })
+  .superRefine((value, context) => {
+    if (!value.customerId && !value.orderId) {
+      context.addIssue({
+        code: 'custom',
+        path: ['customerId'],
+        message: 'Debes indicar cliente o pedido.',
+      });
+    }
+  });
 
 export const financeCustomerSearchSchema = z.object({
-  items: z.array(z.object({
-    id: z.string().uuid(),
-    name: z.string(),
-    document: z.string().nullable(),
-  })),
+  items: z.array(
+    z.object({
+      id: z.string().uuid(),
+      name: z.string(),
+      document: z.string().nullable(),
+    }),
+  ),
   contractVersion: z.string(),
 });
 
@@ -75,20 +79,24 @@ export const financeQueueItemSchema = z.object({
   currentStep: z.string(),
   orderStatus: z.string(),
   paidAmount: z.coerce.number(),
-  activeHold: z.object({
-    id: z.string().uuid(),
-    reasonCode: z.string(),
-    reason: z.string(),
-    createdAt: z.string(),
-    metadata: z.record(z.string(), z.unknown()),
-  }).nullable(),
-  latestValidation: z.object({
-    id: z.string().uuid(),
-    result: financialDecisionSchema,
-    reason: z.string(),
-    reference: z.string().nullable(),
-    createdAt: z.string(),
-  }).nullable(),
+  activeHold: z
+    .object({
+      id: z.string().uuid(),
+      reasonCode: z.string(),
+      reason: z.string(),
+      createdAt: z.string(),
+      metadata: z.record(z.string(), z.unknown()),
+    })
+    .nullable(),
+  latestValidation: z
+    .object({
+      id: z.string().uuid(),
+      result: financialDecisionSchema,
+      reason: z.string(),
+      reference: z.string().nullable(),
+      createdAt: z.string(),
+    })
+    .nullable(),
   invoiceCount: z.coerce.number().int().nonnegative(),
 });
 
@@ -125,55 +133,63 @@ export const orderFinancialSummarySchema = z.object({
   paymentCondition: z.string(),
   paidAmount: z.coerce.number(),
   paymentTruth: z.literal('REGISTERED_INVOICES_NET_OF_REVERSALS'),
-  credit: z.object({
-    requestId: z.string().uuid(),
-    requestNumber: z.string(),
-    requestedAmount: z.coerce.number(),
-    requestedTermDays: z.number().int().positive(),
-    status: z.string(),
-    balanceAgainstRequestedAmount: z.coerce.number(),
-  }).nullable(),
+  credit: z
+    .object({
+      requestId: z.string().uuid(),
+      requestNumber: z.string(),
+      requestedAmount: z.coerce.number(),
+      requestedTermDays: z.number().int().positive(),
+      status: z.string(),
+      balanceAgainstRequestedAmount: z.coerce.number(),
+    })
+    .nullable(),
   availableCredit: z.null(),
   availableCreditReason: z.literal('NO_AUDITED_REUSABLE_CREDIT_LIMIT'),
   activeHolds: z.array(holdSchema),
-  validations: z.array(z.object({
-    id: z.string().uuid(),
-    type: z.string(),
-    result: financialDecisionSchema,
-    reason: z.string(),
-    reference: z.string().nullable(),
-    createdAt: z.string(),
-  })),
+  validations: z.array(
+    z.object({
+      id: z.string().uuid(),
+      type: z.string(),
+      result: financialDecisionSchema,
+      reason: z.string(),
+      reference: z.string().nullable(),
+      createdAt: z.string(),
+    }),
+  ),
   invoices: z.array(invoiceSchema),
-  supports: z.array(z.object({
-    id: z.string().uuid(),
-    invoiceId: z.string().uuid().nullable(),
-    supportType: z.string(),
-    storageProvider: z.string(),
-    storageReference: z.string(),
-    validationStatus: z.string(),
-    createdAt: z.string(),
-  })),
+  supports: z.array(
+    z.object({
+      id: z.string().uuid(),
+      invoiceId: z.string().uuid().nullable(),
+      supportType: z.string(),
+      storageProvider: z.string(),
+      storageReference: z.string(),
+      validationStatus: z.string(),
+      createdAt: z.string(),
+    }),
+  ),
   contractVersion: z.string(),
 });
 
 export const financialApprovalQueueSchema = z.object({
-  items: z.array(z.object({
-    id: z.string().uuid(),
-    orderId: z.string().uuid(),
-    orderNumber: z.string(),
-    customerName: z.string(),
-    holdId: z.string().uuid().nullable(),
-    requestType: z.string(),
-    status: z.string(),
-    reason: z.string(),
-    requestedById: z.string().uuid(),
-    requestedBy: z.string(),
-    decidedBy: z.string().nullable(),
-    decisionReason: z.string().nullable(),
-    createdAt: z.string(),
-    decidedAt: z.string().nullable(),
-  })),
+  items: z.array(
+    z.object({
+      id: z.string().uuid(),
+      orderId: z.string().uuid(),
+      orderNumber: z.string(),
+      customerName: z.string(),
+      holdId: z.string().uuid().nullable(),
+      requestType: z.string(),
+      status: z.string(),
+      reason: z.string(),
+      requestedById: z.string().uuid(),
+      requestedBy: z.string(),
+      decidedBy: z.string().nullable(),
+      decisionReason: z.string().nullable(),
+      createdAt: z.string(),
+      decidedAt: z.string().nullable(),
+    }),
+  ),
   pagination: paginationSchema,
   contractVersion: z.string(),
 });

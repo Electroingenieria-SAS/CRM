@@ -81,11 +81,21 @@ export class FinanceService {
     return this.repository.decideException(approvalId, decision, reason.trim(), requiredKey(key));
   }
 
-  registerSupport(orderId: string, invoiceId: string | undefined, input: SupportInput, key: string) {
+  registerSupport(
+    orderId: string,
+    invoiceId: string | undefined,
+    input: SupportInput,
+    key: string,
+  ) {
     return this.repository.registerSupport(orderId, invoiceId, input, requiredKey(key));
   }
 
-  validateSupport(supportId: string, decision: 'VALIDATED' | 'REJECTED', reason: string, key: string) {
+  validateSupport(
+    supportId: string,
+    decision: 'VALIDATED' | 'REJECTED',
+    reason: string,
+    key: string,
+  ) {
     return this.repository.validateSupport(supportId, decision, reason.trim(), requiredKey(key));
   }
 

@@ -52,7 +52,9 @@ export function CashSupportsPanel(props: CashSupportsPanelProps) {
               <strong>{support.supportType}</strong>
               <span className={styles.badge}>{support.validationStatus}</span>
             </header>
-            <p>{support.storageProvider} · {support.storageReference}</p>
+            <p>
+              {support.storageProvider} · {support.storageReference}
+            </p>
             {props.canUpdate && support.validationStatus === 'PENDING' ? (
               <div className={styles.actions}>
                 <button

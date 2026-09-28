@@ -32,7 +32,9 @@ export function useFinanceSession() {
       })
       .catch((error) => {
         if (active) {
-          setSessionError(error instanceof Error ? error.message : 'No fue posible recuperar la sesión.');
+          setSessionError(
+            error instanceof Error ? error.message : 'No fue posible recuperar la sesión.',
+          );
         }
       })
       .finally(() => {

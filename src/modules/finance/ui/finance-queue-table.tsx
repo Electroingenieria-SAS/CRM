@@ -21,20 +21,32 @@ export function FinanceQueueTable(props: FinanceQueueTableProps) {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Pedido</th><th>Cliente</th><th>Condición</th><th>Pagado</th>
-            <th>Estado financiero</th><th>Acción</th>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Condición</th>
+            <th>Pagado</th>
+            <th>Estado financiero</th>
+            <th>Acción</th>
           </tr>
         </thead>
         <tbody>
           {props.queue.items.map((item) => (
             <tr key={item.orderId}>
-              <td>{item.orderNumber}<br /><span className={styles.muted}>{item.orderType}</span></td>
-              <td>{item.customerName}<br /><span className={styles.muted}>{item.customerDocument ?? 'Sin documento'}</span></td>
+              <td>
+                {item.orderNumber}
+                <br />
+                <span className={styles.muted}>{item.orderType}</span>
+              </td>
+              <td>
+                {item.customerName}
+                <br />
+                <span className={styles.muted}>{item.customerDocument ?? 'Sin documento'}</span>
+              </td>
               <td>{item.paymentCondition}</td>
               <td className={styles.money}>{money.format(item.paidAmount)}</td>
               <td>
                 <span className={styles.badge}>
-                  {item.activeHold ? 'RETENIDO' : item.latestValidation?.result ?? 'PENDIENTE'}
+                  {item.activeHold ? 'RETENIDO' : (item.latestValidation?.result ?? 'PENDIENTE')}
                 </span>
                 {item.activeHold ? <p>{item.activeHold.reason}</p> : null}
               </td>

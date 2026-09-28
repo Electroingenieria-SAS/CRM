@@ -46,7 +46,11 @@ export function CreditRequestForm(props: CreditRequestFormProps) {
             placeholder="Nombre o documento"
           />
         </div>
-        <button type="button" onClick={() => void props.onSearch(search)} disabled={props.searching}>
+        <button
+          type="button"
+          onClick={() => void props.onSearch(search)}
+          disabled={props.searching}
+        >
           {props.searching ? 'Buscando…' : 'Buscar'}
         </button>
       </div>

@@ -50,10 +50,12 @@ interface QueueWorkspaceProps {
   onSignOut(): Promise<void>;
 }
 
-function FinanceQueueSection(props: Pick<
-  QueueWorkspaceProps,
-  'domain' | 'queue' | 'query' | 'selected' | 'onQuery' | 'onSearch' | 'onSelect'
->) {
+function FinanceQueueSection(
+  props: Pick<
+    QueueWorkspaceProps,
+    'domain' | 'queue' | 'query' | 'selected' | 'onQuery' | 'onSearch' | 'onSelect'
+  >,
+) {
   const title = props.domain === 'CARTERA' ? 'Cartera' : 'Caja';
 
   return (
@@ -77,7 +79,9 @@ function FinanceQueueSection(props: Pick<
           <option value="PENDING">Pendientes</option>
           <option value="HELD">Retenidos</option>
         </select>
-        <button type="button" onClick={() => props.onSearch(props.query)}>Buscar</button>
+        <button type="button" onClick={() => props.onSearch(props.query)}>
+          Buscar
+        </button>
       </div>
       <FinanceQueueTable
         queue={props.queue}
@@ -153,8 +157,16 @@ export function FinanceQueueWorkspace(props: QueueWorkspaceProps) {
           </div>
         </header>
 
-        {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
-        {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
+        {props.message ? (
+          <p className={styles.error} role="alert">
+            {props.message}
+          </p>
+        ) : null}
+        {props.notice ? (
+          <p className={styles.notice} role="status">
+            {props.notice}
+          </p>
+        ) : null}
 
         <FinanceQueueSection {...props} />
 

@@ -33,19 +33,38 @@ export function CashInvoicesPanel(props: CashInvoicesPanelProps) {
           <div className={styles.formGrid}>
             <div className={styles.field}>
               <label htmlFor="invoice-number">Factura</label>
-              <input id="invoice-number" value={invoiceNumber} onChange={(event) => setInvoiceNumber(event.target.value)} />
+              <input
+                id="invoice-number"
+                value={invoiceNumber}
+                onChange={(event) => setInvoiceNumber(event.target.value)}
+              />
             </div>
             <div className={styles.field}>
               <label htmlFor="invoice-amount">Valor pagado registrado (COP)</label>
-              <input id="invoice-amount" type="number" min="0.01" step="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} />
+              <input
+                id="invoice-amount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={amount}
+                onChange={(event) => setAmount(event.target.value)}
+              />
             </div>
             <div className={styles.field}>
               <label htmlFor="invoice-support">Soporte validado</label>
-              <select id="invoice-support" value={supportId} onChange={(event) => setSupportId(event.target.value)}>
+              <select
+                id="invoice-support"
+                value={supportId}
+                onChange={(event) => setSupportId(event.target.value)}
+              >
                 <option value="">Sin asociar</option>
-                {props.summary.supports.filter((item) => item.validationStatus === 'VALIDATED').map((item) => (
-                  <option value={item.id} key={item.id}>{item.supportType} · {item.id.slice(0, 8)}</option>
-                ))}
+                {props.summary.supports
+                  .filter((item) => item.validationStatus === 'VALIDATED')
+                  .map((item) => (
+                    <option value={item.id} key={item.id}>
+                      {item.supportType} · {item.id.slice(0, 8)}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -53,12 +72,14 @@ export function CashInvoicesPanel(props: CashInvoicesPanelProps) {
             <button
               type="button"
               disabled={!invoiceNumber.trim() || !(Number(amount) > 0)}
-              onClick={() => void props.onInvoice({
-                invoiceNumber,
-                amount: Number(amount),
-                currency: 'COP',
-                supportId: supportId || undefined,
-              })}
+              onClick={() =>
+                void props.onInvoice({
+                  invoiceNumber,
+                  amount: Number(amount),
+                  currency: 'COP',
+                  supportId: supportId || undefined,
+                })
+              }
             >
               Registrar factura pagada
             </button>
@@ -85,10 +106,18 @@ export function CashInvoicesPanel(props: CashInvoicesPanelProps) {
                   />
                 </div>
                 <div className={styles.actions}>
-                  <button type="button" disabled={!reason.trim()} onClick={() => void props.onReverse(invoice.id, invoice.paidAmount, reason)}>
+                  <button
+                    type="button"
+                    disabled={!reason.trim()}
+                    onClick={() => void props.onReverse(invoice.id, invoice.paidAmount, reason)}
+                  >
                     Reversar total
                   </button>
-                  <button type="button" disabled={!reason.trim()} onClick={() => void props.onVoid(invoice.id, reason)}>
+                  <button
+                    type="button"
+                    disabled={!reason.trim()}
+                    onClick={() => void props.onVoid(invoice.id, reason)}
+                  >
                     Anular
                   </button>
                 </div>

@@ -45,7 +45,9 @@ function creditActions(input: {
         input.setNotice('Solicitud de crédito radicada.');
         await input.load(input.query);
       } catch (error) {
-        input.setMessage(error instanceof Error ? error.message : 'No fue posible radicar crédito.');
+        input.setMessage(
+          error instanceof Error ? error.message : 'No fue posible radicar crédito.',
+        );
       } finally {
         input.setBusy(false);
       }
@@ -61,11 +63,7 @@ function creditActions(input: {
         input.setBusy(false);
       }
     },
-    decide: async (
-      requestId: string,
-      decision: 'APPROVED' | 'REJECTED',
-      reason: string,
-    ) => {
+    decide: async (requestId: string, decision: 'APPROVED' | 'REJECTED', reason: string) => {
       if (!input.application) return;
       input.setBusy(true);
       try {
@@ -93,18 +91,21 @@ export function useCreditPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const load = useCallback(async (next: QueueQuery) => {
-    if (!session.application) return;
-    setBusy(true);
-    setMessage(null);
-    try {
-      setQueue(await session.application.finance.listCredit(next));
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible consultar crédito.');
-    } finally {
-      setBusy(false);
-    }
-  }, [session.application]);
+  const load = useCallback(
+    async (next: QueueQuery) => {
+      if (!session.application) return;
+      setBusy(true);
+      setMessage(null);
+      try {
+        setQueue(await session.application.finance.listCredit(next));
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible consultar crédito.');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [session.application],
+  );
 
   useEffect(() => {
     if (!session.context) return;

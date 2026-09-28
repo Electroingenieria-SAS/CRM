@@ -11,7 +11,11 @@ export function FinanceApprovalsPageClient() {
       <main id="main-content" className="centered-page">
         <section className="surface" aria-live="polite">
           <p className="eyebrow">Finanzas</p>
-          <h1>{page.loadingSession || page.busy ? 'Cargando aprobaciones…' : 'No fue posible abrir aprobaciones'}</h1>
+          <h1>
+            {page.loadingSession || page.busy
+              ? 'Cargando aprobaciones…'
+              : 'No fue posible abrir aprobaciones'}
+          </h1>
           {page.message ? <p role="alert">{page.message}</p> : null}
         </section>
       </main>

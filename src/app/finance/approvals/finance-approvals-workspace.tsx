@@ -41,8 +41,16 @@ export function FinanceApprovalsWorkspace(props: ApprovalsWorkspaceProps) {
             <p>Excepciones con separación entre quien solicita y quien decide.</p>
           </div>
         </header>
-        {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
-        {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
+        {props.message ? (
+          <p className={styles.error} role="alert">
+            {props.message}
+          </p>
+        ) : null}
+        {props.notice ? (
+          <p className={styles.notice} role="status">
+            {props.notice}
+          </p>
+        ) : null}
 
         <section className={styles.section}>
           <div className={styles.toolbar}>
@@ -55,28 +63,45 @@ export function FinanceApprovalsWorkspace(props: ApprovalsWorkspaceProps) {
             <select
               aria-label="Estado de aprobación"
               value={props.query.status ?? ''}
-              onChange={(event) => props.onQuery({ ...props.query, status: event.target.value || undefined })}
+              onChange={(event) =>
+                props.onQuery({ ...props.query, status: event.target.value || undefined })
+              }
             >
               <option value="">Todas</option>
               <option value="PENDING">Pendientes</option>
               <option value="APPROVED">Aprobadas</option>
               <option value="REJECTED">Rechazadas</option>
             </select>
-            <button type="button" onClick={() => props.onSearch(props.query)}>Buscar</button>
+            <button type="button" onClick={() => props.onSearch(props.query)}>
+              Buscar
+            </button>
           </div>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
-                <tr><th>Pedido</th><th>Tipo</th><th>Solicitante</th><th>Motivo</th><th>Estado</th><th>Decisión</th></tr>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Tipo</th>
+                  <th>Solicitante</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Decisión</th>
+                </tr>
               </thead>
               <tbody>
                 {props.queue.items.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.orderNumber}<br /><span className={styles.muted}>{item.customerName}</span></td>
+                    <td>
+                      {item.orderNumber}
+                      <br />
+                      <span className={styles.muted}>{item.customerName}</span>
+                    </td>
                     <td>{item.requestType}</td>
                     <td>{item.requestedBy}</td>
                     <td>{item.reason}</td>
-                    <td><span className={styles.badge}>{item.status}</span></td>
+                    <td>
+                      <span className={styles.badge}>{item.status}</span>
+                    </td>
                     <td>
                       {canApprove && item.status === 'PENDING' ? (
                         <div className={styles.field}>
@@ -85,15 +110,36 @@ export function FinanceApprovalsWorkspace(props: ApprovalsWorkspaceProps) {
                             id={'approval-reason-' + item.id}
                             value={reasons[item.id] ?? ''}
                             onChange={(event) =>
-                              setReasons((current) => ({ ...current, [item.id]: event.target.value }))
+                              setReasons((current) => ({
+                                ...current,
+                                [item.id]: event.target.value,
+                              }))
                             }
                           />
                           <div className={styles.actions}>
-                            <button type="button" disabled={!reasons[item.id]?.trim()} onClick={() => void props.onDecide(item.id, 'APPROVED', reasons[item.id] ?? '')}>Aprobar</button>
-                            <button type="button" disabled={!reasons[item.id]?.trim()} onClick={() => void props.onDecide(item.id, 'REJECTED', reasons[item.id] ?? '')}>Rechazar</button>
+                            <button
+                              type="button"
+                              disabled={!reasons[item.id]?.trim()}
+                              onClick={() =>
+                                void props.onDecide(item.id, 'APPROVED', reasons[item.id] ?? '')
+                              }
+                            >
+                              Aprobar
+                            </button>
+                            <button
+                              type="button"
+                              disabled={!reasons[item.id]?.trim()}
+                              onClick={() =>
+                                void props.onDecide(item.id, 'REJECTED', reasons[item.id] ?? '')
+                              }
+                            >
+                              Rechazar
+                            </button>
                           </div>
                         </div>
-                      ) : 'Solo consulta'}
+                      ) : (
+                        'Solo consulta'
+                      )}
                     </td>
                   </tr>
                 ))}

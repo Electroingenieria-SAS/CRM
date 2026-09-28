@@ -26,8 +26,13 @@ export function CreditQueueTable(props: CreditQueueProps) {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Solicitud</th><th>Cliente</th><th>Valor</th><th>Plazo</th>
-            <th>Estado</th><th>Responsable</th><th>Acciones</th>
+            <th>Solicitud</th>
+            <th>Cliente</th>
+            <th>Valor</th>
+            <th>Plazo</th>
+            <th>Estado</th>
+            <th>Responsable</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -35,16 +40,21 @@ export function CreditQueueTable(props: CreditQueueProps) {
             <tr key={item.id}>
               <td>{item.requestNumber}</td>
               <td>
-                {item.customerName}<br />
+                {item.customerName}
+                <br />
                 <span className={styles.muted}>{item.customerDocument ?? 'Sin documento'}</span>
               </td>
               <td className={styles.money}>{money.format(item.requestedAmount)}</td>
               <td>{item.requestedTermDays} días</td>
-              <td><span className={styles.badge}>{item.status}</span></td>
+              <td>
+                <span className={styles.badge}>{item.status}</span>
+              </td>
               <td>{item.assignedTo ?? item.requestedBy}</td>
               <td>
                 {props.canTake && item.status === 'SUBMITTED' ? (
-                  <button type="button" onClick={() => void props.onTake(item.id)}>Tomar</button>
+                  <button type="button" onClick={() => void props.onTake(item.id)}>
+                    Tomar
+                  </button>
                 ) : null}
                 {props.canDecide && ['SUBMITTED', 'UNDER_REVIEW'].includes(item.status) ? (
                   <div className={styles.field}>
@@ -60,14 +70,18 @@ export function CreditQueueTable(props: CreditQueueProps) {
                       <button
                         type="button"
                         disabled={!reason[item.id]?.trim()}
-                        onClick={() => void props.onDecide(item.id, 'APPROVED', reason[item.id] ?? '')}
+                        onClick={() =>
+                          void props.onDecide(item.id, 'APPROVED', reason[item.id] ?? '')
+                        }
                       >
                         Aprobar
                       </button>
                       <button
                         type="button"
                         disabled={!reason[item.id]?.trim()}
-                        onClick={() => void props.onDecide(item.id, 'REJECTED', reason[item.id] ?? '')}
+                        onClick={() =>
+                          void props.onDecide(item.id, 'REJECTED', reason[item.id] ?? '')
+                        }
                       >
                         Rechazar
                       </button>
