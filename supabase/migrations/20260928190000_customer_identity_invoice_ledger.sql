@@ -11,6 +11,7 @@ create table erp_supply.customers (
   active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  unique (organization_id, id),
   unique (organization_id, normalized_document),
   unique (organization_id, provisional_order_id),
   check (
@@ -21,7 +22,10 @@ create table erp_supply.customers (
 );
 
 alter table erp_supply.orders
-  add column customer_id uuid references erp_supply.customers(id);
+  add column customer_id uuid;
+
+alter table erp_supply.orders
+  add constraint uq_orders_organization_id_id unique (organization_id,id);
 
 create index idx_orders_customer_intelligence
   on erp_supply.orders(organization_id,customer_id,status,created_at)
@@ -30,7 +34,7 @@ create index idx_orders_customer_intelligence
 create table erp_supply.invoices (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references erp_supply.organizations(id),
-  order_id uuid not null references erp_supply.orders(id) on delete cascade,
+  order_id uuid not null,
   invoice_number text not null check (length(trim(invoice_number)) > 0),
   invoice_date date not null default current_date,
   amount numeric(18,2) not null check (amount > 0),
@@ -45,6 +49,8 @@ create table erp_supply.invoices (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (organization_id, invoice_number),
+  foreign key (organization_id,order_id)
+    references erp_supply.orders(organization_id,id) on delete cascade,
   check (reversed_amount <= amount),
   check (
     (status='REGISTERED' and reversed_amount=0 and reversed_at is null)
@@ -198,6 +204,11 @@ set customer_id=erp_private.resolve_order_customer(
   o.organization_id,o.id,o.client_document,o.client_name
 )
 where o.customer_id is null;
+
+alter table erp_supply.orders
+  add constraint fk_orders_customer_organization
+  foreign key (organization_id,customer_id)
+  references erp_supply.customers(organization_id,id);
 
 alter table erp_supply.customers enable row level security;
 alter table erp_supply.invoices enable row level security;
