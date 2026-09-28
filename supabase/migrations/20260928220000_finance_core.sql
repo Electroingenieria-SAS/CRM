@@ -224,9 +224,9 @@ language sql
 immutable
 security invoker
 set search_path=pg_catalog
-as $
+as $$
   select round(p_amount,2)
-$;
+$$;
 
 revoke all on function erp_private.finance_round_money(numeric)
 from public,anon;
@@ -241,7 +241,7 @@ returns void
 language plpgsql
 security invoker
 set search_path=pg_catalog,erp_private
-as $
+as $$
 declare
   v_org uuid:=erp_private.current_org_id();
   v_key text:=nullif(trim(coalesce(p_key,'')),'');
@@ -251,7 +251,7 @@ begin
   end if;
   perform pg_advisory_xact_lock(hashtextextended(v_org::text||':'||upper(p_scope)||':'||v_key,0));
 end;
-$;
+$$;
 
 revoke all on function erp_private.finance_idempotency_lock(text,text)
 from public,anon;
