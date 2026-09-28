@@ -83,7 +83,7 @@ test('planner completes the activity lifecycle with required photo evidence', as
 });
 
 test('mobile Workforce uses timeline cards without page overflow', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile-iphone');
+  test.skip(!['mobile-iphone', 'mobile-android'].includes(testInfo.project.name));
 
   await login(page);
   await openWorkforce(page);
