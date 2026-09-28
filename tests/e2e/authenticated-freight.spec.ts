@@ -38,8 +38,8 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await login(page, sellerEmail);
   await page.getByRole('link', { name: 'Fletes' }).click();
   await page.getByLabel('Buscar destino').fill('Armenia');
-  await page.getByLabel('Destino').selectOption({ label: /Armenia/i });
-  await page.getByLabel('Transportadora').selectOption({ label: /Colvanes/i });
+  await page.getByLabel('Destino', { exact: true }).nth(0).selectOption({ label: /Armenia/i });
+  await page.getByLabel('Transportadora', { exact: true }).nth(0).selectOption({ label: /Colvanes/i });
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   const result = page.getByTestId('freight-result').first();
   await expect(result).toBeVisible();
@@ -48,7 +48,7 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await expect(result).not.toContainText(/Sin evidencia suficiente/i);
   await expect(result.getByLabel('Rango histórico esperado')).toBeVisible();
   await page.getByLabel('Destino', { exact: true }).nth(1).selectOption({ label: /Armenia/i });
-  await page.getByLabel('Transportadora').nth(1).selectOption({ label: /Colvanes/i });
+  await page.getByLabel('Transportadora', { exact: true }).nth(1).selectOption({ label: /Colvanes/i });
   await page.getByRole('button', { name: 'Filtrar histórico' }).click();
   await expect(page.getByRole('table')).toContainText(/Armenia/i);
   await expect(page.getByRole('table')).toContainText(/Colvanes/i);
