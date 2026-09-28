@@ -1,4 +1,5 @@
 import type { FreightPredictionResult } from '@/modules/freight/application/freight-prediction.schemas';
+import { weightedFreightEstimate } from '@/modules/freight/domain/statistics';
 import styles from './freight-ui.module.css';
 
 const money = new Intl.NumberFormat('es-CO', {
@@ -81,8 +82,44 @@ export function FreightResults({ results }: { results: readonly FreightPredictio
     );
   }
 
+  const general = weightedFreightEstimate(
+    results.flatMap((result) =>
+      result.available &&
+      result.estimateLow != null &&
+      result.estimateMid != null &&
+      result.estimateHigh != null &&
+      result.sampleCount > 0
+        ? [{
+            low: result.estimateLow,
+            mid: result.estimateMid,
+            high: result.estimateHigh,
+            samples: result.sampleCount,
+          }]
+        : [],
+    ),
+  );
+
   return (
     <div className={styles.results} aria-live="polite">
+      {results.length > 1 && general ? (
+        <article className={styles.result} data-testid="freight-general-result">
+          <div className={styles.resultHeader}>
+            <div>
+              <p className="eyebrow">Referencia general del destino</p>
+              <h3>{money.format(general.mid)}</h3>
+            </div>
+            <span className={styles.badge}>{general.samples} muestras</span>
+          </div>
+          <div className={styles.range} aria-label="Rango general comparativo">
+            <div><span>Rango bajo</span><strong>{money.format(general.low)}</strong></div>
+            <div><span>Referencia</span><strong>{money.format(general.mid)}</strong></div>
+            <div><span>Rango alto</span><strong>{money.format(general.high)}</strong></div>
+          </div>
+          <p className={styles.explanation}>
+            Referencia ponderada por número de muestras entre transportadoras disponibles; no es una tarifa única.
+          </p>
+        </article>
+      ) : null}
       {results.map((result) => (
         <FreightResultCard
           result={result}
