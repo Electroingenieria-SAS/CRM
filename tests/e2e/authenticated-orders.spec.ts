@@ -127,7 +127,7 @@ test('logout invalidates the local session and returns to login', async ({ page 
 
 test('invalid recovery links are rejected without exposing internals', async ({ page }) => {
   await page.goto('/auth/update-password?code=invalid-recovery-code');
-  await expect(page.getByRole('alert')).toContainText(/no es válido|expiró/i);
+  await expect(page.getByText(/El enlace de recuperación no es válido o ya expiró/i)).toBeVisible();
   await expect(page.getByText(/sql|jwt|token/i)).toHaveCount(0);
 });
 
