@@ -148,6 +148,27 @@ export const orderFinancialSummarySchema = z.object({
   contractVersion: z.string(),
 });
 
+export const financialApprovalQueueSchema = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid(),
+    orderId: z.string().uuid(),
+    orderNumber: z.string(),
+    customerName: z.string(),
+    holdId: z.string().uuid().nullable(),
+    requestType: z.string(),
+    status: z.string(),
+    reason: z.string(),
+    requestedById: z.string().uuid(),
+    requestedBy: z.string(),
+    decidedBy: z.string().nullable(),
+    decisionReason: z.string().nullable(),
+    createdAt: z.string(),
+    decidedAt: z.string().nullable(),
+  })),
+  pagination: paginationSchema,
+  contractVersion: z.string(),
+});
+
 export const financialGateSchema = z.object({
   decision: financialDecisionSchema,
   domain: z.string().nullable(),
@@ -171,5 +192,6 @@ export type CreditQueue = z.infer<typeof creditQueueSchema>;
 export type FinanceQueue = z.infer<typeof financeQueueSchema>;
 export type FinanceQueueItem = z.infer<typeof financeQueueItemSchema>;
 export type OrderFinancialSummary = z.infer<typeof orderFinancialSummarySchema>;
+export type FinancialApprovalQueue = z.infer<typeof financialApprovalQueueSchema>;
 export type FinancialGate = z.infer<typeof financialGateSchema>;
 export type CustomerPaidProjection = z.infer<typeof customerPaidProjectionSchema>;
