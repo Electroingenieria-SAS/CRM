@@ -11,14 +11,32 @@
 - 14 roles de negocio, 20 módulos y 133 relaciones de permiso módulo/rol.
 - 6 tablas `public` publicadas a Supabase Realtime.
 - 0 buckets Supabase Storage.
+- El ledger fuente reconoce 27 cambios históricos que existen solo en la base productiva, por lo que el instalador legado no se considera baseline confiable.
 
-## Estrategia del CRM nuevo
+## Baseline limpio del CRM nuevo
 
-1. Conservar compatibilidad solo para el módulo que se esté migrando.
-2. Inventariar cada RPC usada por ese módulo.
-3. Revisar autorización, concurrencia, idempotencia, `search_path` y grants.
-4. Reducir SECURITY DEFINER donde no sea necesario.
-5. Versionar todo DDL bajo `supabase/migrations/`.
-6. Probar permitido y prohibido antes de conectar el frontend nuevo.
+La reconstrucción no copia el instalador monolítico del CRM fuente. Se construye en migraciones pequeñas y ordenadas:
 
-Las recomendaciones de índices no se aplican automáticamente: requieren evidencia de plan, cardinalidad y frecuencia de uso.
+1. `20260928000100_core_identity_rbac.sql`: organización, perfiles, roles, módulos, permisos y helpers privados.
+2. `20260928000200_order_catalogs.sql`: catálogos y workflow.
+3. `20260928000300_orders_core.sql`: pedidos, líneas, tareas, eventos, integridad, índices y RLS.
+4. `20260928000400_orders_api.sql`: RPC públicas `SECURITY INVOKER`.
+
+El esquema `erp_supply` es interno y no está incluido en `api.schemas`. `erp_private` contiene únicamente helpers privilegiados que necesitan resolver identidad/RBAC atravesando RLS; todos tienen `search_path` explícito, grants mínimos y no están expuestos como API pública.
+
+## Gate reproducible
+
+CI debe reconstruir una base vacía con:
+
+```text
+supabase start
+supabase db reset
+supabase test db
+supabase db lint --level error
+```
+
+Los tests usan usuarios y organizaciones sintéticos. No usan dumps, tokens ni PII productiva.
+
+## Regla de promoción
+
+Una tabla/RPC del CRM fuente solo se migra cuando su dominio está siendo reconstruido. Antes de producción debe tener integridad, permisos, RLS, tests positivos/negativos, documentación y paridad funcional.
