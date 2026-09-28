@@ -350,7 +350,7 @@ begin
     coalesce((v_evidence->>'baselineSamples')::integer,0)
     + coalesce((v_evidence->>'actualSamples')::integer,0);
 
-  if v_samples < case v_scope when 'CITY' then 3 when 'DEPARTMENT' then 5 else 10 end then
+  if v_samples < (case v_scope when 'CITY' then 3 when 'DEPARTMENT' then 5 else 10 end) then
     return jsonb_build_object(
       'available',false,
       'status','INSUFFICIENT',
