@@ -118,8 +118,11 @@
 }
 
 .baseline code {
+  display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-all;
   color: var(--brand-strong);
