@@ -50,9 +50,9 @@ select is(
 );
 
 select lives_ok(
-  $select public.erp_x_freight_history(
+  $$select public.erp_x_freight_history(
     null,'Quindío',null,'NATIONAL_DISPATCH',null,null,1,25
-  )$,
+  )$$,
   'sales may read normalized freight history through SECURITY INVOKER RPC'
 );
 
@@ -157,9 +157,9 @@ select lives_ok(
 );
 
 select lives_ok(
-  $select public.erp_x_freight_history(
+  $$select public.erp_x_freight_history(
     null,'Quindío',null,'NATIONAL_DISPATCH',null,null,1,25
-  )$,
+  )$$,
   'auditor may read normalized freight history'
 );
 
