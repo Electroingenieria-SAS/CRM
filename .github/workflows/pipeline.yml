@@ -74,10 +74,33 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated E2E Supabase
+        run: supabase start
+      - name: Rebuild E2E database
+        run: supabase db reset
+      - name: Export ephemeral local credentials
+        shell: bash
+        run: |
+          eval "$(supabase status -o env)"
+          E2E_PASSWORD="$(openssl rand -base64 24 | tr -d '\n')"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$ANON_KEY"
+            echo "E2E_SUPABASE_URL=http://127.0.0.1:54321"
+            echo "E2E_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "E2E_USER_EMAIL=e2e.sales@example.test"
+            echo "E2E_USER_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
       - run: npm ci
+      - name: Prepare synthetic authenticated user
+        run: node scripts/prepare-e2e-user.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Responsive + semantic staging smoke
+      - name: Authenticated responsive E2E
         run: npm run test:e2e
       - name: Upload Playwright report on failure
         if: failure()
@@ -86,6 +109,9 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+      - name: Stop E2E Supabase
+        if: always()
+        run: supabase stop --no-backup
 
   secret-scan:
     runs-on: ubuntu-latest
