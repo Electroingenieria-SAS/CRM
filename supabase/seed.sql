@@ -23,6 +23,7 @@ insert into erp_supply.modules(code,name,description,icon,sort_order,active) val
 ('dashboard','Centro de operación','KPIs, alertas y cuellos de botella','layout-dashboard',10,true),
 ('orders','Control de pedidos','Registro, consulta y trazabilidad total','clipboard-list',20,true),
 ('sales','Registro de ventas','Creación y control comercial','badge-dollar-sign',30,true),
+('customer_intelligence','Inteligencia de clientes','Ranking, Pareto y segmentación automática por pedidos y valor pagado','chart-spline',35,true),
 ('credit','Crédito','Solicitudes y decisiones de crédito','landmark',40,true),
 ('cartera','Cartera','Liberaciones de cartera y riesgo','wallet-cards',50,true),
 ('caja','Caja','Validación de pagos','banknote',60,true),
@@ -64,7 +65,11 @@ insert into erp_supply.role_module_permissions(
 ('lider_logistica','orders',true,false,true,true,false),
 ('recepcion_mercancia','orders',true,false,false,false,false),
 ('ventas','orders',true,true,true,false,false),
-('ventas','sales',true,true,true,false,false)
+('ventas','sales',true,true,true,false,false),
+('ventas','customer_intelligence',true,false,false,false,false),
+('gerencia','customer_intelligence',true,false,false,false,false),
+('auditoria','customer_intelligence',true,false,false,false,false),
+('jefe_logistica','customer_intelligence',true,false,false,false,false)
 on conflict (role_code,module_code) do nothing;
 
 insert into erp_supply.role_module_permissions(
@@ -153,3 +158,15 @@ $$;
 
 revoke all on function public.e2e_bind_user(text,uuid) from public,anon,authenticated;
 grant execute on function public.e2e_bind_user(text,uuid) to service_role;
+
+
+insert into erp_supply.customer_intelligence_algorithm_versions(
+  organization_id,version,order_weight,paid_weight,
+  normal_min_score,premium_min_score,urgent_min_score,
+  minimum_population_clients,minimum_population_orders,
+  medium_support_orders,high_support_orders,active
+)
+select id,'1.0.0',0.5,0.5,30,70,90,5,20,3,10,true
+from erp_supply.organizations
+where code='EI'
+on conflict (organization_id,version) do update set active=true;
