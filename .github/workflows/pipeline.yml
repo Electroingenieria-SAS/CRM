@@ -133,12 +133,20 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/authenticated_e2e.sql
+      - name: Seed synthetic Customer Intelligence dataset
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/customer_intelligence_e2e.sql
       - name: Verify Auth and operational session contract
         run: node tests/fixtures/verify-authenticated-e2e-session.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Authenticated orders journeys
-        run: npx playwright test tests/e2e/authenticated-orders.spec.ts
+      - name: Authenticated domain journeys
+        run: >
+          npx playwright test
+          tests/e2e/authenticated-orders.spec.ts
+          tests/e2e/customer-intelligence.spec.ts
       - name: Upload authenticated Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
