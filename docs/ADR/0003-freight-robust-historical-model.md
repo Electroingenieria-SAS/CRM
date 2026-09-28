@@ -15,7 +15,7 @@ Se adopta FREIGHT_ROBUST_V1:
 2. Los destinos se normalizan por ciudad/departamento y las transportadoras usan UUID y códigos estables.
 3. El fallback es estrictamente ciudad → departamento → nacional, dentro de modalidad y transportadora compatibles.
 4. Los nuevos costos reales se almacenan como observaciones independientes de las predicciones.
-5. Para observaciones nuevas, los outliers se excluyen mediante IQR 1,5× antes de calcular P25/P50/P75.
+5. Para observaciones nuevas, los outliers se excluyen mediante IQR 1,5×; se conservan media, P25, P50, P75, P90 e IQR como diagnóstico.
 6. La base histórica usa P20/P50/P80 ya calculados; no se inventan percentiles ausentes.
 7. La recencia pondera la evidencia.
 8. Peso, bultos o volumen solo refinan la estimación con al menos 8 observaciones pareadas y |correlación| ≥ 0,50.
