@@ -27,10 +27,7 @@ for insert to authenticated
 with check (
   bucket_id='workforce-evidence'
   and split_part(name,'/',1)=erp_private.current_org_id()::text
-  and split_part(name,'/',2) ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}
-
-commit;
-
+  and split_part(name,'/',2) ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
   and erp_private.can_access_module('workforce','create')
   and exists(
     select 1
