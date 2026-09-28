@@ -82,8 +82,14 @@ test('sales user restores session, creates, filters and opens an order', async (
   await page.getByLabel('Dirección de entrega *').fill('Calle QA 10 # 20-30');
   await page.getByLabel('Descripción *').fill('Cable sintético E2E');
   await page.getByLabel('Cantidad *').fill('2');
+  await page.getByRole('button', { name: 'Agregar material' }).click();
+  await page.getByLabel('Descripción *').nth(1).fill('Perfil sintético con corte');
+  await page.getByLabel('Cantidad *').nth(1).fill('3');
+  await page.getByLabel('Requiere corte').nth(1).check();
+  await page.getByLabel('Longitud de corte *').fill('1.5');
   await page.getByRole('button', { name: 'Crear pedido', exact: true }).last().click();
 
+  await expect(page.getByRole('status')).toContainText(`Pedido ${orderNumber} creado correctamente.`);
   await expect(page.getByText(orderNumber)).toBeVisible();
 
   await page.getByLabel('Buscar').fill(orderNumber);
@@ -96,6 +102,8 @@ test('sales user restores session, creates, filters and opens an order', async (
 
   await expect(page.getByRole('heading', { level: 2, name: orderNumber })).toBeVisible();
   await expect(page.getByText('Cable sintético E2E')).toBeVisible();
+  await expect(page.getByText('Perfil sintético con corte')).toBeVisible();
+  await expect(page.getByText('Corte: 1.5')).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth,
@@ -148,7 +156,17 @@ test('password recovery completes through local Supabase and Mailpit', async ({
   await expect(page.getByRole('heading', { name: 'Cambiar contraseña' })).toBeVisible();
 
   const newPassword = `${password()}-Recovered-2026!`;
+
+  await page.getByLabel('Nueva contraseña').fill('short');
+  await page.getByLabel('Confirmar contraseña').fill('short');
+  await page.getByRole('button', { name: 'Cambiar contraseña' }).click();
+  await expect(page.getByRole('status')).toContainText('al menos 12 caracteres');
+
   await page.getByLabel('Nueva contraseña').fill(newPassword);
+  await page.getByLabel('Confirmar contraseña').fill(`${newPassword}-mismatch`);
+  await page.getByRole('button', { name: 'Cambiar contraseña' }).click();
+  await expect(page.getByRole('status')).toContainText('Las contraseñas no coinciden');
+
   await page.getByLabel('Confirmar contraseña').fill(newPassword);
   await page.getByRole('button', { name: 'Cambiar contraseña' }).click();
 
