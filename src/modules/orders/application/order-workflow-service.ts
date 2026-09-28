@@ -49,12 +49,7 @@ export class OrderWorkflowService {
   assign(orderId: string, profileId: string, version: number, key: string) {
     if (!profileId.trim()) throw new Error('Selecciona un responsable.');
     return this.mutate(() =>
-      this.repository.assign(
-        orderId,
-        profileId.trim(),
-        requireVersion(version),
-        requireKey(key),
-      ),
+      this.repository.assign(orderId, profileId.trim(), requireVersion(version), requireKey(key)),
     );
   }
 
@@ -79,12 +74,7 @@ export class OrderWorkflowService {
     const normalized = resolution.trim();
     if (normalized.length < 3) throw new Error('Describe cómo se resolvió el bloqueo.');
     return this.mutate(() =>
-      this.repository.resume(
-        orderId,
-        normalized,
-        requireVersion(version),
-        requireKey(key),
-      ),
+      this.repository.resume(orderId, normalized, requireVersion(version), requireKey(key)),
     );
   }
 
@@ -104,12 +94,7 @@ export class OrderWorkflowService {
     const normalized = reason.trim();
     if (normalized.length < 3) throw new Error('Indica la razón de cancelación.');
     return this.mutate(() =>
-      this.repository.cancel(
-        orderId,
-        normalized,
-        requireVersion(version),
-        requireKey(key),
-      ),
+      this.repository.cancel(orderId, normalized, requireVersion(version), requireKey(key)),
     );
   }
 

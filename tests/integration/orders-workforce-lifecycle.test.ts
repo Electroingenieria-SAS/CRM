@@ -166,9 +166,7 @@ describe('Orders Workforce synthetic lifecycle', () => {
     }
 
     expect(workforce.existingActivityIds[0]).toBeNull();
-    expect(workforce.existingActivityIds.slice(1)).toEqual(
-      expect.arrayContaining([activityId]),
-    );
+    expect(workforce.existingActivityIds.slice(1)).toEqual(expect.arrayContaining([activityId]));
     expect(workforce.assignee).toBe(assigneeB);
     expect(workforce.status).toBe('COMPLETED');
     expect(workforce.history).toContain(`REASSIGNED:${assigneeA}->${assigneeB}`);
