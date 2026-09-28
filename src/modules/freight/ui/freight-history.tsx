@@ -6,6 +6,7 @@ import type { FreightHistoryResponse } from '@/modules/freight/application/freig
 import type { FreightHistoryQuery } from '@/modules/freight/application/freight-repository';
 import { FreightHistoryFilters } from './freight-history-filters';
 import {
+  FreightActualsTable,
   FreightHistoryPagination,
   FreightHistoryTable,
 } from './freight-history-table';
@@ -39,6 +40,7 @@ export function FreightHistory(props: FreightHistoryProps) {
         onSearch={props.onSearch}
       />
       <FreightHistoryTable history={props.history} />
+      <FreightActualsTable history={props.history} />
       <FreightHistoryPagination history={props.history} onPage={props.onPage} />
     </section>
   );
