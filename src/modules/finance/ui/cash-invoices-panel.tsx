@@ -18,10 +18,7 @@ interface CashInvoicesPanelProps {
   onVoid(invoiceId: string, reason: string): Promise<void>;
 }
 
-function InvoiceRegistrationForm(props: Pick<
-  CashInvoicesPanelProps,
-  'summary' | 'onInvoice'
->) {
+function InvoiceRegistrationForm(props: Pick<CashInvoicesPanelProps, 'summary' | 'onInvoice'>) {
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [amount, setAmount] = useState('');
   const [supportId, setSupportId] = useState('');

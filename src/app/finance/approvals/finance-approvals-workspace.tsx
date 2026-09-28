@@ -100,12 +100,8 @@ function ApprovalTable(props: {
                   canApprove={props.canApprove}
                   status={item.status}
                   reason={reasons[item.id] ?? ''}
-                  onReason={(value) =>
-                    setReasons((current) => ({ ...current, [item.id]: value }))
-                  }
-                  onDecide={(decision) =>
-                    props.onDecide(item.id, decision, reasons[item.id] ?? '')
-                  }
+                  onReason={(value) => setReasons((current) => ({ ...current, [item.id]: value }))}
+                  onDecide={(decision) => props.onDecide(item.id, decision, reasons[item.id] ?? '')}
                 />
               </td>
             </tr>
@@ -142,11 +138,7 @@ function ApprovalQueueSection(props: ApprovalsWorkspaceProps & { canApprove: boo
           Buscar
         </button>
       </div>
-      <ApprovalTable
-        queue={props.queue}
-        canApprove={props.canApprove}
-        onDecide={props.onDecide}
-      />
+      <ApprovalTable queue={props.queue} canApprove={props.canApprove} onDecide={props.onDecide} />
       {props.busy ? <p aria-live="polite">Actualizando aprobaciones…</p> : null}
     </section>
   );
