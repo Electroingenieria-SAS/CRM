@@ -16,6 +16,8 @@ declare
   v_activity erp_supply.workforce_activities%rowtype;
   v_event jsonb;
 begin
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select ev.payload into v_event
   from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key)
@@ -89,6 +91,8 @@ declare
   v_event jsonb;
   v_from_status text;
 begin
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select ev.payload into v_event from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key) limit 1;
   if v_event is not null then
@@ -148,6 +152,8 @@ declare
   v_activity erp_supply.workforce_activities%rowtype;
   v_event jsonb;
 begin
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select ev.payload into v_event from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key) limit 1;
   if v_event is not null then
@@ -205,6 +211,8 @@ declare
   v_event jsonb;
   v_business_seconds bigint;
 begin
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select ev.payload into v_event from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key) limit 1;
   if v_event is not null then
@@ -278,6 +286,8 @@ declare
   v_activity erp_supply.workforce_activities%rowtype;
   v_event jsonb;
 begin
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select ev.payload into v_event from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key) limit 1;
   if v_event is not null then
