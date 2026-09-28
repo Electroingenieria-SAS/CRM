@@ -40,7 +40,9 @@ export function WorkforceDetail(props: WorkforceDetailProps) {
   const [reason, setReason] = useState('');
   const [result, setResult] = useState('');
   const [cancelReason, setCancelReason] = useState('');
-  const [evidenceType, setEvidenceType] = useState<WorkforceEvidenceType>(options[0][0]);
+  const [evidenceType, setEvidenceType] = useState<WorkforceEvidenceType>(
+    options[0]?.[0] ?? 'FINAL_PHOTO',
+  );
 
   useEffect(() => {
     const dialog = ref.current;
