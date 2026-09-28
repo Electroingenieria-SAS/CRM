@@ -161,6 +161,20 @@ export const orderDetailResponseSchema = z.object({
         name: z.string(),
       }),
     ),
+    blockReasons: z.array(
+      z.object({
+        code: z.string(),
+        name: z.string(),
+      }),
+    ),
+    issueTypes: z.array(
+      z.object({
+        code: z.string(),
+        name: z.string(),
+        defaultSeverity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
+        defaultBlocking: z.boolean(),
+      }),
+    ),
   }),
   assignmentCandidates: z.array(
     z.object({
