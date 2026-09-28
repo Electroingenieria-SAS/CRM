@@ -21,7 +21,7 @@
 | Facturación                        |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Despachos / entrega / satisfacción |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Workforce / jornada / cronograma   |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E* |   ✓*   |     ✓     | En validación CI       |
 | Excepciones / aprobaciones         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
@@ -39,3 +39,6 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 > Evidencia: PR #6, commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`, pipeline #105 (`36453408365`) completamente verde, incluido `e2e-authenticated`.
 
 | Customer Intelligence / Pareto | CRM viejo V11.39.x | CRM nuevo 1.0.0 | Unit + pgTAP + E2E | Responsive | RLS/RBAC | Implementado; pendiente CI final del PR |
+
+
+> Workforce: actividad agregada, jornada Colombia, Día/Semana/Mes, evidencia, concurrencia, idempotencia, RLS/RBAC y responsive implementados en `reconstruction/p1-workforce-scheduling`; validación final depende de checks verdes del PR.
