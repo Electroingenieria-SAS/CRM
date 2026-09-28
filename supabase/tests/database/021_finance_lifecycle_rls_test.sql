@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(35);
+select plan(37);
 
 insert into auth.users(
   instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,
@@ -54,6 +54,16 @@ insert into erp_supply.orders(
  'Cliente Otro','9991001','Cali','Calle QA','63000000-0000-4000-8000-000000000007','CAJA',
  'QUEUED','MEDIUM','QA',false);
 
+insert into erp_supply.order_tasks(
+  id,order_id,step_code,sequence_no,queue_code,status,
+  assigned_profile_id,assigned_role_code,started_at
+) values(
+  '65000000-0000-4000-8000-000000000001',
+  '64000000-0000-4000-8000-000000000001',
+  'CARTERA',1,'CARTERA','IN_PROGRESS',
+  '63000000-0000-4000-8000-000000000002','cartera',now()
+);
+
 select set_config(
   'request.jwt.claims',
   '{"sub":"61000000-0000-4000-8000-000000000001","role":"authenticated","email":"fin-sales@example.test"}',
@@ -102,8 +112,17 @@ select set_config(
 );
 set local role authenticated;
 
+select throws_ok(
+  $update erp_supply.order_tasks
+    set status='COMPLETED',completed_at=now()
+    where id='65000000-0000-4000-8000-000000000001'$,
+  '23514',
+  null,
+  'Orders cannot complete Cartera while its financial gate still requires review'
+);
+
 select lives_ok(
-  $$select public.erp_x_finance_take_credit_request(
+  $select public.erp_x_finance_take_credit_request(
     (select id from erp_supply.credit_requests limit 1),'credit-take-1'
   )$$,
   'cartera can take submitted credit'
@@ -208,6 +227,13 @@ select is(
   (select status from erp_supply.financial_holds where reason_code='OVERDUE_EXTERNAL'),
   'RELEASED',
   'hold history is retained as released instead of deleted'
+);
+
+select lives_ok(
+  $update erp_supply.order_tasks
+    set status='COMPLETED',completed_at=now()
+    where id='65000000-0000-4000-8000-000000000001'$,
+  'Orders can complete Cartera after the financial hold is released'
 );
 
 reset role;
