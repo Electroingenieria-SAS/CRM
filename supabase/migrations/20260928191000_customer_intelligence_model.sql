@@ -142,7 +142,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path=pg_catalog,erp_supply
-as $
+as $ci$
 begin
   insert into erp_supply.customer_intelligence_algorithm_versions(
     organization_id,version,order_weight,paid_weight,active
@@ -151,7 +151,7 @@ begin
   on conflict (organization_id,version) do nothing;
   return new;
 end;
-$;
+$ci$;
 
 revoke all on function erp_private.create_default_customer_intelligence_algorithm()
 from public,anon,authenticated;
