@@ -83,3 +83,37 @@
     flex-direction: column;
   }
 }
+
+.timeline {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.timeline article {
+  padding: var(--space-3);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--canvas);
+}
+
+.timeline article > div {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.timeline p,
+.timeline time {
+  margin: 0.3rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 680px) {
+  .timeline article > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}
