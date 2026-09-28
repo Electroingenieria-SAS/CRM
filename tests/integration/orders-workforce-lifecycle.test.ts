@@ -43,11 +43,14 @@ class InMemoryWorkforce implements WorkforceAutomationPort {
   assignee: string | null = null;
   history: string[] = [];
   eventKeys = new Set<string>();
+  existingActivityIds: Array<string | null> = [];
 
   async applyOrderEvent(
     event: OrderWorkforceEvent,
     keys: WorkforceAutomationKeys,
+    existingActivityId: string | null,
   ): Promise<WorkforceAutomationResult> {
+    this.existingActivityIds.push(existingActivityId);
     if (this.eventKeys.has(keys.eventKey)) {
       return { activityId, status: this.status, idempotent: true, metadata: {} };
     }
@@ -95,6 +98,16 @@ class InMemoryOutbox implements OrderWorkforceOutboxPort {
       summary: { pending: 0, processing: 0, processed: 0, failed: 0, staleProcessing: 0 },
       pendingByStep: {},
       oldestPendingAt: null,
+      contractVersion: '1.0.0',
+    };
+  }
+
+  async binding() {
+    const bound = [...this.processed.values()].at(-1) ?? null;
+    return {
+      orderTaskId: taskId,
+      workforceActivityId: bound,
+      status: bound ? 'PROCESSED' : 'UNBOUND',
       contractVersion: '1.0.0',
     };
   }
@@ -152,6 +165,10 @@ describe('Orders Workforce synthetic lifecycle', () => {
       expect(result.activityId).toBe(activityId);
     }
 
+    expect(workforce.existingActivityIds[0]).toBeNull();
+    expect(workforce.existingActivityIds.slice(1)).toEqual(
+      expect.arrayContaining([activityId]),
+    );
     expect(workforce.assignee).toBe(assigneeB);
     expect(workforce.status).toBe('COMPLETED');
     expect(workforce.history).toContain(`REASSIGNED:${assigneeA}->${assigneeB}`);
