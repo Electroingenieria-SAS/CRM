@@ -30,6 +30,8 @@ begin
     raise exception 'La clave de idempotencia es obligatoria' using errcode='22023';
   end if;
 
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select (ev.payload->>'activityId')::uuid into v_existing
   from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org
@@ -174,6 +176,8 @@ begin
   if nullif(trim(p_idempotency_key),'') is null then
     raise exception 'La clave de idempotencia es obligatoria' using errcode='22023';
   end if;
+
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
 
   select ev.payload into v_event
   from erp_supply.workforce_activity_events ev
