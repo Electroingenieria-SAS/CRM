@@ -11,6 +11,12 @@ export class OrdersService {
     return this.repository.list(query);
   }
 
+  get(orderId: string) {
+    const normalizedId = orderId.trim();
+    if (!normalizedId) throw new Error('El identificador del pedido es obligatorio.');
+    return this.repository.get(normalizedId);
+  }
+
   create(input: unknown, idempotencyKey: string) {
     const payload = createOrderSchema.parse(input);
     const key = idempotencyKey.trim();
