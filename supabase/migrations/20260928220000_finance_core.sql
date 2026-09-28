@@ -236,6 +236,18 @@ from public,anon;
 grant execute on function erp_private.can_access_financial_domain(text,text)
 to authenticated;
 
+create policy customers_finance_read
+on erp_supply.customers for select
+to authenticated
+using (
+  organization_id=erp_private.current_org_id()
+  and (
+    erp_private.can_access_module('credit','read')
+    or erp_private.can_access_module('cartera','read')
+    or erp_private.can_access_module('caja','read')
+  )
+);
+
 alter table erp_supply.credit_requests enable row level security;
 alter table erp_supply.financial_validations enable row level security;
 alter table erp_supply.financial_holds enable row level security;
