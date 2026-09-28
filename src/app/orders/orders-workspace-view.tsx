@@ -21,6 +21,7 @@ interface OrdersWorkspaceViewProps {
   loading: boolean;
   creating: boolean;
   message: string | null;
+  notice: string | null;
   detail: OrderDetailResponse | null;
   onFiltersChange(filters: OrdersFilterValues): void;
   onSearch(): void;
@@ -89,6 +90,11 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
           onChange={props.onFiltersChange}
           onSubmit={props.onSearch}
         />
+        {props.notice ? (
+          <p className={styles.message} role="status">
+            {props.notice}
+          </p>
+        ) : null}
         {props.message ? (
           <p className={styles.message} role="alert">
             {props.message}
