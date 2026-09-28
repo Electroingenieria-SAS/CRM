@@ -58,20 +58,21 @@ export function useOrdersPage() {
       return;
     }
 
+    const app = application;
     let active = true;
-    const unsubscribe = application.auth.onSessionChange((event) => {
+    const unsubscribe = app.auth.onSessionChange((event) => {
       if (event.type === 'signed_out') router.replace('/login');
     });
 
     async function boot() {
       try {
-        const nextContext = await application.auth.restoreContext();
+        const nextContext = await app.auth.restoreContext();
         if (!nextContext) {
           router.replace('/login');
           return;
         }
 
-        const firstPage = await application.orders.list({
+        const firstPage = await app.orders.list({
           page: 1,
           pageSize: 50,
           includeHistory: true,
