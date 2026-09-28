@@ -42,3 +42,7 @@ No se mezclan precios de NATIONAL_DISPATCH con LOCAL_DISPATCH.
 ## Integraciones
 
 Orders consume FreightQuotePort y no conoce SQL ni tablas. Logistics podrá registrar costo final mediante recordActual y enlazarlo a la predicción para calcular error.
+
+## Excepciones de tamaño justificadas
+
+Las migraciones del engine/API quedan por debajo del límite bloqueante de 800 líneas, pero superan 500 porque encapsulan contratos SQL atómicos del mismo caso de uso y dividirlas más introduciría dependencias de orden artificiales. El seed histórico supera 500 líneas únicamente porque contiene 166 agregados sanitizados verificables; es dato versionado, no lógica monolítica.
