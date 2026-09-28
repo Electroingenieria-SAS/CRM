@@ -83,6 +83,26 @@ on conflict (role_code,module_code) do nothing;
 insert into erp_supply.role_module_permissions(
   role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
 )
+select
+  r.code,
+  'workforce',
+  true,
+  true,
+  true,
+  r.code in ('super_admin','gerencia','jefe_logistica','lider_logistica'),
+  r.code in ('super_admin','gerencia','jefe_logistica','lider_logistica')
+from erp_supply.roles r
+where r.active
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_create=excluded.can_create,
+  can_update=excluded.can_update,
+  can_approve=excluded.can_approve,
+  can_admin=excluded.can_admin;
+
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
 select 'super_admin',m.code,true,true,true,true,true
 from erp_supply.modules m
 on conflict (role_code,module_code) do nothing;
