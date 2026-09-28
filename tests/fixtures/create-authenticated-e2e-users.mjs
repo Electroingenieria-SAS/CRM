@@ -15,7 +15,12 @@ const admin = createClient(apiUrl, secretKey, {
   },
 });
 
-const users = ['qa-seller@example.test', 'qa-auditor@example.test', 'qa-recovery@example.test'];
+const users = [
+  'qa-seller@example.test',
+  'qa-auditor@example.test',
+  'qa-recovery@example.test',
+  'qa-superadmin@example.test',
+];
 
 for (const email of users) {
   const { error } = await admin.auth.admin.createUser({
