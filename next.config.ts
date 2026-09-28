@@ -27,27 +27,6 @@ const connectSources = [
   ...configuredSupabaseConnectSources(),
 ];
 
-function configuredSupabaseOrigin(): string | null {
-  const value = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  if (!value) return null;
-
-  try {
-    const url = new URL(value);
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
-    return url.origin;
-  } catch {
-    return null;
-  }
-}
-
-const supabaseOrigin = configuredSupabaseOrigin();
-const connectSources = [
-  "'self'",
-  'https://*.supabase.co',
-  'wss://*.supabase.co',
-  ...(supabaseOrigin ? [supabaseOrigin] : []),
-];
-
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
