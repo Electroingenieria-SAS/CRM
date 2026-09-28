@@ -51,19 +51,19 @@ describe('customer intelligence domain', () => {
     expect(row?.segment).toBe('NORMAL');
   });
   it('builds monotonic Pareto accumulation without hardcoding 80/20', () => {
-    const points = buildPareto([
+    const pareto = buildPareto([
       { customerId: 'a', orderCount: 10, paidAmount: 1_000_000 },
       { customerId: 'b', orderCount: 5, paidAmount: 200_000 },
       { customerId: 'c', orderCount: 1, paidAmount: 0 },
     ]);
 
-    expect(points.at(-1)?.cumulativeOrdersPct).toBeCloseTo(100);
-    expect(points.at(-1)?.cumulativePaidPct).toBeCloseTo(100);
-    expect(points[1]!.cumulativeOrdersPct).toBeGreaterThanOrEqual(
-      points[0]!.cumulativeOrdersPct,
+    expect(pareto.ordersSeries.at(-1)?.cumulativePct).toBeCloseTo(100);
+    expect(pareto.paidSeries.at(-1)?.cumulativePct).toBeCloseTo(100);
+    expect(pareto.ordersSeries[1]!.cumulativePct).toBeGreaterThanOrEqual(
+      pareto.ordersSeries[0]!.cumulativePct,
     );
-    expect(points[1]!.cumulativePaidPct).toBeGreaterThanOrEqual(
-      points[0]!.cumulativePaidPct,
+    expect(pareto.paidSeries[1]!.cumulativePct).toBeGreaterThanOrEqual(
+      pareto.paidSeries[0]!.cumulativePct,
     );
   });
 
