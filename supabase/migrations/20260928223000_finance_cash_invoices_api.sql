@@ -227,7 +227,7 @@ begin
   values(
     v_org,p_order_id,v_number,
     coalesce(nullif(p_payload->>'invoiceDate','')::date,current_date),
-    round(v_amount,2),0,'COP','REGISTERED',v_actor,trim(p_idempotency_key),v_actor,
+    erp_private.finance_round_money(v_amount),0,'COP','REGISTERED',v_actor,trim(p_idempotency_key),v_actor,
     (
       case when jsonb_typeof(coalesce(p_payload->'metadata','{}'::jsonb))='object'
         then coalesce(p_payload->'metadata','{}'::jsonb) else '{}'::jsonb end
@@ -326,7 +326,7 @@ begin
       using errcode='22023';
   end if;
 
-  v_new_reversed:=round(v_invoice.reversed_amount+p_amount,2);
+  v_new_reversed:=erp_private.finance_round_money(v_invoice.reversed_amount+p_amount);
 
   update erp_supply.invoices
   set reversed_amount=v_new_reversed,
@@ -339,7 +339,7 @@ begin
   perform erp_private.finance_append_event(
     v_invoice.order_id,'INVOICE',v_invoice.id,'INVOICE_PAYMENT_REVERSED',
     jsonb_build_object(
-      'reversalAmount',round(p_amount,2),
+      'reversalAmount',erp_private.finance_round_money(p_amount),
       'totalReversed',v_invoice.reversed_amount,
       'remainingPaid',erp_private.finance_invoice_effective_paid(
         v_invoice.amount,v_invoice.reversed_amount,v_invoice.status
