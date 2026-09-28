@@ -100,7 +100,7 @@ export function useWorkforcePage() {
       try {
         const [nextSchedule, nextIndicators] = await Promise.all([
           application.workforce.schedule(range.from, range.to),
-          application.workforce.indicators(range.from, nextMode === 'month' ? range.to : range.to),
+          application.workforce.indicators(range.from, range.to),
         ]);
         setMode(nextMode);
         setAnchor(nextAnchor);
