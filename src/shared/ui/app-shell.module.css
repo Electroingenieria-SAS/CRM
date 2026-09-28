@@ -75,6 +75,7 @@
 
 .content {
   width: min(100%, 1480px);
+  min-width: 0;
   margin: 0 auto;
   padding: max(var(--space-5), env(safe-area-inset-top)) clamp(1rem, 3vw, 2.5rem)
     max(var(--space-6), env(safe-area-inset-bottom));
@@ -82,7 +83,7 @@
 
 @media (max-width: 760px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding-bottom: 72px;
   }
 
