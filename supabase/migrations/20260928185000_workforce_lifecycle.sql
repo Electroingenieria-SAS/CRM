@@ -89,7 +89,6 @@ declare
   v_actor uuid:=erp_private.current_profile_id();
   v_activity erp_supply.workforce_activities%rowtype;
   v_event jsonb;
-  v_from_status text;
 begin
   perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
 
@@ -285,6 +284,7 @@ declare
   v_actor uuid:=erp_private.current_profile_id();
   v_activity erp_supply.workforce_activities%rowtype;
   v_event jsonb;
+  v_from_status text;
 begin
   perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
 
