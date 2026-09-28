@@ -9,7 +9,7 @@ select col_not_null('erp_supply','order_items','quantity','item quantity is requ
 
 select throws_ok(
   $$insert into erp_supply.order_items(order_id,line_number,description,quantity,requires_cut)
-    values ('00000000-0000-0000-0000-000000000000',1,'Invalid',0,false)$$,
+    values ('00000000-0000-0000-0000-000000000000',1,'Invalid',1,false)$$,
   '23503',
   null,
   'orphan item is rejected by foreign key'
