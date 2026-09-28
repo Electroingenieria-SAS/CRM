@@ -2,7 +2,6 @@
 
 import { workforceDaySlots } from '@/modules/workforce/domain/work-schedule';
 import { occupancyLabel } from '@/modules/workforce/domain/workforce-metrics';
-import { occupancyLabel } from '@/modules/workforce/domain/workforce-metrics';
 import type {
   WorkforceActivitySummary,
   WorkforcePerson,
