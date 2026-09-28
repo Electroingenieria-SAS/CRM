@@ -117,8 +117,9 @@
   padding: var(--space-5);
 }
 
-.baselineCommit {
+.baseline > code {
   display: block;
+  box-sizing: border-box;
   width: 100%;
   min-width: 0;
   max-width: 100%;
