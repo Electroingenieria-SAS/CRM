@@ -27,24 +27,9 @@ export const orderItemInputSchema = z
 export const createOrderSchema = z.object({
   orderNumber: z.string().trim().min(1).max(120),
   externalReference: z.string().trim().max(160).optional(),
-  orderType: z
-    .string()
-    .trim()
-    .min(1)
-    .max(20)
-    .transform((value) => value.toUpperCase()),
-  paymentCondition: z
-    .string()
-    .trim()
-    .min(1)
-    .max(30)
-    .transform((value) => value.toUpperCase()),
-  deliveryRoute: z
-    .string()
-    .trim()
-    .min(1)
-    .max(40)
-    .transform((value) => value.toUpperCase()),
+  orderType: z.string().trim().min(1).max(20).transform((value) => value.toUpperCase()),
+  paymentCondition: z.string().trim().min(1).max(30).transform((value) => value.toUpperCase()),
+  deliveryRoute: z.string().trim().min(1).max(40).transform((value) => value.toUpperCase()),
   clientName: z.string().trim().min(1).max(240),
   clientDocument: z.string().trim().max(80).optional(),
   clientDepartment: z.string().trim().max(120).optional(),
@@ -103,7 +88,41 @@ export const createOrderResponseSchema = z.object({
   contractVersion: z.string(),
 });
 
+export const orderDetailResponseSchema = z.object({
+  order: z.object({
+    id: z.string().uuid(),
+    order_number: z.string(),
+    client_name: z.string(),
+    client_city: z.string().nullable(),
+    client_address: z.string().nullable(),
+    order_type_code: z.string(),
+    payment_condition_code: z.string(),
+    delivery_route_code: z.string(),
+    current_step_code: z.string(),
+    status: z.string(),
+    priority: z.string(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }),
+  items: z.array(
+    z.object({
+      id: z.string().uuid(),
+      description: z.string(),
+      quantity: z.coerce.number(),
+      unit: z.string(),
+      sku: z.string().nullable(),
+      reference: z.string().nullable(),
+      requires_cut: z.boolean(),
+      requested_cut_length: z.coerce.number().nullable(),
+    }).passthrough(),
+  ),
+  tasks: z.array(z.record(z.string(), z.unknown())),
+  events: z.array(z.record(z.string(), z.unknown())),
+  contractVersion: z.string(),
+});
+
 export type OrderListItem = z.infer<typeof orderListItemSchema>;
 export type CreateOrderInput = z.input<typeof createOrderSchema>;
 export type OrderListResponse = z.infer<typeof orderListResponseSchema>;
 export type CreateOrderResponse = z.infer<typeof createOrderResponseSchema>;
+export type OrderDetailResponse = z.infer<typeof orderDetailResponseSchema>;
