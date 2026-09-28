@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('staging shell renders without horizontal overflow', async ({ page }) => {
+test('login entry renders without horizontal overflow', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'CRM empresarial' })).toBeVisible();
-  await expect(page.getByText('staging seguro')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth,
@@ -15,7 +14,8 @@ test('semantic landmarks and language are present', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.getByRole('main')).toHaveCount(1);
-  await expect(page.getByRole('heading', { level: 2 })).toHaveCount(5);
+  await expect(page.getByLabel('Correo')).toBeVisible();
+  await expect(page.getByLabel('Contraseña')).toBeVisible();
 });
 
 test('keyboard navigation exposes a visible focus target', async ({ page }) => {
@@ -33,42 +33,12 @@ test.describe('reference responsive widths', () => {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
       await page.goto('/');
 
-      const layout = await page.evaluate(() => {
-        const viewportWidth = window.innerWidth;
-        const documentWidth = document.documentElement.scrollWidth;
-        const offenders = Array.from(document.querySelectorAll<HTMLElement>('*'))
-          .map((element) => {
-            const rect = element.getBoundingClientRect();
-            return {
-              tag: element.tagName.toLowerCase(),
-              id: element.id,
-              className: element.className,
-              left: Math.round(rect.left * 100) / 100,
-              right: Math.round(rect.right * 100) / 100,
-              width: Math.round(rect.width * 100) / 100,
-              text: element.textContent?.slice(0, 120) ?? '',
-              parentTag: element.parentElement?.tagName.toLowerCase() ?? '',
-              parentClass: element.parentElement?.className ?? '',
-              computed: {
-                display: getComputedStyle(element).display,
-                width: getComputedStyle(element).width,
-                maxWidth: getComputedStyle(element).maxWidth,
-                whiteSpace: getComputedStyle(element).whiteSpace,
-                wordBreak: getComputedStyle(element).wordBreak,
-                overflowWrap: getComputedStyle(element).overflowWrap,
-                fontSize: getComputedStyle(element).fontSize,
-              },
-            };
-          })
-          .filter((item) => item.right > viewportWidth + 0.5 || item.left < -0.5)
-          .slice(0, 10);
+      const layout = await page.evaluate(() => ({
+        viewportWidth: window.innerWidth,
+        documentWidth: document.documentElement.scrollWidth,
+      }));
 
-        return { viewportWidth, documentWidth, offenders };
-      });
-
-      expect(layout.documentWidth > layout.viewportWidth, JSON.stringify(layout, null, 2)).toBe(
-        false,
-      );
+      expect(layout.documentWidth > layout.viewportWidth, JSON.stringify(layout)).toBe(false);
     });
   }
 });
