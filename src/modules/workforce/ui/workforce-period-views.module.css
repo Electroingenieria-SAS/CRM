@@ -1,5 +1,9 @@
 .weekWrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
@@ -7,6 +11,7 @@
 
 .weekGrid {
   display: grid;
+  width: 100%;
   min-width: 960px;
   grid-template-columns: minmax(210px, 1.2fr) repeat(5, minmax(140px, 1fr));
 }
