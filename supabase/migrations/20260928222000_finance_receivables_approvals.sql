@@ -292,6 +292,8 @@ begin
     raise exception 'Pedido no encontrado' using errcode='22023';
   end if;
 
+  perform erp_private.finance_idempotency_lock('VALIDATION',p_idempotency_key);
+
   select * into v_validation
   from erp_supply.financial_validations
   where organization_id=v_org and idempotency_key=trim(p_idempotency_key)
@@ -362,6 +364,8 @@ begin
      or nullif(trim(coalesce(p_reason,'')),'') is null then
     raise exception 'Código y razón de retención son obligatorios' using errcode='22023';
   end if;
+
+  perform erp_private.finance_idempotency_lock('HOLD',p_idempotency_key);
 
   select * into v_hold
   from erp_supply.financial_holds
@@ -520,6 +524,8 @@ begin
   if nullif(trim(coalesce(p_reason,'')),'') is null then
     raise exception 'La justificación es obligatoria' using errcode='22023';
   end if;
+
+  perform erp_private.finance_idempotency_lock('APPROVAL_REQUEST',p_idempotency_key);
 
   select * into v_request
   from erp_supply.financial_approval_requests
