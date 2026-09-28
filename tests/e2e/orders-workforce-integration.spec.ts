@@ -27,9 +27,7 @@ test('integration health is visible and reconciliation detection is explicit', a
   await login(page);
   await page.goto('/operations/orders-workforce');
 
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' })).toBeVisible();
   await expect(page.getByText('Procesando')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Pendientes por etapa' })).toBeVisible();
 
@@ -48,9 +46,7 @@ test('integration health remains usable at reference widths', async ({ page }, t
   for (const width of [320, 375, 390, 430, 768, 1024, 1366, 1920]) {
     await page.setViewportSize({ width, height: width <= 430 ? 760 : 900 });
     await page.goto('/operations/orders-workforce');
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' })).toBeVisible();
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth,
@@ -62,8 +58,6 @@ test('integration health remains usable at reference widths', async ({ page }, t
 test('integration health cross-browser smoke', async ({ page }) => {
   await login(page);
   await page.goto('/operations/orders-workforce');
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' })).toBeVisible();
   await expect(page.getByLabel('Estado de integración')).toBeVisible();
 });

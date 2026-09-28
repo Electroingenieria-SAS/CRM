@@ -87,11 +87,26 @@ export function OrdersWorkforceWorkspace(props: Props) {
       ) : null}
 
       <section className={styles.metrics} aria-label="Estado de integración">
-        <article><small>Pendientes</small><strong>{status.pending}</strong></article>
-        <article><small>Procesando</small><strong>{status.processing}</strong></article>
-        <article><small>Procesados</small><strong>{status.processed}</strong></article>
-        <article><small>Fallidos</small><strong>{status.failed}</strong></article>
-        <article><small>Locks obsoletos</small><strong>{status.staleProcessing}</strong></article>
+        <article>
+          <small>Pendientes</small>
+          <strong>{status.pending}</strong>
+        </article>
+        <article>
+          <small>Procesando</small>
+          <strong>{status.processing}</strong>
+        </article>
+        <article>
+          <small>Procesados</small>
+          <strong>{status.processed}</strong>
+        </article>
+        <article>
+          <small>Fallidos</small>
+          <strong>{status.failed}</strong>
+        </article>
+        <article>
+          <small>Locks obsoletos</small>
+          <strong>{status.staleProcessing}</strong>
+        </article>
       </section>
 
       <section className={styles.panel} aria-labelledby="pending-step-title">

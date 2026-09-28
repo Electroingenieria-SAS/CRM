@@ -18,8 +18,6 @@ export function createOrdersWorkforceBrowserApplication(): OrdersWorkforceBrowse
 
   return {
     auth: new AuthService(new SupabaseAuthGateway(client), new SupabaseSessionRepository(client)),
-    health: new OrdersWorkforceHealthService(
-      new SupabaseOrderWorkforceOutboxRepository(client),
-    ),
+    health: new OrdersWorkforceHealthService(new SupabaseOrderWorkforceOutboxRepository(client)),
   };
 }
