@@ -4,7 +4,7 @@
 
 Recalcular cuando el estado muestre “Actualización pendiente”, normalmente después de crear/cambiar un pedido válido, cancelar un pedido, registrar factura, revertir total o parcialmente una factura o activar una nueva versión del algoritmo.
 
-No recalcular en cada render.
+No recalcular en cada render. Pedidos y facturas solo marcan el dataset como pendiente; el cálculo exacto se ejecuta por lote porque percentiles, ranking y Pareto dependen de toda la población.
 
 ## Procedimiento
 
@@ -22,7 +22,7 @@ El motor usa pg_advisory_xact_lock derivado del UUID de organización. Dos recal
 
 ## Error
 
-La ejecución fallida se registra como FAILED con error_code; no debe reemplazar el snapshot vigente.
+El recalculado corre en una sola transacción. Si falla, PostgreSQL revierte el intento completo y el snapshot vigente permanece intacto; el error de la RPC se propaga al cliente sin exponer consultas ni secretos.
 
 Revisar primero migraciones, RLS/permisos, algoritmo activo, consistencia de facturas y estado de pedidos.
 
