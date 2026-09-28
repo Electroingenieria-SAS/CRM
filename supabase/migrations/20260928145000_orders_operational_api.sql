@@ -176,7 +176,16 @@ begin
     v_actions:=v_actions||jsonb_build_array(jsonb_build_object('code','REOPEN','label','Reabrir pedido','enabled',true));
   end if;
 
-  return jsonb_build_object('actions',v_actions,'missingRequirements',v_missing,'blockingIssueOpen',v_has_blocking_issue);
+  return jsonb_build_object(
+    'actions',v_actions,
+    'missingRequirements',v_missing,
+    'blockingIssueOpen',v_has_blocking_issue,
+    'reopenCandidates',(
+      select coalesce(jsonb_agg(jsonb_build_object('code',s.code,'name',s.name) order by s.sort_order),'[]'::jsonb)
+      from erp_supply.workflow_steps s
+      where s.active and not s.terminal
+    )
+  );
 end;
 $$;
 
