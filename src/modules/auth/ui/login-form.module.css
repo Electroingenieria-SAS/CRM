@@ -1,0 +1,49 @@
+.form {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field label {
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.field input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.9rem;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.field input:disabled {
+  background: var(--canvas);
+  cursor: not-allowed;
+}
+
+.message {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--brand-soft);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.recovery {
+  border: 0;
+  background: transparent;
+  color: var(--brand-strong);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
