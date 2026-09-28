@@ -52,7 +52,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.118.0
       - name: Start isolated local Supabase
         run: supabase start
       - name: Rebuild database from migrations and synthetic seed
@@ -100,7 +100,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.118.0
       - name: Start isolated Supabase and rebuild schema
         run: |
           supabase start
