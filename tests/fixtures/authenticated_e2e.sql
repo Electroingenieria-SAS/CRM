@@ -24,6 +24,16 @@ insert into auth.users(
   '{"provider":"email","providers":["email"]}'::jsonb,
   '{"fixture":"e2e"}'::jsonb,
   now(),now(),'','','',''
+),
+(
+  '00000000-0000-0000-0000-000000000000',
+  '91000000-0000-0000-0000-000000000003',
+  'authenticated','authenticated','qa-recovery@example.test',
+  extensions.crypt(:'e2e_password', extensions.gen_salt('bf')),
+  now(),
+  '{"provider":"email","providers":["email"]}'::jsonb,
+  '{"fixture":"e2e"}'::jsonb,
+  now(),now(),'','','',''
 );
 
 insert into auth.identities(
@@ -42,6 +52,13 @@ insert into auth.identities(
   '91000000-0000-0000-0000-000000000002',
   '{"sub":"91000000-0000-0000-0000-000000000002","email":"qa-auditor@example.test"}'::jsonb,
   'email',now(),now(),now(),'qa-auditor@example.test'
+),
+(
+  '92000000-0000-0000-0000-000000000003',
+  '91000000-0000-0000-0000-000000000003',
+  '91000000-0000-0000-0000-000000000003',
+  '{"sub":"91000000-0000-0000-0000-000000000003","email":"qa-recovery@example.test"}'::jsonb,
+  'email',now(),now(),now(),'qa-recovery@example.test'
 );
 
 insert into erp_supply.profiles(
@@ -68,6 +85,19 @@ select
   'QA-AUDIT'
 from erp_supply.organizations o where o.code='EI';
 
+insert into erp_supply.profiles(
+  id,organization_id,auth_user_id,email,display_name,employee_code
+)
+select
+  '93000000-0000-0000-0000-000000000003',
+  o.id,
+  '91000000-0000-0000-0000-000000000003',
+  'qa-recovery@example.test',
+  'QA Recuperación',
+  'QA-RECOVERY'
+from erp_supply.organizations o where o.code='EI';
+
 insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
 ('93000000-0000-0000-0000-000000000001','ventas',true),
-('93000000-0000-0000-0000-000000000002','auditoria',true);
+('93000000-0000-0000-0000-000000000002','auditoria',true),
+('93000000-0000-0000-0000-000000000003','ventas',true);
