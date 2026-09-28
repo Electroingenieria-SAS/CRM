@@ -12,6 +12,7 @@ interface WorkforceCreateFormProps {
   catalog: readonly WorkforceCatalogItem[];
   people: readonly WorkforcePerson[];
   initialDate: string;
+  allowAutoAssign: boolean;
   onCreate(input: CreateWorkforceActivityInput): Promise<void>;
   onCancel(): void;
 }
@@ -27,6 +28,7 @@ export function WorkforceCreateForm({
   catalog,
   people,
   initialDate,
+  allowAutoAssign,
   onCreate,
   onCancel,
 }: WorkforceCreateFormProps) {
@@ -134,14 +136,16 @@ export function WorkforceCreateForm({
             {people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
           </select>
         </label>
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={autoAssign}
-            onChange={(event) => setAutoAssign(event.target.checked)}
-          />
-          Autoasignar a una persona disponible compatible
-        </label>
+        {allowAutoAssign ? (
+          <label className={styles.checkbox}>
+            <input
+              type="checkbox"
+              checked={autoAssign}
+              onChange={(event) => setAutoAssign(event.target.checked)}
+            />
+            Autoasignar a una persona disponible compatible
+          </label>
+        ) : null}
         <label className={styles.full}>
           Descripción
           <textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} />
