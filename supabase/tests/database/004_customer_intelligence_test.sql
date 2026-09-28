@@ -60,11 +60,7 @@ insert into erp_supply.organizations(id,code,name) values
 ('42000000-0000-0000-0000-000000000001','CI_A','CI A'),
 ('42000000-0000-0000-0000-000000000002','CI_B','CI B');
 
-insert into erp_supply.customer_intelligence_algorithm_versions(
-  organization_id,version,order_weight,paid_weight,active
-) values
-('42000000-0000-0000-0000-000000000001','1.0.0',0.5,0.5,true),
-('42000000-0000-0000-0000-000000000002','1.0.0',0.5,0.5,true);
+-- The organization trigger provisions algorithm version 1.0.0 automatically.
 
 insert into erp_supply.profiles(
   id,organization_id,auth_user_id,email,display_name
