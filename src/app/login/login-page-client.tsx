@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserApplication } from '@/composition/browser-application';
 import { LoginForm } from '@/modules/auth/ui/login-form';
 
@@ -10,20 +10,14 @@ function recoveryRedirect(): string | undefined {
   return new URL('../auth/update-password/', window.location.href).toString();
 }
 
-function passwordUpdatedNotice(): string | null {
-  if (typeof window === 'undefined') return null;
-  return new URLSearchParams(window.location.search).get('passwordUpdated') === '1'
-    ? 'Tu contraseña fue actualizada. Inicia sesión con la nueva contraseña.'
-    : null;
-}
-
 export function LoginPageClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const application = useMemo(() => createBrowserApplication(), []);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+  const passwordUpdated = searchParams.get('passwordUpdated') === '1';
 
   useEffect(() => {
-    setNotice(passwordUpdatedNotice());
     if (!application) return;
 
     let active = true;
@@ -34,7 +28,9 @@ export function LoginPageClient() {
       })
       .catch((error) => {
         if (active) {
-          setNotice(error instanceof Error ? error.message : 'No fue posible restaurar la sesión.');
+          setRestoreError(
+            error instanceof Error ? error.message : 'No fue posible restaurar la sesión.',
+          );
         }
       });
 
@@ -57,7 +53,10 @@ export function LoginPageClient() {
             en CI contra un Supabase aislado.
           </p>
         ) : null}
-        {notice ? <p role="status">{notice}</p> : null}
+        {passwordUpdated ? (
+          <p role="status">Tu contraseña fue actualizada. Inicia sesión con la nueva contraseña.</p>
+        ) : null}
+        {restoreError ? <p role="alert">{restoreError}</p> : null}
         <LoginForm
           disabled={!application}
           onLogin={async (email, password) => {
