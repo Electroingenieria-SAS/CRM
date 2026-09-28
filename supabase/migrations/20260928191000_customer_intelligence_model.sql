@@ -137,6 +137,29 @@ select id,'1.0.0',0.5,0.5,true
 from erp_supply.organizations
 on conflict (organization_id,version) do nothing;
 
+create or replace function erp_private.create_default_customer_intelligence_algorithm()
+returns trigger
+language plpgsql
+security definer
+set search_path=pg_catalog,erp_supply
+as $
+begin
+  insert into erp_supply.customer_intelligence_algorithm_versions(
+    organization_id,version,order_weight,paid_weight,active
+  )
+  values(new.id,'1.0.0',0.5,0.5,true)
+  on conflict (organization_id,version) do nothing;
+  return new;
+end;
+$;
+
+revoke all on function erp_private.create_default_customer_intelligence_algorithm()
+from public,anon,authenticated;
+
+create trigger trg_organizations_customer_intelligence_algorithm
+after insert on erp_supply.organizations
+for each row execute function erp_private.create_default_customer_intelligence_algorithm();
+
 create or replace function erp_private.mark_customer_intelligence_dirty()
 returns trigger
 language plpgsql
