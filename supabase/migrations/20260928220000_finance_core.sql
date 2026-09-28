@@ -105,6 +105,9 @@ create table erp_supply.financial_holds (
   )
 );
 
+create unique index uq_financial_hold_org_id
+  on erp_supply.financial_holds(organization_id,id);
+
 create unique index uq_financial_hold_idempotency
   on erp_supply.financial_holds(organization_id,idempotency_key)
   where idempotency_key is not null;
@@ -120,7 +123,7 @@ create table erp_supply.financial_approval_requests (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references erp_supply.organizations(id),
   order_id uuid not null,
-  hold_id uuid references erp_supply.financial_holds(id),
+  hold_id uuid,
   request_type text not null
     check (request_type in ('CREDIT_EXCEPTION','RELEASE_EXCEPTION','PAYMENT_EXCEPTION')),
   status text not null default 'PENDING'
@@ -135,6 +138,8 @@ create table erp_supply.financial_approval_requests (
   created_at timestamptz not null default now(),
   foreign key (organization_id,order_id)
     references erp_supply.orders(organization_id,id),
+  foreign key (organization_id,hold_id)
+    references erp_supply.financial_holds(organization_id,id),
   check (decided_by is null or decided_by<>requested_by),
   check (
     (status in ('APPROVED','REJECTED') and decided_by is not null and decided_at is not null)
