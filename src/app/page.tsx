@@ -1,5 +1,5 @@
-import { ReconstructionOverview } from '@/modules/platform/ui/reconstruction-overview';
+import { LoginPageClient } from '@/app/login/login-page-client';
 
 export default function HomePage() {
-  return <ReconstructionOverview />;
+  return <LoginPageClient />;
 }
