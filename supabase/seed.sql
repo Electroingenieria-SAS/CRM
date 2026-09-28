@@ -153,3 +153,118 @@ $$;
 
 revoke all on function public.e2e_bind_user(text,uuid) from public,anon,authenticated;
 grant execute on function public.e2e_bind_user(text,uuid) to service_role;
+
+
+-- Operational workflow catalogs and permissions.
+insert into erp_supply.workflow_steps(
+  code,name,module_code,queue_code,sla_hours,sort_order,terminal,active,metadata
+) values
+('RECEPCION_MERCANCIA','Recepción de mercancía','receiving','RECEPCION_MERCANCIA',8,40,false,true,'{"phase":"supply"}')
+on conflict (code) do update set
+  name=excluded.name,module_code=excluded.module_code,queue_code=excluded.queue_code,
+  sla_hours=excluded.sla_hours,sort_order=excluded.sort_order,active=true;
+
+insert into erp_supply.workflow_transitions(
+  from_step_code,action_code,to_step_code,order_type_code,delivery_route_code,
+  priority,metadata
+) values
+('CARTERA','COMPLETE','RECEPCION_PEDIDO',null,null,100,'{"source":"legacy-certified"}'),
+('CAJA','COMPLETE','RECEPCION_PEDIDO',null,null,100,'{"source":"legacy-certified"}'),
+('COMPRAS','COMPLETE','RECEPCION_MERCANCIA',null,null,100,'{"source":"legacy-certified"}'),
+('RECEPCION_MERCANCIA','COMPLETE','RECEPCION_PEDIDO',null,null,100,'{"source":"legacy-certified"}'),
+('RECEPCION_PEDIDO','COMPLETE','ALISTAMIENTO',null,null,100,'{"source":"legacy-v10.12-parallel-cut"}'),
+('CORTE','COMPLETE','ALISTAMIENTO',null,null,100,'{"source":"legacy-historical-compatibility"}'),
+('ALISTAMIENTO','COMPLETE','CAJA_FACTURACION','PVN',null,10,'{"source":"legacy-cash-billing"}'),
+('ALISTAMIENTO','COMPLETE','FACTURACION',null,null,100,'{"source":"legacy-certified"}'),
+('CAJA_FACTURACION','COMPLETE','CLIENT_POINT',null,'CLIENT_POINT',10,'{}'),
+('CAJA_FACTURACION','COMPLETE','CLIENT_PICKUP',null,'CLIENT_PICKUP',10,'{}'),
+('CAJA_FACTURACION','COMPLETE','LOCAL_DISPATCH',null,'LOCAL_DISPATCH',10,'{}'),
+('CAJA_FACTURACION','COMPLETE','NATIONAL_DISPATCH',null,'NATIONAL_DISPATCH',10,'{}'),
+('FACTURACION','COMPLETE','CLIENT_POINT',null,'CLIENT_POINT',10,'{}'),
+('FACTURACION','COMPLETE','CLIENT_PICKUP',null,'CLIENT_PICKUP',10,'{}'),
+('FACTURACION','COMPLETE','LOCAL_DISPATCH',null,'LOCAL_DISPATCH',10,'{}'),
+('FACTURACION','COMPLETE','NATIONAL_DISPATCH',null,'NATIONAL_DISPATCH',10,'{}'),
+('CLIENT_POINT','COMPLETE','CLOSURE',null,null,100,'{}'),
+('CLIENT_PICKUP','COMPLETE','CLOSURE',null,null,100,'{}'),
+('LOCAL_DISPATCH','COMPLETE','CLOSURE',null,null,100,'{}'),
+('NATIONAL_DISPATCH','COMPLETE','CLOSURE',null,null,100,'{}'),
+('CLOSURE','COMPLETE','CLOSED',null,null,100,'{}')
+on conflict do nothing;
+
+insert into erp_supply.step_roles(
+  step_code,role_code,can_view,can_claim,can_assign,can_start,can_complete,can_block,can_override
+) values
+('CARTERA','cartera',true,true,false,true,true,true,false),
+('CAJA','caja',true,true,false,true,true,true,false),
+('COMPRAS','compras',true,true,false,true,true,true,false),
+('RECEPCION_MERCANCIA','recepcion_mercancia',true,true,false,true,true,true,false),
+('RECEPCION_PEDIDO','coordinador_logistico',true,true,true,true,true,true,false),
+('RECEPCION_PEDIDO','lider_logistica',true,true,true,true,true,true,true),
+('ALISTAMIENTO','aux_logistica',true,true,false,true,true,true,false),
+('ALISTAMIENTO','lider_logistica',true,true,true,true,true,true,true),
+('CORTE','auxiliar_corte',true,true,false,true,true,true,false),
+('CORTE','lider_logistica',true,true,true,true,true,true,true),
+('CAJA_FACTURACION','caja',true,true,false,true,true,true,false),
+('FACTURACION','coordinador_logistico',true,true,true,true,true,true,false),
+('FACTURACION','despacho_nacional',true,true,false,true,true,true,false),
+('CLIENT_POINT','coordinador_logistico',true,true,true,true,true,true,false),
+('CLIENT_PICKUP','coordinador_logistico',true,true,true,true,true,true,false),
+('LOCAL_DISPATCH','coordinador_logistico',true,true,true,true,true,true,false),
+('NATIONAL_DISPATCH','despacho_nacional',true,true,false,true,true,true,false),
+('NATIONAL_DISPATCH','coordinador_logistico',true,true,true,true,true,true,true),
+('CLOSURE','jefe_logistica',true,true,true,true,true,true,true),
+('CLOSURE','coordinador_logistico',true,true,false,true,true,true,false)
+on conflict (step_code,role_code) do update set
+  can_view=excluded.can_view,can_claim=excluded.can_claim,can_assign=excluded.can_assign,
+  can_start=excluded.can_start,can_complete=excluded.can_complete,
+  can_block=excluded.can_block,can_override=excluded.can_override;
+
+insert into erp_supply.step_roles(
+  step_code,role_code,can_view,can_claim,can_assign,can_start,can_complete,can_block,can_override
+)
+select s.code,'super_admin',true,true,true,true,true,true,true
+from erp_supply.workflow_steps s
+where not s.terminal
+on conflict (step_code,role_code) do update set
+  can_view=true,can_claim=true,can_assign=true,can_start=true,
+  can_complete=true,can_block=true,can_override=true;
+
+insert into erp_supply.order_block_reasons(code,name,description,sort_order) values
+('MATERIAL','Falta de material','Material requerido no disponible para continuar.',10),
+('APPROVAL','Espera de aprobación','La operación depende de una decisión formal.',20),
+('INCOMPLETE_INFORMATION','Información incompleta','Faltan datos o documentos operativos.',30),
+('PAYMENT','Pago','Existe una condición pendiente relacionada con pago.',40),
+('SUPPLIER','Proveedor','La continuidad depende de un proveedor.',50),
+('MACHINE','Máquina o equipo','Existe una indisponibilidad de máquina o equipo.',60),
+('CUSTOMER','Cliente','Se requiere respuesta o acción del cliente.',70),
+('OTHER','Otro','Motivo operativo no cubierto por el catálogo.',100)
+on conflict (code) do update set name=excluded.name,description=excluded.description,active=true;
+
+insert into erp_supply.order_issue_types(
+  code,name,default_severity,default_blocking,sort_order
+) values
+('NOTE','Nota','LOW',false,10),
+('NOVELTY','Novedad','MEDIUM',false,20),
+('QUALITY','Calidad','HIGH',true,30),
+('DAMAGED_MATERIAL','Material averiado','HIGH',true,40),
+('DELIVERY','Entrega','HIGH',false,50),
+('OTHER','Otra incidencia','MEDIUM',false,100)
+on conflict (code) do update set
+  name=excluded.name,default_severity=excluded.default_severity,
+  default_blocking=excluded.default_blocking,active=true;
+
+insert into erp_supply.order_action_authorities(action_code,role_code) values
+('CANCEL','jefe_logistica'),
+('CANCEL','gerencia'),
+('CANCEL','super_admin'),
+('REOPEN','jefe_logistica'),
+('REOPEN','gerencia'),
+('REOPEN','super_admin')
+on conflict (action_code,role_code) do update set active=true;
+
+insert into erp_supply.workflow_step_requirements(
+  step_code,requirement_code,requirement_type,evidence_type,required_count,metadata
+) values
+('CLOSURE','CLOSURE_PROOF','EVIDENCE','CLOSURE_PROOF',1,'{"label":"Evidencia de cierre"}')
+on conflict (step_code,requirement_code) do update set active=true;
+

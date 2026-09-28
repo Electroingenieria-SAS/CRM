@@ -104,21 +104,26 @@ export const createOrderResponseSchema = z.object({
 });
 
 export const orderDetailResponseSchema = z.object({
-  order: z.object({
-    id: z.string().uuid(),
-    order_number: z.string(),
-    client_name: z.string(),
-    client_city: z.string().nullable(),
-    client_address: z.string().nullable(),
-    order_type_code: z.string(),
-    payment_condition_code: z.string(),
-    delivery_route_code: z.string(),
-    current_step_code: z.string(),
-    status: z.string(),
-    priority: z.string(),
-    created_at: z.string(),
-    updated_at: z.string(),
-  }),
+  order: z
+    .object({
+      id: z.string().uuid(),
+      order_number: z.string(),
+      client_name: z.string(),
+      client_city: z.string().nullable(),
+      client_address: z.string().nullable(),
+      order_type_code: z.string(),
+      payment_condition_code: z.string(),
+      delivery_route_code: z.string(),
+      current_step_code: z.string(),
+      status: z.string(),
+      priority: z.string(),
+      current_assignee_id: z.string().uuid().nullable(),
+      current_role_code: z.string().nullable(),
+      version: z.number().int().positive(),
+      created_at: z.string(),
+      updated_at: z.string(),
+    })
+    .passthrough(),
   items: z.array(
     z
       .object({
@@ -134,7 +139,51 @@ export const orderDetailResponseSchema = z.object({
       .passthrough(),
   ),
   tasks: z.array(z.record(z.string(), z.unknown())),
+  blocks: z.array(z.record(z.string(), z.unknown())),
+  issues: z.array(z.record(z.string(), z.unknown())),
+  evidence: z.array(z.record(z.string(), z.unknown())),
   events: z.array(z.record(z.string(), z.unknown())),
+  workflow: z.object({
+    actions: z.array(
+      z.object({
+        code: z.string(),
+        label: z.string(),
+        enabled: z.boolean(),
+        reason: z.string().nullable().optional(),
+        requires: z.array(z.string()).optional(),
+      }),
+    ),
+    missingRequirements: z.array(z.record(z.string(), z.unknown())),
+    blockingIssueOpen: z.boolean(),
+    reopenCandidates: z.array(
+      z.object({
+        code: z.string(),
+        name: z.string(),
+      }),
+    ),
+    blockReasons: z.array(
+      z.object({
+        code: z.string(),
+        name: z.string(),
+      }),
+    ),
+    issueTypes: z.array(
+      z.object({
+        code: z.string(),
+        name: z.string(),
+        defaultSeverity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
+        defaultBlocking: z.boolean(),
+      }),
+    ),
+  }),
+  assignmentCandidates: z.array(
+    z.object({
+      id: z.string().uuid(),
+      name: z.string(),
+      employeeCode: z.string().nullable(),
+      roles: z.array(z.string()),
+    }),
+  ),
   contractVersion: z.string(),
 });
 

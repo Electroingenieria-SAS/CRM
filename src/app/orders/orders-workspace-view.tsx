@@ -23,6 +23,7 @@ interface OrdersWorkspaceViewProps {
   message: string | null;
   notice: string | null;
   detail: OrderDetailResponse | null;
+  workflowBusy: boolean;
   onFiltersChange(filters: OrdersFilterValues): void;
   onSearch(): void;
   onStartCreate(): void;
@@ -30,6 +31,25 @@ interface OrdersWorkspaceViewProps {
   onCreate(input: CreateOrderInput): Promise<void>;
   onOpenDetail(orderId: string): void;
   onCloseDetail(): void;
+  onWorkflowSimpleAction(action: 'CLAIM' | 'START' | 'COMPLETE'): Promise<void>;
+  onAssign(profileId: string): Promise<void>;
+  onBlock(reasonCode: string, detail: string): Promise<void>;
+  onResume(resolution: string): Promise<void>;
+  onCreateIssue(input: {
+    type: string;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    blocking: boolean;
+    title: string;
+    description: string;
+  }): Promise<void>;
+  onAddEvidence(input: {
+    evidenceType: string;
+    storageReference: string;
+    fileName?: string;
+  }): Promise<void>;
+  onCancel(reason: string): Promise<void>;
+  onReopen(targetStep: string, reason: string): Promise<void>;
+  onResolveIssue(issueId: string, resolution: string): Promise<void>;
   onSignOut(): Promise<void>;
 }
 
@@ -109,7 +129,22 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
         )}
       </section>
 
-      {props.detail ? <OrderDetail detail={props.detail} onClose={props.onCloseDetail} /> : null}
+      {props.detail ? (
+        <OrderDetail
+          detail={props.detail}
+          busy={props.workflowBusy}
+          onClose={props.onCloseDetail}
+          onSimpleAction={props.onWorkflowSimpleAction}
+          onAssign={props.onAssign}
+          onBlock={props.onBlock}
+          onResume={props.onResume}
+          onCreateIssue={props.onCreateIssue}
+          onAddEvidence={props.onAddEvidence}
+          onCancel={props.onCancel}
+          onReopen={props.onReopen}
+          onResolveIssue={props.onResolveIssue}
+        />
+      ) : null}
     </AppShell>
   );
 }
