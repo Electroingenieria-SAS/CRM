@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildPareto,
   calculateCustomerScores,
   classifyCustomer,
+  effectiveInvoicePaid,
   orderPriorityForSegment,
   scoreCustomer,
 } from '@/modules/customers/domain/customer-intelligence';
@@ -47,5 +49,43 @@ describe('customer intelligence domain', () => {
     expect(row?.paidPercentile).toBe(50);
     expect(row?.score).toBe(50);
     expect(row?.segment).toBe('NORMAL');
+  });
+  it('builds monotonic Pareto accumulation without hardcoding 80/20', () => {
+    const points = buildPareto([
+      { customerId: 'a', orderCount: 10, paidAmount: 1_000_000 },
+      { customerId: 'b', orderCount: 5, paidAmount: 200_000 },
+      { customerId: 'c', orderCount: 1, paidAmount: 0 },
+    ]);
+
+    expect(points.at(-1)?.cumulativeOrdersPct).toBeCloseTo(100);
+    expect(points.at(-1)?.cumulativePaidPct).toBeCloseTo(100);
+    expect(points[1]!.cumulativeOrdersPct).toBeGreaterThanOrEqual(
+      points[0]!.cumulativeOrdersPct,
+    );
+    expect(points[1]!.cumulativePaidPct).toBeGreaterThanOrEqual(
+      points[0]!.cumulativePaidPct,
+    );
+  });
+
+  it('treats multiple invoices as partial payments and subtracts reversals', () => {
+    const paid =
+      effectiveInvoicePaid(100_000, 0, 'REGISTERED') +
+      effectiveInvoicePaid(50_000, 20_000, 'PARTIALLY_REVERSED') +
+      effectiveInvoicePaid(80_000, 80_000, 'REVERSED');
+
+    expect(paid).toBe(130_000);
+  });
+
+  it('handles zero payments and very high values without scale addition', () => {
+    const rows = calculateCustomerScores([
+      { customerId: 'zero', orderCount: 4, paidAmount: 0 },
+      { customerId: 'outlier', orderCount: 1, paidAmount: 999_999_999 },
+      { customerId: 'balanced', orderCount: 3, paidAmount: 50_000 },
+    ]);
+
+    for (const row of rows) {
+      expect(row.score).toBeGreaterThanOrEqual(0);
+      expect(row.score).toBeLessThanOrEqual(100);
+    }
   });
 });
