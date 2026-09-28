@@ -62,7 +62,11 @@ create table erp_supply.customer_intelligence_runs (
   started_at timestamptz not null default now(),
   completed_at timestamptz,
   error_code text,
-  unique (organization_id,algorithm_version,dataset_fingerprint)
+);
+
+create index idx_customer_intelligence_run_fingerprint
+on erp_supply.customer_intelligence_runs(
+  organization_id,algorithm_version,dataset_fingerprint,started_at desc
 );
 
 create table erp_supply.customer_intelligence_current (
