@@ -7,7 +7,7 @@ function repository(): WorkforceRepository {
   const mutation = {
     success: true as const,
     idempotent: false,
-    activityId: '00000000-0000-0000-0000-000000000001',
+    activityId: '123e4567-e89b-42d3-a456-426614174001',
     version: 2,
     contractVersion: '1.0.0',
   };
@@ -41,7 +41,7 @@ describe('workforce service', () => {
 
     await service.create(
       {
-        catalogId: '00000000-0000-4000-8000-000000000010',
+        catalogId: '123e4567-e89b-42d3-a456-426614174010',
         plannedStart: '2026-09-29T07:00:00-05:00',
         plannedEnd: '2026-09-29T09:00:00-05:00',
         metadata: {},
@@ -68,8 +68,8 @@ describe('workforce service', () => {
     const file = new File(['test'], 'photo.png', { type: 'image/png' });
 
     await service.uploadEvidence({
-      organizationId: '00000000-0000-0000-0000-000000000100',
-      activityId: '00000000-0000-0000-0000-000000000001',
+      organizationId: '123e4567-e89b-42d3-a456-426614174100',
+      activityId: '123e4567-e89b-42d3-a456-426614174001',
       evidenceType: 'FINAL_PHOTO',
       file,
       idempotencyKey: 'evidence-1',
@@ -77,7 +77,7 @@ describe('workforce service', () => {
 
     expect(storage.upload).toHaveBeenCalledOnce();
     expect(repo.addEvidence).toHaveBeenCalledWith(
-      '00000000-0000-0000-0000-000000000001',
+      '123e4567-e89b-42d3-a456-426614174001',
       expect.objectContaining({
         evidenceType: 'FINAL_PHOTO',
         storageProvider: 'TEST',
