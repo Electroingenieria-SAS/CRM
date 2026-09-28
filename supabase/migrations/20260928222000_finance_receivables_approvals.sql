@@ -156,6 +156,11 @@ begin
           where i.order_id=o.id and lower(i.invoice_number) like '%'||v_search||'%'
         )
       )
+      and (
+        v_status is null
+        or (v_status='HELD' and h.id is not null)
+        or (v_status='PENDING' and h.id is null)
+      )
   )
   select count(*) into v_total from candidates;
 
