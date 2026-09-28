@@ -138,10 +138,17 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/customer_intelligence_e2e.sql
+      - name: Seed synthetic Orders-Workforce integration event
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/orders_workforce_e2e.sql
       - name: Verify Auth and operational session contract
         run: node tests/fixtures/verify-authenticated-e2e-session.mjs
       - name: Prove atomic task claim concurrency
         run: node tests/integration/order-claim-concurrency.mjs
+      - name: Prove Orders-Workforce outbox concurrency
+        run: node tests/integration/orders-workforce-outbox-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Authenticated domain journeys
