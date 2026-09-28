@@ -99,6 +99,7 @@ jobs:
           npx playwright test tests/e2e/workforce.spec.ts
           --project=desktop-chromium
           --project=mobile-iphone
+          --project=mobile-android
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
