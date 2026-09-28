@@ -279,7 +279,7 @@ set search_path=pg_catalog,erp_supply,erp_private
 as $$
 declare
   v_org uuid:=erp_private.current_org_id();
-  v_document text:=erp_private.normalize_customer_document(p_client_document);
+  v_document text:=nullif(upper(regexp_replace(trim(coalesce(p_client_document,'')),'[^A-Za-z0-9]','','g')),'');
   v_result jsonb;
 begin
   if not (
