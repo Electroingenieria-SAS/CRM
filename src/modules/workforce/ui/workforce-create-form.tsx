@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import type {
   CreateWorkforceActivityInput,
   WorkforceCatalogItem,
   WorkforcePerson,
 } from '@/modules/workforce/application/workforce.schemas';
+import { useWorkforceCreateForm } from './use-workforce-create-form';
 import styles from './workforce-form.module.css';
 
 interface WorkforceCreateFormProps {
@@ -17,183 +17,125 @@ interface WorkforceCreateFormProps {
   onCancel(): void;
 }
 
-function localColombiaIso(value: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
-    throw new Error('Fecha y hora inválidas.');
-  }
-  return `${value}:00-05:00`;
+function CatalogFields({ form }: { form: ReturnType<typeof useWorkforceCreateForm> }) {
+  return (
+    <>
+      <label>
+        Categoría
+        <select value={form.category} onChange={(event) => form.selectCategory(event.target.value)}>
+          {form.categories.map(([code, label]) => <option value={code} key={code}>{label}</option>)}
+        </select>
+      </label>
+      <label>
+        Subcategoría
+        <select
+          value={form.subcategory}
+          onChange={(event) => form.selectSubcategory(event.target.value)}
+        >
+          {form.subcategories.map((item) => <option value={item} key={item}>{item}</option>)}
+        </select>
+      </label>
+      <label className={styles.full}>
+        Actividad específica
+        <select value={form.catalogId} onChange={(event) => form.setCatalogId(event.target.value)}>
+          {form.activities.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+        </select>
+      </label>
+    </>
+  );
 }
 
-export function WorkforceCreateForm({
-  catalog,
-  people,
-  initialDate,
-  allowAutoAssign,
-  onCreate,
-  onCancel,
-}: WorkforceCreateFormProps) {
-  const categories = useMemo(
-    () => [...new Map(catalog.map((item) => [item.categoryCode, item.categoryLabel])).entries()],
-    [catalog],
-  );
-  const [category, setCategory] = useState(categories[0]?.[0] ?? '');
-  const subcategories = useMemo(
-    () => [
-      ...new Set(
-        catalog.filter((item) => item.categoryCode === category).map((item) => item.subcategory),
-      ),
-    ],
-    [catalog, category],
-  );
-  const [subcategory, setSubcategory] = useState(subcategories[0] ?? '');
-  const activities = catalog.filter(
-    (item) => item.categoryCode === category && item.subcategory === subcategory,
-  );
-  const [catalogId, setCatalogId] = useState(activities[0]?.id ?? '');
-  const [assignee, setAssignee] = useState('');
-  const [autoAssign, setAutoAssign] = useState(false);
-  const [start, setStart] = useState(`${initialDate}T07:00`);
-  const [end, setEnd] = useState(`${initialDate}T09:00`);
-  const [description, setDescription] = useState('');
-  const [busy, setBusy] = useState(false);
-
-  function selectCategory(next: string) {
-    setCategory(next);
-    const sub = catalog.find((item) => item.categoryCode === next)?.subcategory ?? '';
-    setSubcategory(sub);
-    setCatalogId(
-      catalog.find((item) => item.categoryCode === next && item.subcategory === sub)?.id ?? '',
-    );
-  }
-
-  function selectSubcategory(next: string) {
-    setSubcategory(next);
-    setCatalogId(
-      catalog.find((item) => item.categoryCode === category && item.subcategory === next)?.id ?? '',
-    );
-  }
-
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!catalogId) return;
-    setBusy(true);
-    try {
-      await onCreate({
-        catalogId,
-        ...(autoAssign ? { autoAssign: true } : {}),
-        ...(!autoAssign && assignee ? { assigneeProfileId: assignee } : {}),
-        plannedStart: localColombiaIso(start),
-        plannedEnd: localColombiaIso(end),
-        description: description.trim() || undefined,
-        metadata: {},
-      } as CreateWorkforceActivityInput);
-    } finally {
-      setBusy(false);
-    }
-  }
-
+function TimingFields({ form }: { form: ReturnType<typeof useWorkforceCreateForm> }) {
   return (
-    <form className={styles.form} onSubmit={(event) => void submit(event)}>
+    <>
+      <label>
+        Inicio
+        <input
+          type="datetime-local"
+          value={form.start}
+          onChange={(event) => form.setStart(event.target.value)}
+          required
+        />
+      </label>
+      <label>
+        Fin
+        <input
+          type="datetime-local"
+          value={form.end}
+          onChange={(event) => form.setEnd(event.target.value)}
+          required
+        />
+      </label>
+    </>
+  );
+}
+
+function AssignmentFields({
+  form,
+  people,
+  allowAutoAssign,
+}: {
+  form: ReturnType<typeof useWorkforceCreateForm>;
+  people: readonly WorkforcePerson[];
+  allowAutoAssign: boolean;
+}) {
+  return (
+    <>
+      <label className={styles.full}>
+        Responsable
+        <select
+          value={form.assignee}
+          disabled={form.autoAssign}
+          onChange={(event) => form.setAssignee(event.target.value)}
+        >
+          <option value="">Yo mismo</option>
+          {people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
+        </select>
+      </label>
+      {allowAutoAssign ? (
+        <label className={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={form.autoAssign}
+            onChange={(event) => form.setAutoAssign(event.target.checked)}
+          />
+          Autoasignar a una persona disponible compatible
+        </label>
+      ) : null}
+    </>
+  );
+}
+
+export function WorkforceCreateForm(props: WorkforceCreateFormProps) {
+  const form = useWorkforceCreateForm(props.catalog, props.initialDate, props.onCreate);
+  return (
+    <form className={styles.form} onSubmit={(event) => void form.submit(event)}>
       <header>
         <div>
           <span className="eyebrow">Planificación</span>
           <h2>Nueva actividad</h2>
         </div>
-        <button type="button" onClick={onCancel}>
-          Cerrar
-        </button>
+        <button type="button" onClick={props.onCancel}>Cerrar</button>
       </header>
 
       <div className={styles.grid}>
-        <label>
-          Categoría
-          <select value={category} onChange={(event) => selectCategory(event.target.value)}>
-            {categories.map(([code, label]) => (
-              <option value={code} key={code}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Subcategoría
-          <select value={subcategory} onChange={(event) => selectSubcategory(event.target.value)}>
-            {subcategories.map((item) => (
-              <option value={item} key={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.full}>
-          Actividad específica
-          <select value={catalogId} onChange={(event) => setCatalogId(event.target.value)}>
-            {activities.map((item) => (
-              <option value={item.id} key={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Inicio
-          <input
-            type="datetime-local"
-            value={start}
-            onChange={(event) => setStart(event.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Fin
-          <input
-            type="datetime-local"
-            value={end}
-            onChange={(event) => setEnd(event.target.value)}
-            required
-          />
-        </label>
-        <label className={styles.full}>
-          Responsable
-          <select
-            value={assignee}
-            disabled={autoAssign}
-            onChange={(event) => setAssignee(event.target.value)}
-          >
-            <option value="">Yo mismo</option>
-            {people.map((person) => (
-              <option value={person.id} key={person.id}>
-                {person.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        {allowAutoAssign ? (
-          <label className={styles.checkbox}>
-            <input
-              type="checkbox"
-              checked={autoAssign}
-              onChange={(event) => setAutoAssign(event.target.checked)}
-            />
-            Autoasignar a una persona disponible compatible
-          </label>
-        ) : null}
+        <CatalogFields form={form} />
+        <TimingFields form={form} />
+        <AssignmentFields form={form} people={props.people} allowAutoAssign={props.allowAutoAssign} />
         <label className={styles.full}>
           Descripción
           <textarea
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
+            value={form.description}
+            onChange={(event) => form.setDescription(event.target.value)}
             rows={3}
           />
         </label>
       </div>
 
       <footer>
-        <button type="button" onClick={onCancel}>
-          Cancelar
-        </button>
-        <button type="submit" disabled={busy || !catalogId}>
-          {busy ? 'Guardando…' : 'Planificar actividad'}
+        <button type="button" onClick={props.onCancel}>Cancelar</button>
+        <button type="submit" disabled={form.busy || !form.catalogId}>
+          {form.busy ? 'Guardando…' : 'Planificar actividad'}
         </button>
       </footer>
     </form>
