@@ -56,13 +56,13 @@ from erp_supply.organizations o
 join auth.users u on u.email='qa-superadmin@example.test'
 where o.code='EI';
 
-do $
+do $e2e$
 begin
   if (select count(*) from erp_supply.profiles where employee_code like 'QA-%') <> 4 then
     raise exception 'Synthetic Auth users were not linked to all CRM profiles';
   end if;
 end
-$$;
+$e2e$;
 
 insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
 ('93000000-0000-4000-8000-000000000001','ventas',true),
