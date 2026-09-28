@@ -1,8 +1,4 @@
-export type OperationalOccupancy =
-  | 'AVAILABLE'
-  | 'OCCUPIED'
-  | 'BLOCKED'
-  | 'OUT_OF_SCHEDULE';
+export type OperationalOccupancy = 'AVAILABLE' | 'OCCUPIED' | 'BLOCKED' | 'OUT_OF_SCHEDULE';
 
 export interface OperationalPersonIndicator {
   readonly profileId: string;

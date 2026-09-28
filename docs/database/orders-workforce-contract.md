@@ -19,14 +19,14 @@ No se copian cliente, dirección, materiales, valor del pedido ni snapshot compl
 
 ## Steps operativos mapeados
 
-| Orders step | Workforce catalog |
-| --- | --- |
-| ALISTAMIENTO | LOG_SUPPORT_PICKING |
-| CORTE | LOG_SUPPORT_CUTTING |
-| LOCAL_DISPATCH | LOG_LOADING |
-| NATIONAL_DISPATCH | LOG_LOADING |
-| CLIENT_POINT | LOG_LOADING |
-| CLIENT_PICKUP | LOG_LOADING |
+| Orders step       | Workforce catalog   |
+| ----------------- | ------------------- |
+| ALISTAMIENTO      | LOG_SUPPORT_PICKING |
+| CORTE             | LOG_SUPPORT_CUTTING |
+| LOCAL_DISPATCH    | LOG_LOADING         |
+| NATIONAL_DISPATCH | LOG_LOADING         |
+| CLIENT_POINT      | LOG_LOADING         |
+| CLIENT_PICKUP     | LOG_LOADING         |
 
 Los mappings se persisten en DB y pueden evolucionar sin hardcodear roles en frontend.
 

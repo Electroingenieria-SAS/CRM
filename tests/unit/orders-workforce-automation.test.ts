@@ -89,9 +89,9 @@ describe('OrdersWorkforceAutomationService', () => {
     };
     const service = new OrdersWorkforceAutomationService(outbox, workforce);
 
-    await expect(
-      service.processOutboxItem('00000000-0000-4000-8000-000000000006'),
-    ).rejects.toThrow('evidence required');
+    await expect(service.processOutboxItem('00000000-0000-4000-8000-000000000006')).rejects.toThrow(
+      'evidence required',
+    );
     expect(outbox.markFailed).toHaveBeenCalledWith(
       '00000000-0000-4000-8000-000000000006',
       'evidence required',

@@ -18,7 +18,10 @@ export interface OrderWorkforceOutboxPort {
     result: Readonly<Record<string, unknown>>,
   ): Promise<void>;
   markFailed(outboxId: string, error: string): Promise<void>;
-  reconcile(orderId?: string, repair?: boolean): Promise<{
+  reconcile(
+    orderId?: string,
+    repair?: boolean,
+  ): Promise<{
     readonly items: readonly Readonly<Record<string, unknown>>[];
     readonly repaired: number;
   }>;
