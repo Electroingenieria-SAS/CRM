@@ -14,7 +14,7 @@ import {
 import { CustomerIntelligenceDetailPanel } from '@/modules/customers/ui/customer-intelligence-detail';
 import { CustomerRanking } from '@/modules/customers/ui/customer-ranking';
 import { ParetoChart } from '@/modules/customers/ui/pareto-chart';
-import { AppShell } from '@/shared/ui/app-shell';
+import { AppShell, type AppShellNavigationItem } from '@/shared/ui/app-shell';
 import styles from './customer-intelligence-page.module.css';
 
 interface Props {
@@ -43,6 +43,22 @@ function dateLabel(value: string | null | undefined) {
   });
 }
 
+function navigationFor(context: SessionContext): AppShellNavigationItem[] {
+  const items: AppShellNavigationItem[] = [];
+
+  if (hasModuleCapability(context, 'orders', 'read')) {
+    items.push({ href: '/orders', label: 'Pedidos' });
+  }
+
+  items.push({ href: '/customers/intelligence', label: 'Clientes', current: true });
+
+  if (hasModuleCapability(context, 'freight', 'read')) {
+    items.push({ href: '/freight', label: 'Fletes' });
+  }
+
+  return items;
+}
+
 export function CustomerIntelligenceWorkspace(props: Props) {
   const canRecalculate = hasModuleCapability(props.context, 'customer_intelligence', 'admin');
 
@@ -50,7 +66,7 @@ export function CustomerIntelligenceWorkspace(props: Props) {
     <AppShell
       userName={props.context.profile.name}
       organizationName={props.context.organization.name}
-      currentSection="customer-intelligence"
+      navigation={navigationFor(props.context)}
       onSignOut={props.onSignOut}
     >
       <header className={styles.header}>
