@@ -34,7 +34,7 @@ export function PasswordUpdateForm({ disabled = false, onUpdate }: PasswordUpdat
   }
 
   return (
-    <form onSubmit={submit} className="stack-form">
+    <form onSubmit={submit} className="stack-form" noValidate>
       <label>
         <span>Nueva contraseña</span>
         <input
