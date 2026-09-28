@@ -21,10 +21,14 @@ const event = {
 };
 
 describe('OrdersWorkforceAutomationService', () => {
-  it('processes an event once and preserves a stable task-level idempotency key', async () => {
+  it('separates stable activity identity from event mutation idempotency', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       listPending: vi.fn(),
-      claim: vi.fn().mockResolvedValue({ idempotent: false, event }),
+      claim: vi.fn().mockResolvedValue({
+        idempotent: false,
+        event,
+        dedupeKey: 'order-event:42',
+      }),
       markProcessed: vi.fn().mockResolvedValue(undefined),
       markFailed: vi.fn().mockResolvedValue(undefined),
       reconcile: vi.fn(),
@@ -41,10 +45,10 @@ describe('OrdersWorkforceAutomationService', () => {
     const service = new OrdersWorkforceAutomationService(outbox, workforce);
     await service.processOutboxItem('00000000-0000-4000-8000-000000000006');
 
-    expect(workforce.applyOrderEvent).toHaveBeenCalledWith(
-      event,
-      'orders-workforce:00000000-0000-4000-8000-000000000002',
-    );
+    expect(workforce.applyOrderEvent).toHaveBeenCalledWith(event, {
+      activityKey: 'orders-workforce:00000000-0000-4000-8000-000000000002:activity',
+      eventKey: 'orders-workforce:event:42',
+    });
     expect(outbox.markProcessed).toHaveBeenCalledTimes(1);
     expect(outbox.markFailed).not.toHaveBeenCalled();
   });
@@ -71,7 +75,11 @@ describe('OrdersWorkforceAutomationService', () => {
   it('marks the durable event failed when Workforce rejects the mutation', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       listPending: vi.fn(),
-      claim: vi.fn().mockResolvedValue({ idempotent: false, event }),
+      claim: vi.fn().mockResolvedValue({
+        idempotent: false,
+        event,
+        dedupeKey: 'order-event:42',
+      }),
       markProcessed: vi.fn(),
       markFailed: vi.fn().mockResolvedValue(undefined),
       reconcile: vi.fn(),
