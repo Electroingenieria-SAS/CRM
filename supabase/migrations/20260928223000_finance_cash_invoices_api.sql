@@ -25,6 +25,8 @@ begin
     raise exception 'Tipo, proveedor y referencia del soporte son obligatorios' using errcode='22023';
   end if;
 
+  perform erp_private.finance_idempotency_lock('SUPPORT',p_idempotency_key);
+
   select * into v_support
   from erp_supply.financial_supports
   where organization_id=v_org and idempotency_key=trim(p_idempotency_key)
@@ -176,6 +178,8 @@ begin
   ) then
     raise exception 'No autorizado para registrar facturas' using errcode='42501';
   end if;
+
+  perform erp_private.finance_idempotency_lock('INVOICE',p_idempotency_key);
 
   select * into v_invoice
   from erp_supply.invoices
