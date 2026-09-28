@@ -3,17 +3,13 @@
 import type { ParetoResponse } from '@/modules/customers/application/customer-intelligence.schemas';
 import styles from './customer-intelligence.module.css';
 
-function polyline(
-  points: ParetoResponse['points'],
-  field: 'ordersCumulativePct' | 'paidCumulativePct',
-) {
-  if (!points.length) return '';
-  const denominator = Math.max(points.length - 1, 1);
+type ParetoPoint = ParetoResponse['ordersSeries'][number];
 
+function polyline(points: ParetoPoint[]) {
   return points
-    .map((point, index) => {
-      const x = (index / denominator) * 100;
-      const y = 100 - point[field];
+    .map((point) => {
+      const x = point.customerPct;
+      const y = 100 - point.cumulativePct;
       return x.toFixed(2) + ',' + y.toFixed(2);
     })
     .join(' ');
@@ -24,23 +20,24 @@ interface Props {
 }
 
 export function ParetoChart({ data }: Props) {
-  const paidLine = polyline(data.points, 'paidCumulativePct');
-  const ordersLine = polyline(data.points, 'ordersCumulativePct');
+  const paidLine = polyline(data.paidSeries);
+  const ordersLine = polyline(data.ordersSeries);
+  const hasData = data.ordersSeries.length > 0 || data.paidSeries.length > 0;
 
   return (
     <section className={styles.paretoLayout} aria-labelledby="pareto-title">
       <div className={styles.chartPanel}>
         <h3 id="pareto-title">Concentración Pareto real</h3>
         <p>
-          Las curvas muestran el acumulado observado; no se asume que la distribución sea 80/20.
+          Cada curva ordena los clientes por su propio factor. No se fuerza una distribución 80/20.
         </p>
-        {data.points.length ? (
+        {hasData ? (
           <>
             <svg
               className={styles.chart}
               viewBox="0 0 100 100"
               role="img"
-              aria-label="Curvas acumuladas de pedidos y valor pagado por ranking de clientes"
+              aria-label="Curvas Pareto independientes de pedidos y valor pagado por facturas registradas"
               preserveAspectRatio="none"
             >
               <line x1="0" y1="100" x2="100" y2="100" stroke="currentColor" opacity="0.25" />
@@ -63,7 +60,7 @@ export function ParetoChart({ data }: Props) {
             </svg>
             <div className={styles.legend} aria-hidden="true">
               <span>Pedidos acumulados</span>
-              <span>Valor pagado acumulado (línea discontinua)</span>
+              <span>Facturación pagada acumulada (línea discontinua)</span>
             </div>
           </>
         ) : (
