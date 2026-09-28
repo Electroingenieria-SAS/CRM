@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import type { OrderDetailResponse } from '@/modules/orders/application/order.schemas';
+import { OrderEvidencePanel } from '@/modules/orders/ui/order-evidence-panel';
+import { OrderIssuesPanel } from '@/modules/orders/ui/order-issues-panel';
+import { OrderLifecyclePanel } from '@/modules/orders/ui/order-lifecycle-panel';
 import styles from './order-workflow-panel.module.css';
 
 interface WorkflowPanelProps {
@@ -37,17 +40,10 @@ function action(detail: OrderDetailResponse, code: string) {
 }
 
 export function OrderWorkflowPanel(props: WorkflowPanelProps) {
-  const [blockReason, setBlockReason] = useState('OTHER');
+  const [blockReason, setBlockReason] = useState(props.detail.workflow.blockReasons[0]?.code ?? '');
   const [blockDetail, setBlockDetail] = useState('');
   const [resolution, setResolution] = useState('');
   const [assignee, setAssignee] = useState('');
-  const [issueTitle, setIssueTitle] = useState('');
-  const [issueDescription, setIssueDescription] = useState('');
-  const [issueBlocking, setIssueBlocking] = useState(false);
-  const [evidenceReference, setEvidenceReference] = useState('');
-  const [cancelReason, setCancelReason] = useState('');
-  const [reopenStep, setReopenStep] = useState('RECEPCION_PEDIDO');
-  const [reopenReason, setReopenReason] = useState('');
 
   const activeTask = useMemo(
     () =>
@@ -58,8 +54,6 @@ export function OrderWorkflowPanel(props: WorkflowPanelProps) {
         ),
     [props.detail.tasks],
   );
-
-  const openIssues = props.detail.issues.filter((item) => text(item.status) === 'OPEN');
 
   return (
     <section className={styles.panel} aria-labelledby="workflow-title">
@@ -143,14 +137,11 @@ export function OrderWorkflowPanel(props: WorkflowPanelProps) {
           <label>
             Motivo
             <select value={blockReason} onChange={(event) => setBlockReason(event.target.value)}>
-              <option value="MATERIAL">Falta de material</option>
-              <option value="APPROVAL">Espera de aprobación</option>
-              <option value="INCOMPLETE_INFORMATION">Información incompleta</option>
-              <option value="PAYMENT">Pago</option>
-              <option value="SUPPLIER">Proveedor</option>
-              <option value="MACHINE">Máquina o equipo</option>
-              <option value="CUSTOMER">Cliente</option>
-              <option value="OTHER">Otro</option>
+              {props.detail.workflow.blockReasons.map((reason) => (
+                <option key={reason.code} value={reason.code}>
+                  {reason.name}
+                </option>
+              ))}
             </select>
           </label>
           <label>
@@ -159,7 +150,7 @@ export function OrderWorkflowPanel(props: WorkflowPanelProps) {
           </label>
           <button
             type="button"
-            disabled={props.busy || blockDetail.trim().length < 3}
+            disabled={props.busy || !blockReason || blockDetail.trim().length < 3}
             onClick={() => props.onBlock(blockReason, blockDetail)}
           >
             Registrar bloqueo
@@ -184,136 +175,23 @@ export function OrderWorkflowPanel(props: WorkflowPanelProps) {
         </details>
       ) : null}
 
-      <details className={styles.actionBox}>
-        <summary>Registrar incidencia</summary>
-        <label>
-          Título
-          <input value={issueTitle} onChange={(event) => setIssueTitle(event.target.value)} />
-        </label>
-        <label>
-          Descripción
-          <textarea
-            value={issueDescription}
-            onChange={(event) => setIssueDescription(event.target.value)}
-          />
-        </label>
-        <label className={styles.check}>
-          <input
-            type="checkbox"
-            checked={issueBlocking}
-            onChange={(event) => setIssueBlocking(event.target.checked)}
-          />
-          Incidencia bloqueante
-        </label>
-        <button
-          type="button"
-          disabled={props.busy || issueTitle.trim().length < 3 || issueDescription.trim().length < 3}
-          onClick={() =>
-            props.onCreateIssue({
-              type: 'NOVELTY',
-              severity: issueBlocking ? 'HIGH' : 'MEDIUM',
-              blocking: issueBlocking,
-              title: issueTitle,
-              description: issueDescription,
-            })
-          }
-        >
-          Guardar incidencia
-        </button>
-      </details>
-
-      <details className={styles.actionBox}>
-        <summary>Agregar evidencia</summary>
-        <label>
-          Referencia del archivo
-          <input
-            value={evidenceReference}
-            onChange={(event) => setEvidenceReference(event.target.value)}
-            placeholder="ID o referencia segura del archivo"
-          />
-        </label>
-        <button
-          type="button"
-          disabled={props.busy || !evidenceReference.trim()}
-          onClick={() =>
-            props.onAddEvidence({
-              evidenceType:
-                props.detail.order.current_step_code === 'CLOSURE' ? 'CLOSURE_PROOF' : 'OPERATIONAL',
-              storageReference: evidenceReference,
-            })
-          }
-        >
-          Registrar evidencia
-        </button>
-      </details>
-
-      {openIssues.length > 0 ? (
-        <section className={styles.issues}>
-          <h4>Incidencias abiertas</h4>
-          {openIssues.map((issue) => (
-            <article key={text(issue.id)}>
-              <div>
-                <strong>{text(issue.title)}</strong>
-                <span>{text(issue.severity)}</span>
-              </div>
-              <p>{text(issue.description)}</p>
-              <button
-                type="button"
-                disabled={props.busy}
-                onClick={() => {
-                  const answer = window.prompt('Describe la resolución aplicada:');
-                  if (answer?.trim()) void props.onResolveIssue(text(issue.id), answer);
-                }}
-              >
-                Resolver
-              </button>
-            </article>
-          ))}
-        </section>
-      ) : null}
-
-      {action(props.detail, 'CANCEL') ? (
-        <details className={styles.dangerBox}>
-          <summary>Cancelar pedido</summary>
-          <label>
-            Razón
-            <textarea value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} />
-          </label>
-          <button
-            type="button"
-            disabled={props.busy || cancelReason.trim().length < 3}
-            onClick={() => props.onCancel(cancelReason)}
-          >
-            Confirmar cancelación
-          </button>
-        </details>
-      ) : null}
-
-      {action(props.detail, 'REOPEN') ? (
-        <details className={styles.actionBox}>
-          <summary>Reabrir pedido</summary>
-          <label>
-            Etapa de retorno
-            <select value={reopenStep} onChange={(event) => setReopenStep(event.target.value)}>
-              <option value="RECEPCION_PEDIDO">Recepción del pedido</option>
-              <option value="ALISTAMIENTO">Alistamiento</option>
-              <option value="FACTURACION">Facturación</option>
-              <option value="CLOSURE">Cierre</option>
-            </select>
-          </label>
-          <label>
-            Razón
-            <textarea value={reopenReason} onChange={(event) => setReopenReason(event.target.value)} />
-          </label>
-          <button
-            type="button"
-            disabled={props.busy || reopenReason.trim().length < 3}
-            onClick={() => props.onReopen(reopenStep, reopenReason)}
-          >
-            Reabrir
-          </button>
-        </details>
-      ) : null}
+      <OrderIssuesPanel
+        detail={props.detail}
+        busy={props.busy}
+        onCreateIssue={props.onCreateIssue}
+        onResolveIssue={props.onResolveIssue}
+      />
+      <OrderEvidencePanel
+        detail={props.detail}
+        busy={props.busy}
+        onAddEvidence={props.onAddEvidence}
+      />
+      <OrderLifecyclePanel
+        detail={props.detail}
+        busy={props.busy}
+        onCancel={props.onCancel}
+        onReopen={props.onReopen}
+      />
     </section>
   );
 }
