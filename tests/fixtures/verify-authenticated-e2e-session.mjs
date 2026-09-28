@@ -21,7 +21,9 @@ const { data: authData, error: authError } = await client.auth.signInWithPasswor
 });
 
 if (authError || !authData.session) {
-  throw new Error(`Synthetic seller authentication failed: ${authError?.message ?? 'missing session'}`);
+  throw new Error(
+    `Synthetic seller authentication failed: ${authError?.message ?? 'missing session'}`,
+  );
 }
 
 const { data: sessionData, error: sessionError } = await client.rpc('erp_x_session');
