@@ -1,6 +1,7 @@
 'use client';
 
 import { workforceDaySlots } from '@/modules/workforce/domain/work-schedule';
+import { occupancyLabel } from '@/modules/workforce/domain/workforce-metrics';
 import type {
   WorkforceActivitySummary,
   WorkforcePerson,
@@ -55,14 +56,16 @@ export function WorkforceDayView({
     <section aria-label="Cronograma del día" className={styles.daySection}>
       <div className={styles.desktopDay}>
         <div className={styles.dayGrid} role="table" aria-label="Cronograma por franjas horarias">
-          <div className={styles.teamHeader} role="columnheader">
-            Equipo / Actividad y estado
-          </div>
-          {workforceDaySlots.map((slot) => (
-            <div className={styles.slotHeader} role="columnheader" key={slot.key}>
-              {slot.label}
+          <div className={styles.rowContents} role="row">
+            <div className={styles.teamHeader} role="columnheader">
+              Equipo / Actividad y estado
             </div>
-          ))}
+            {workforceDaySlots.map((slot) => (
+              <div className={styles.slotHeader} role="columnheader" key={slot.key}>
+                {slot.label}
+              </div>
+            ))}
+          </div>
 
           {people.map((person) => {
             const personActivities = activitiesForDay(activities, person.id, day);
@@ -71,7 +74,7 @@ export function WorkforceDayView({
                 <div className={styles.personCell} role="rowheader">
                   <strong>{person.name}</strong>
                   <span>{person.roles.join(' · ') || 'Sin rol operativo'}</span>
-                  <span data-occupancy={person.occupancy}>{person.occupancy}</span>
+                  <span data-occupancy={person.occupancy}>{occupancyLabel(person.occupancy)}</span>
                   {person.specialTreatment ? (
                     <small>{person.specialTreatmentLabel ?? 'Tratamiento especial'}</small>
                   ) : null}
@@ -110,7 +113,7 @@ export function WorkforceDayView({
                   <strong>{person.name}</strong>
                   <span>{person.roles.join(' · ') || 'Sin rol operativo'}</span>
                 </div>
-                <span data-occupancy={person.occupancy}>{person.occupancy}</span>
+                <span data-occupancy={person.occupancy}>{occupancyLabel(person.occupancy)}</span>
               </header>
               <div className={styles.mobileTimeline}>
                 {workforceDaySlots.map((slot, index) => {
