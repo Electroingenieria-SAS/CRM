@@ -39,6 +39,48 @@ from public,anon;
 grant execute on function erp_private.finance_append_event(uuid,text,uuid,text,jsonb,text)
 to authenticated;
 
+create or replace function public.erp_x_finance_customer_search(
+  p_search text,
+  p_limit integer default 20
+)
+returns jsonb
+language plpgsql
+stable
+security invoker
+set search_path=pg_catalog,public,erp_supply,erp_private
+as $
+declare
+  v_org uuid:=erp_private.current_org_id();
+  v_search text:=lower(trim(coalesce(p_search,'')));
+  v_limit integer:=least(greatest(coalesce(p_limit,20),1),50);
+begin
+  if not erp_private.can_access_module('credit','read') then
+    raise exception 'No autorizado para consultar clientes de crédito' using errcode='42501';
+  end if;
+
+  return jsonb_build_object(
+    'items',(
+      select coalesce(jsonb_agg(jsonb_build_object(
+        'id',c.id,'name',c.display_name,'document',c.document
+      ) order by c.display_name),'[]'::jsonb)
+      from (
+        select id,display_name,document
+        from erp_supply.customers
+        where organization_id=v_org
+          and active
+          and (
+            v_search=''
+            or lower(display_name||' '||coalesce(document,'')) like '%'||v_search||'%'
+          )
+        order by display_name
+        limit v_limit
+      ) c
+    ),
+    'contractVersion','1.0.0'
+  );
+end;
+$;
+
 create or replace function public.erp_x_finance_credit_queue(
   p_status text default null,
   p_search text default null,
@@ -381,6 +423,8 @@ begin
 end;
 $$;
 
+revoke all on function public.erp_x_finance_customer_search(text,integer)
+from public,anon;
 revoke all on function public.erp_x_finance_credit_queue(text,text,integer,integer)
 from public,anon;
 revoke all on function public.erp_x_finance_create_credit_request(jsonb,text)
@@ -390,6 +434,8 @@ from public,anon;
 revoke all on function public.erp_x_finance_decide_credit_request(uuid,text,text,text)
 from public,anon;
 
+grant execute on function public.erp_x_finance_customer_search(text,integer)
+to authenticated;
 grant execute on function public.erp_x_finance_credit_queue(text,text,integer,integer)
 to authenticated;
 grant execute on function public.erp_x_finance_create_credit_request(jsonb,text)
