@@ -3,9 +3,7 @@ import {
   orderWorkforcePendingResponseSchema,
   outboxClaimResponseSchema,
 } from '@/modules/integrations/orders-workforce/application/orders-workforce.schemas';
-import type {
-  OrderWorkforceOutboxPort,
-} from '@/modules/integrations/orders-workforce/application/orders-workforce.ports';
+import type { OrderWorkforceOutboxPort } from '@/modules/integrations/orders-workforce/application/orders-workforce.ports';
 import { AppError } from '@/shared/errors/app-error';
 
 function mapError(error: { code?: string; message?: string } | null): AppError {
@@ -39,6 +37,7 @@ export class SupabaseOrderWorkforceOutboxRepository implements OrderWorkforceOut
     return {
       idempotent: parsed.idempotent,
       event: parsed.event,
+      dedupeKey: parsed.dedupeKey,
       workforceActivityId: parsed.workforceActivityId,
     };
   }
@@ -70,7 +69,10 @@ export class SupabaseOrderWorkforceOutboxRepository implements OrderWorkforceOut
       p_repair: repair,
     });
     if (error) throw mapError(error);
-    const payload = (data ?? {}) as { items?: Readonly<Record<string, unknown>>[]; repaired?: number };
+    const payload = (data ?? {}) as {
+      items?: Readonly<Record<string, unknown>>[];
+      repaired?: number;
+    };
     return { items: payload.items ?? [], repaired: payload.repaired ?? 0 };
   }
 }
