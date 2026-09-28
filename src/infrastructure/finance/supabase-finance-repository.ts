@@ -3,6 +3,7 @@ import {
   creditQueueSchema,
   customerPaidProjectionSchema,
   financeQueueSchema,
+  financialApprovalQueueSchema,
   financialGateSchema,
   orderFinancialSummarySchema,
   type CreditRequestInput,
@@ -11,6 +12,7 @@ import type {
   CreateHoldInput,
   FinanceDomain,
   FinanceRepository,
+  FinancialExceptionInput,
   FinancialValidationInput,
   InvoiceInput,
   QueueQuery,
@@ -122,6 +124,40 @@ export class SupabaseFinanceRepository implements FinanceRepository {
   async releaseHold(holdId: string, reason: string, key: string) {
     const { error } = await this.client.rpc('erp_x_finance_release_hold', {
       p_hold_id: holdId,
+      p_reason: reason,
+      p_idempotency_key: key,
+    });
+    if (error) throw mapFinanceError(error);
+  }
+
+  async listApprovals(query: QueueQuery = {}) {
+    const { data, error } = await this.client.rpc('erp_x_finance_approval_queue', {
+      p_status: query.status ?? 'PENDING',
+      p_search: query.search ?? null,
+      p_page: query.page ?? 1,
+      p_page_size: query.pageSize ?? 25,
+    });
+    if (error) throw mapFinanceError(error);
+    return financialApprovalQueueSchema.parse(data);
+  }
+
+  async requestException(input: FinancialExceptionInput, key: string) {
+    const { data, error } = await this.client.rpc('erp_x_finance_request_exception', {
+      p_order_id: input.orderId,
+      p_hold_id: input.holdId ?? null,
+      p_request_type: input.requestType,
+      p_reason: input.reason,
+      p_metadata: input.metadata ?? {},
+      p_idempotency_key: key,
+    });
+    if (error) throw mapFinanceError(error);
+    return identifier(data, 'approvalId');
+  }
+
+  async decideException(approvalId: string, decision: 'APPROVED' | 'REJECTED', reason: string, key: string) {
+    const { error } = await this.client.rpc('erp_x_finance_decide_exception', {
+      p_approval_id: approvalId,
+      p_decision: decision,
       p_reason: reason,
       p_idempotency_key: key,
     });
