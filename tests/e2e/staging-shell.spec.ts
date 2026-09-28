@@ -46,6 +46,18 @@ test.describe('reference responsive widths', () => {
               left: Math.round(rect.left * 100) / 100,
               right: Math.round(rect.right * 100) / 100,
               width: Math.round(rect.width * 100) / 100,
+              text: element.textContent?.slice(0, 120) ?? '',
+              parentTag: element.parentElement?.tagName.toLowerCase() ?? '',
+              parentClass: element.parentElement?.className ?? '',
+              computed: {
+                display: getComputedStyle(element).display,
+                width: getComputedStyle(element).width,
+                maxWidth: getComputedStyle(element).maxWidth,
+                whiteSpace: getComputedStyle(element).whiteSpace,
+                wordBreak: getComputedStyle(element).wordBreak,
+                overflowWrap: getComputedStyle(element).overflowWrap,
+                fontSize: getComputedStyle(element).fontSize,
+              },
             };
           })
           .filter((item) => item.right > viewportWidth + 0.5 || item.left < -0.5)
