@@ -13,6 +13,7 @@ import type {
   OrderListItem,
 } from '@/modules/orders/application/order.schemas';
 import type { OrdersFilterValues } from '@/modules/orders/ui/orders-filters';
+import { useOrderWorkflowActions } from './use-order-workflow-actions';
 
 const initialFilters: OrdersFilterValues = {
   search: '',
@@ -142,6 +143,14 @@ export function useOrdersPage() {
     };
   }, [application, router]);
 
+  const reloadOrder = useCallback(
+    async (orderId: string) => {
+      if (!application) return;
+      setDetail(await application.orders.get(orderId));
+    },
+    [application],
+  );
+
   const actions = createOrderActions({
     application,
     refresh: () => loadOrders(initialFilters),
@@ -151,6 +160,16 @@ export function useOrdersPage() {
     showNotice: setNotice,
     goToLogin: () => router.replace('/login'),
   });
+
+  const workflow = useOrderWorkflowActions({
+    application,
+    detail,
+    reloadOrder,
+    reloadList: () => loadOrders(filters),
+    showMessage: setMessage,
+    showNotice: setNotice,
+  });
+
   const unavailable = !application;
 
   return {
@@ -167,6 +186,7 @@ export function useOrdersPage() {
     setDetail,
     search: () => loadOrders(filters),
     ...actions,
+    ...workflow,
   };
 }
 
