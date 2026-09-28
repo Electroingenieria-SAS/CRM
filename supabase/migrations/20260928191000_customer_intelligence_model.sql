@@ -140,9 +140,14 @@ security definer
 set search_path=pg_catalog,erp_supply
 as $$
 declare
-  v_org uuid:=coalesce(new.organization_id,old.organization_id);
+  v_org uuid;
   v_reason text:=case when tg_table_name='invoices' then 'INVOICE_CHANGED' else 'ORDER_CHANGED' end;
 begin
+  if tg_op='DELETE' then
+    v_org:=old.organization_id;
+  else
+    v_org:=new.organization_id;
+  end if;
   insert into erp_supply.customer_intelligence_state(
     organization_id,dirty_since,dirty_reason,updated_at
   )
@@ -158,12 +163,12 @@ $$;
 revoke all on function erp_private.mark_customer_intelligence_dirty() from public,anon,authenticated;
 
 create trigger trg_customer_intelligence_order_dirty
-after insert or update of status,customer_id,client_document,client_name or delete
+after insert or update or delete
 on erp_supply.orders
 for each row execute function erp_private.mark_customer_intelligence_dirty();
 
 create trigger trg_customer_intelligence_invoice_dirty
-after insert or update of amount,reversed_amount,status,invoice_date or delete
+after insert or update or delete
 on erp_supply.invoices
 for each row execute function erp_private.mark_customer_intelligence_dirty();
 
