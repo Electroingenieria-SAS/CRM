@@ -13,66 +13,39 @@ interface Dependencies {
   showNotice(message: string | null): void;
 }
 
-export function useOrderWorkflowActions(dependencies: Dependencies) {
-  const [workflowBusy, setWorkflowBusy] = useState(false);
+type MutationRunner = (
+  operation: (application: BrowserApplication, detail: OrderDetailResponse) => Promise<unknown>,
+  success: string,
+) => Promise<void>;
 
-  const run = useCallback(
-    async (
-      operation: (application: BrowserApplication, detail: OrderDetailResponse) => Promise<unknown>,
-      success: string,
-    ) => {
-      const { application, detail } = dependencies;
-      if (!application || !detail) return;
-
-      setWorkflowBusy(true);
-      dependencies.showMessage(null);
-      dependencies.showNotice(null);
-
-      try {
-        await operation(application, detail);
-        await Promise.all([
-          dependencies.reloadOrder(detail.order.id),
-          dependencies.reloadList(),
-        ]);
-        dependencies.showNotice(success);
-      } catch (error) {
-        dependencies.showMessage(
-          error instanceof Error ? error.message : 'No fue posible completar la operación.',
+function createSimpleAction(run: MutationRunner) {
+  return (action: 'CLAIM' | 'START' | 'COMPLETE') =>
+    run(
+      (app, detail) => {
+        const key = crypto.randomUUID();
+        if (action === 'CLAIM') return app.orderWorkflow.claim(detail.order.id, detail.order.version, key);
+        if (action === 'START') return app.orderWorkflow.start(detail.order.id, detail.order.version, key);
+        return app.orderWorkflow.complete(
+          detail.order.id,
+          'COMPLETED',
+          '',
+          detail.order.version,
+          key,
         );
-      } finally {
-        setWorkflowBusy(false);
-      }
-    },
-    [dependencies],
-  );
+      },
+      action === 'CLAIM'
+        ? 'Tarea tomada correctamente.'
+        : action === 'START'
+          ? 'Trabajo iniciado.'
+          : 'Etapa completada y workflow actualizado.',
+    );
+}
 
+function createWorkflowCallbacks(run: MutationRunner) {
   const key = () => crypto.randomUUID();
 
   return {
-    workflowBusy,
-    simpleAction: (action: 'CLAIM' | 'START' | 'COMPLETE') =>
-      run(
-        (app, detail) => {
-          if (action === 'CLAIM') {
-            return app.orderWorkflow.claim(detail.order.id, detail.order.version, key());
-          }
-          if (action === 'START') {
-            return app.orderWorkflow.start(detail.order.id, detail.order.version, key());
-          }
-          return app.orderWorkflow.complete(
-            detail.order.id,
-            'COMPLETED',
-            '',
-            detail.order.version,
-            key(),
-          );
-        },
-        action === 'CLAIM'
-          ? 'Tarea tomada correctamente.'
-          : action === 'START'
-            ? 'Trabajo iniciado.'
-            : 'Etapa completada y workflow actualizado.',
-      ),
+    simpleAction: createSimpleAction(run),
     assign: (profileId: string) =>
       run(
         (app, detail) =>
@@ -130,4 +103,34 @@ export function useOrderWorkflowActions(dependencies: Dependencies) {
         'Incidencia resuelta.',
       ),
   };
+}
+
+export function useOrderWorkflowActions(dependencies: Dependencies) {
+  const [workflowBusy, setWorkflowBusy] = useState(false);
+
+  const run = useCallback<MutationRunner>(
+    async (operation, success) => {
+      const { application, detail } = dependencies;
+      if (!application || !detail) return;
+
+      setWorkflowBusy(true);
+      dependencies.showMessage(null);
+      dependencies.showNotice(null);
+
+      try {
+        await operation(application, detail);
+        await Promise.all([dependencies.reloadOrder(detail.order.id), dependencies.reloadList()]);
+        dependencies.showNotice(success);
+      } catch (error) {
+        dependencies.showMessage(
+          error instanceof Error ? error.message : 'No fue posible completar la operación.',
+        );
+      } finally {
+        setWorkflowBusy(false);
+      }
+    },
+    [dependencies],
+  );
+
+  return { workflowBusy, ...createWorkflowCallbacks(run) };
 }
