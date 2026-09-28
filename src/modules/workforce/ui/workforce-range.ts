@@ -31,14 +31,7 @@ export function workforceRange(mode: WorkforceCalendarMode, anchor: string) {
   if (mode === 'day') return { from: anchor, to: anchor };
 
   if (mode === 'week') {
-    const weekday = Number(
-      new Intl.DateTimeFormat('en-US', {
-        weekday: 'short',
-        timeZone: BUSINESS_TIME_ZONE,
-      }).formatToParts(date).find((part) => part.type === 'weekday')?.value
-        ? date.getUTCDay()
-        : date.getUTCDay(),
-    );
+    const weekday = date.getUTCDay();
     const isoWeekday = weekday === 0 ? 7 : weekday;
     const from = shiftIsoDate(anchor, 1 - isoWeekday);
     return { from, to: shiftIsoDate(from, 4) };
