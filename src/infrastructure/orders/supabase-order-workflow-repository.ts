@@ -24,7 +24,10 @@ function mapWorkflowError(error: { message?: string; code?: string } | null): Ap
   }
 
   if (error?.code === 'P0001' || error?.code === '23505') {
-    return new AppError('BUSINESS_RULE', message || 'La operación no cumple las reglas del pedido.');
+    return new AppError(
+      'BUSINESS_RULE',
+      message || 'La operación no cumple las reglas del pedido.',
+    );
   }
 
   if (error?.code === '22023') {

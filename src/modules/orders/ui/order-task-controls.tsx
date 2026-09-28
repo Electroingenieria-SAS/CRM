@@ -59,7 +59,10 @@ export function OrderTaskControls({ detail, busy, onAssign, onBlock, onResume }:
           </label>
           <label>
             Observación
-            <textarea value={blockDetail} onChange={(event) => setBlockDetail(event.target.value)} />
+            <textarea
+              value={blockDetail}
+              onChange={(event) => setBlockDetail(event.target.value)}
+            />
           </label>
           <button
             type="button"

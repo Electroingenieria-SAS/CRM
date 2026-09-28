@@ -23,8 +23,10 @@ function createSimpleAction(run: MutationRunner) {
     run(
       (app, detail) => {
         const key = crypto.randomUUID();
-        if (action === 'CLAIM') return app.orderWorkflow.claim(detail.order.id, detail.order.version, key);
-        if (action === 'START') return app.orderWorkflow.start(detail.order.id, detail.order.version, key);
+        if (action === 'CLAIM')
+          return app.orderWorkflow.claim(detail.order.id, detail.order.version, key);
+        if (action === 'START')
+          return app.orderWorkflow.start(detail.order.id, detail.order.version, key);
         return app.orderWorkflow.complete(
           detail.order.id,
           'COMPLETED',

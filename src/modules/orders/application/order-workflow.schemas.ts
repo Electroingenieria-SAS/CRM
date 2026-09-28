@@ -51,12 +51,20 @@ export const workflowMutationResponseSchema = z.object({
 });
 
 export const blockTaskInputSchema = z.object({
-  reasonCode: z.string().trim().min(1).transform((value) => value.toUpperCase()),
+  reasonCode: z
+    .string()
+    .trim()
+    .min(1)
+    .transform((value) => value.toUpperCase()),
   detail: z.string().trim().min(3).max(1000),
 });
 
 export const issueInputSchema = z.object({
-  type: z.string().trim().min(1).transform((value) => value.toUpperCase()),
+  type: z
+    .string()
+    .trim()
+    .min(1)
+    .transform((value) => value.toUpperCase()),
   severity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
   blocking: z.boolean().optional(),
   title: z.string().trim().min(3).max(180),
@@ -66,12 +74,21 @@ export const issueInputSchema = z.object({
 });
 
 export const evidenceInputSchema = z.object({
-  evidenceType: z.string().trim().min(1).transform((value) => value.toUpperCase()),
+  evidenceType: z
+    .string()
+    .trim()
+    .min(1)
+    .transform((value) => value.toUpperCase()),
   storageProvider: z.string().trim().min(1).max(40).default('EXTERNAL'),
   storageReference: z.string().trim().min(1).max(2000),
   fileName: z.string().trim().max(255).optional(),
   mimeType: z.string().trim().max(150).optional(),
-  sizeBytes: z.number().int().positive().max(15 * 1024 * 1024).optional(),
+  sizeBytes: z
+    .number()
+    .int()
+    .positive()
+    .max(15 * 1024 * 1024)
+    .optional(),
   metadata: z.record(z.string(), z.unknown()).default({}),
 });
 

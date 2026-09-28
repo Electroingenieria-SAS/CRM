@@ -27,7 +27,12 @@ export class OrderWorkflowService {
 
   assign(orderId: string, profileId: string, version: number, key: string) {
     if (!profileId.trim()) throw new Error('Selecciona un responsable.');
-    return this.repository.assign(orderId, profileId.trim(), requireVersion(version), requireKey(key));
+    return this.repository.assign(
+      orderId,
+      profileId.trim(),
+      requireVersion(version),
+      requireKey(key),
+    );
   }
 
   start(orderId: string, version: number, key: string) {

@@ -58,9 +58,18 @@ export function OrderWorkflowPanel(props: WorkflowPanelProps) {
       </header>
       {activeTask ? (
         <dl className={styles.taskSummary}>
-          <div><dt>Etapa</dt><dd>{text(activeTask.step_code)}</dd></div>
-          <div><dt>Responsable</dt><dd>{text(activeTask.assigned_profile_id) || 'Disponible'}</dd></div>
-          <div><dt>Secuencia</dt><dd>{String(activeTask.sequence_no ?? '—')}</dd></div>
+          <div>
+            <dt>Etapa</dt>
+            <dd>{text(activeTask.step_code)}</dd>
+          </div>
+          <div>
+            <dt>Responsable</dt>
+            <dd>{text(activeTask.assigned_profile_id) || 'Disponible'}</dd>
+          </div>
+          <div>
+            <dt>Secuencia</dt>
+            <dd>{String(activeTask.sequence_no ?? '—')}</dd>
+          </div>
         </dl>
       ) : null}
       <div className={styles.primaryActions}>
@@ -98,7 +107,11 @@ export function OrderWorkflowPanel(props: WorkflowPanelProps) {
         onCreateIssue={props.onCreateIssue}
         onResolveIssue={props.onResolveIssue}
       />
-      <OrderEvidencePanel detail={props.detail} busy={props.busy} onAddEvidence={props.onAddEvidence} />
+      <OrderEvidencePanel
+        detail={props.detail}
+        busy={props.busy}
+        onAddEvidence={props.onAddEvidence}
+      />
       <OrderLifecyclePanel
         detail={props.detail}
         busy={props.busy}

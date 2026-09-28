@@ -28,13 +28,13 @@ order_action_authorities
 
 ## Acciones de tarea
 
-| Acción | Precondición principal | Resultado |
-| --- | --- | --- |
-| CLAIM | tarea QUEUED, rol con `can_claim` | ASSIGNED + responsable |
-| ASSIGN | tarea QUEUED/ASSIGNED, rol con `can_assign` | ASSIGNED al perfil elegible |
-| START | ASSIGNED y actor responsable/override | IN_PROGRESS + sesión |
-| BLOCK | IN_PROGRESS y actor responsable/override | BLOCKED + registro de bloqueo |
-| RESUME | BLOCKED + bloqueo abierto + resolución | IN_PROGRESS + nueva sesión |
+| Acción   | Precondición principal                                                  | Resultado                          |
+| -------- | ----------------------------------------------------------------------- | ---------------------------------- |
+| CLAIM    | tarea QUEUED, rol con `can_claim`                                       | ASSIGNED + responsable             |
+| ASSIGN   | tarea QUEUED/ASSIGNED, rol con `can_assign`                             | ASSIGNED al perfil elegible        |
+| START    | ASSIGNED y actor responsable/override                                   | IN_PROGRESS + sesión               |
+| BLOCK    | IN_PROGRESS y actor responsable/override                                | BLOCKED + registro de bloqueo      |
+| RESUME   | BLOCKED + bloqueo abierto + resolución                                  | IN_PROGRESS + nueva sesión         |
 | COMPLETE | IN_PROGRESS + owner + requisitos + sin bloqueos/incidencias bloqueantes | COMPLETED + siguiente tarea/cierre |
 
 Las transiciones de etapa se resuelven en `workflow_transitions`. No existe un switch de workflow en React.

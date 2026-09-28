@@ -91,7 +91,9 @@ if (finalError) throw finalError;
 
 const active = [...(finalDetail.tasks ?? [])]
   .reverse()
-  .find((task) => ['QUEUED', 'ASSIGNED', 'IN_PROGRESS', 'WAITING', 'BLOCKED'].includes(task.status));
+  .find((task) =>
+    ['QUEUED', 'ASSIGNED', 'IN_PROGRESS', 'WAITING', 'BLOCKED'].includes(task.status),
+  );
 
 if (!active?.assigned_profile_id || active.status !== 'ASSIGNED') {
   throw new Error('Concurrency invariant failed: active task is not assigned exactly once.');
@@ -152,7 +154,9 @@ if (completionEvents.length !== 1) {
 }
 
 if ((afterComplete.tasks ?? []).length !== 2) {
-  throw new Error(`Expected exactly two sequential tasks after one advance, found ${afterComplete.tasks?.length}`);
+  throw new Error(
+    `Expected exactly two sequential tasks after one advance, found ${afterComplete.tasks?.length}`,
+  );
 }
 
 console.log(

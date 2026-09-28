@@ -50,9 +50,7 @@ export function useOrdersBootstrap(dependencies: BootstrapDependencies) {
       })
       .catch((error) => {
         if (active) {
-          setMessage(
-            error instanceof Error ? error.message : 'No fue posible iniciar el módulo.',
-          );
+          setMessage(error instanceof Error ? error.message : 'No fue posible iniciar el módulo.');
         }
       })
       .finally(() => {

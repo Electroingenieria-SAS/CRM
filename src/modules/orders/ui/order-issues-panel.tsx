@@ -29,7 +29,8 @@ export function OrderIssuesPanel({ detail, busy, onCreateIssue, onResolveIssue }
   const [blocking, setBlocking] = useState(firstType?.defaultBlocking ?? false);
   const [resolutions, setResolutions] = useState<Record<string, string>>({});
   const openIssues = detail.issues.filter((item) => text(item.status) === 'OPEN');
-  const selectedType = detail.workflow.issueTypes.find((item) => item.code === issueType) ?? firstType;
+  const selectedType =
+    detail.workflow.issueTypes.find((item) => item.code === issueType) ?? firstType;
 
   return (
     <>
@@ -40,7 +41,9 @@ export function OrderIssuesPanel({ detail, busy, onCreateIssue, onResolveIssue }
           <select
             value={issueType}
             onChange={(event) => {
-              const next = detail.workflow.issueTypes.find((item) => item.code === event.target.value);
+              const next = detail.workflow.issueTypes.find(
+                (item) => item.code === event.target.value,
+              );
               setIssueType(event.target.value);
               setBlocking(next?.defaultBlocking ?? false);
             }}
@@ -70,7 +73,9 @@ export function OrderIssuesPanel({ detail, busy, onCreateIssue, onResolveIssue }
         </label>
         <button
           type="button"
-          disabled={busy || !selectedType || title.trim().length < 3 || description.trim().length < 3}
+          disabled={
+            busy || !selectedType || title.trim().length < 3 || description.trim().length < 3
+          }
           onClick={() =>
             selectedType &&
             onCreateIssue({

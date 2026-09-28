@@ -22,7 +22,9 @@ async function logout(page: Page) {
   await expect(page).toHaveURL(/\/login\/?$/);
 }
 
-test('order workflow records claim start block resume and completion', async ({ page }, testInfo) => {
+test('order workflow records claim start block resume and completion', async ({
+  page,
+}, testInfo) => {
   test.skip(
     testInfo.project.name !== 'desktop-chromium',
     'The workflow journey mutates one synthetic order once per CI run.',
@@ -39,7 +41,9 @@ test('order workflow records claim start block resume and completion', async ({ 
   await page.getByLabel('Descripción *').fill('Material workflow');
   await page.getByLabel('Cantidad *').fill('1');
   await page.getByRole('button', { name: 'Crear pedido', exact: true }).last().click();
-  await expect(page.getByRole('status')).toContainText(`Pedido ${orderNumber} creado correctamente.`);
+  await expect(page.getByRole('status')).toContainText(
+    `Pedido ${orderNumber} creado correctamente.`,
+  );
   await logout(page);
 
   await login(page, coordinatorEmail);

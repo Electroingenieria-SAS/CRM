@@ -28,7 +28,10 @@ export function OrderLifecyclePanel({ detail, busy, onCancel, onReopen }: Props)
           <summary>Cancelar pedido</summary>
           <label>
             Razón
-            <textarea value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} />
+            <textarea
+              value={cancelReason}
+              onChange={(event) => setCancelReason(event.target.value)}
+            />
           </label>
           <button
             type="button"
@@ -55,7 +58,10 @@ export function OrderLifecyclePanel({ detail, busy, onCancel, onReopen }: Props)
           </label>
           <label>
             Razón
-            <textarea value={reopenReason} onChange={(event) => setReopenReason(event.target.value)} />
+            <textarea
+              value={reopenReason}
+              onChange={(event) => setReopenReason(event.target.value)}
+            />
           </label>
           <button
             type="button"
