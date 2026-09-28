@@ -19,6 +19,8 @@ declare
   v_evidence_id uuid;
   v_event jsonb;
 begin
+  perform erp_private.workforce_lock_idempotency(v_org,p_idempotency_key);
+
   select ev.payload into v_event
   from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key)
