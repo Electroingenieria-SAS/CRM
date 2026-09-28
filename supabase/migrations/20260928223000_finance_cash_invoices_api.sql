@@ -198,8 +198,7 @@ begin
 
   select * into v_order
   from erp_supply.orders
-  where id=p_order_id and organization_id=v_org
-  for share;
+  where id=p_order_id and organization_id=v_org;
   if not found then raise exception 'Pedido no encontrado' using errcode='22023'; end if;
 
   if v_number is null then raise exception 'Número de factura requerido' using errcode='22023'; end if;
