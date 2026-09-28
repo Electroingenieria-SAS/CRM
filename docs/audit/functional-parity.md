@@ -5,10 +5,10 @@
 | Funcionalidad                      |   CRM fuente   |    CRM nuevo    |             Tests             | Mobile | Seguridad | Estado                    |
 | ---------------------------------- | :------------: | :-------------: | :---------------------------: | :----: | :-------: | ------------------------- |
 | Shell/base técnica                 |       ✓        |        ✓        |               ✓               |   ✓    |     ✓     | Validado en staging       |
-| Login / sesión                     |       ✓        |  UI + gateway   |     Unit + E2E pendiente      |   ✓    | En curso  | Implementado, no validado |
-| Recuperación de contraseña         | Fuente parcial |  UI + gateway   |             Unit              |   ✓    | En curso  | Implementado, no validado |
+| Login / sesión                     |       ✓        |        ✓        |          Unit + E2E           |   ✓    |     ✓     | Validado en staging       |
+| Recuperación de contraseña         | Fuente parcial |        ✓        |          Unit + E2E           |   ✓    |     ✓     | Validado en staging       |
 | Dashboard / centro de operaciones  |       ✓        |        —        |               —               |   —    |     —     | Pendiente                 |
-| Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E pendiente |   ✓    | En curso  | Implementado, no validado |
+| Pedidos / ventas                   |       ✓        | UI + núcleo/API |      Unit + DB/RLS + E2E      |   ✓    |     ✓     | Slice inicial validado    |
 | Segmentación de clientes           |       ✓        |        —        |               —               |   —    |     —     | Pendiente                 |
 | Inteligencia/predicción de fletes  |       ✓        |        —        |               —               |   —    |     —     | Pendiente                 |
 | Crédito                            |       ✓        |        —        |               —               |   —    |     —     | Pendiente                 |
@@ -32,8 +32,8 @@
 
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
 
-> “Base técnica” no equivale a paridad: faltan pantallas, integración con entorno no productivo, E2E autenticado, MFA/administración y pruebas de autorización antes de validar estas filas.
+> “Base técnica” no equivale a paridad. Auth/sesión/recuperación ya están validados en staging; MFA y administración siguen perteneciendo a un bloque posterior de seguridad/administración.
 
-> Pedidos tiene ya núcleo SQL/API, integridad, idempotencia y capa Application/Repository. Sigue sin marcarse `Validado` hasta completar UI, recorrido autenticado, responsive del módulo y paridad de acciones operativas.
+> Pedidos tiene validado el vertical slice inicial: núcleo SQL/API, integridad, idempotencia, Application/Repository, UI, responsive, RBAC/RLS y E2E autenticado. Claim, asignación, inicio, bloqueo, finalización, aprobaciones y demás workflow operativo siguen fuera de este slice.
 
-> Este tranche añade login real, shell privado, lista/filtros, creación idempotente y detalle de pedido. El estado seguirá sin ser `Validado` hasta que el job `e2e-authenticated` termine verde en todos los proyectos de Playwright configurados.
+> Evidencia: PR #6, commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`, pipeline #105 (`36453408365`) completamente verde, incluido `e2e-authenticated`.
