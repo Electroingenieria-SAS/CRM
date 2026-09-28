@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   creditQueueSchema,
   customerPaidProjectionSchema,
+  financeCustomerSearchSchema,
   financeQueueSchema,
   financialApprovalQueueSchema,
   financialGateSchema,
@@ -45,6 +46,15 @@ function identifier(data: unknown, field: string) {
 
 export class SupabaseFinanceRepository implements FinanceRepository {
   constructor(private readonly client: SupabaseClient) {}
+
+  async searchCustomers(search: string) {
+    const { data, error } = await this.client.rpc('erp_x_finance_customer_search', {
+      p_search: search,
+      p_limit: 20,
+    });
+    if (error) throw mapFinanceError(error);
+    return financeCustomerSearchSchema.parse(data);
+  }
 
   async listCredit(query: QueueQuery = {}) {
     const { data, error } = await this.client.rpc('erp_x_finance_credit_queue', {
