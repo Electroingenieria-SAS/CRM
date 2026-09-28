@@ -157,6 +157,7 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
       {props.detail ? (
         <OrderDetail
           detail={props.detail}
+          financialGate={props.financialGate}
           busy={props.workflowBusy}
           onClose={props.onCloseDetail}
           onSimpleAction={props.onWorkflowSimpleAction}
