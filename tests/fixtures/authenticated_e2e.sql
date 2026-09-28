@@ -123,3 +123,37 @@ insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
 ('93000000-0000-4000-8000-000000000008','caja',true),
 ('93000000-0000-4000-8000-000000000009','caja',true),
 ('93000000-0000-4000-8000-000000000010','gerencia',true);
+
+
+-- Synthetic Finance orders used only by authenticated E2E.
+insert into erp_supply.orders(
+  id,organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
+  client_name,client_document,client_city,client_address,seller_profile_id,current_step_code,
+  status,priority,source,is_test
+)
+select
+  v.id,
+  o.id,
+  v.order_number,
+  v.order_type,
+  v.payment_condition,
+  'LOCAL_DISPATCH',
+  v.client_name,
+  v.client_document,
+  'Cali',
+  'Calle QA Finanzas',
+  '93000000-0000-4000-8000-000000000001',
+  v.step_code,
+  'QUEUED',
+  'MEDIUM',
+  'QA',
+  false
+from erp_supply.organizations o
+cross join (
+  values
+    ('94000000-0000-4000-8000-000000000001'::uuid,'FIN-E2E-CREDIT','PVC','CREDIT','Cliente Crédito E2E','QA-FIN-CREDIT','CARTERA'),
+    ('94000000-0000-4000-8000-000000000002'::uuid,'FIN-E2E-CARTERA','PVP','CREDIT','Cliente Cartera E2E','QA-FIN-CARTERA','CARTERA'),
+    ('94000000-0000-4000-8000-000000000003'::uuid,'FIN-E2E-CAJA','PVN','CASH','Cliente Caja E2E','QA-FIN-CAJA','CAJA')
+) v(id,order_number,order_type,payment_condition,client_name,client_document,step_code)
+where o.code='EI'
+on conflict (organization_id,order_number) do nothing;
