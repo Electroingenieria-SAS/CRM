@@ -1,0 +1,168 @@
+.daySection {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.desktopDay {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.dayGrid {
+  display: grid;
+  min-width: 1080px;
+  grid-template-columns: minmax(230px, 1.35fr) repeat(5, minmax(150px, 1fr));
+}
+
+.rowContents {
+  display: contents;
+}
+
+.teamHeader,
+.slotHeader,
+.personCell,
+.slotCell {
+  min-width: 0;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.teamHeader,
+.slotHeader {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  min-height: 58px;
+  padding: 0.85rem;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 800;
+}
+
+.personCell {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.9rem;
+  background: color-mix(in srgb, var(--surface) 92%, var(--brand-soft));
+}
+
+.personCell span,
+.personCell small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.slotCell {
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  min-height: 116px;
+  padding: 0.65rem;
+}
+
+.activityChip {
+  display: grid;
+  width: 100%;
+  min-height: 58px;
+  gap: 0.2rem;
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.activityChip:hover,
+.activityChip:focus-visible {
+  border-color: var(--brand);
+  outline: 3px solid color-mix(in srgb, var(--brand) 24%, transparent);
+}
+
+.activityChip[data-status='IN_PROGRESS'] {
+  border-inline-start: 4px solid var(--brand);
+}
+
+.activityChip[data-status='BLOCKED'],
+.activityChip[data-signal='OVER_60_MINUTES'] {
+  border-inline-start: 4px solid currentColor;
+}
+
+.activityChip span,
+.activityChip small {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}
+
+.alertText {
+  font-weight: 800;
+}
+
+.available {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.mobileDay {
+  display: none;
+}
+
+.mobilePerson {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.mobilePerson > header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.mobilePerson > header > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.mobilePerson span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.mobileTimeline {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.mobileTimeline section {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.mobileTimeline h3 {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 760px) {
+  .desktopDay {
+    display: none;
+  }
+
+  .mobileDay {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .activityChip {
+    min-height: 48px;
+  }
+}
