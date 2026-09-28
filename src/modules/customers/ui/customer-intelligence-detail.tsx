@@ -62,8 +62,8 @@ function SegmentExplanation({ detail }: { detail: CustomerIntelligenceDetail }) 
   return (
     <p className={styles.explanation}>
       Se clasifica usando exclusivamente {orderWeight}% de posición por cantidad de pedidos y{' '}
-      {paidWeight}% de posición por valor pagado en facturas registradas, netas de reversión. Está en
-      percentil {detail.metrics.frequencyPercentile.toFixed(1)} por pedidos y{' '}
+      {paidWeight}% de posición por valor pagado en facturas registradas, netas de reversión. Está
+      en percentil {detail.metrics.frequencyPercentile.toFixed(1)} por pedidos y{' '}
       {detail.metrics.paidPercentile.toFixed(1)} por pago.
       {detail.metrics.provisional
         ? ' La clasificación es provisional porque el soporte estadístico todavía es limitado.'
@@ -90,9 +90,7 @@ function SegmentHistory({ detail }: { detail: CustomerIntelligenceDetail }) {
         <tbody>
           {detail.history.map((entry) => (
             <tr key={entry.changedAt}>
-              <td data-label="Fecha">
-                {new Date(entry.changedAt).toLocaleDateString('es-CO')}
-              </td>
+              <td data-label="Fecha">{new Date(entry.changedAt).toLocaleDateString('es-CO')}</td>
               <td data-label="De">{entry.previousSegment ?? 'Inicial'}</td>
               <td data-label="A">{entry.segment}</td>
               <td data-label="Score">{entry.score.toFixed(1)}</td>
