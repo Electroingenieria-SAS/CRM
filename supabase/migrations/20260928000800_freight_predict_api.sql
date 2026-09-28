@@ -147,6 +147,17 @@ begin
     from erp_supply.freight_carriers
     where organization_id=v_org and code=v_carrier_code and active
     limit 1;
+
+    if v_carrier_id is null then
+      raise exception 'Transportadora inválida' using errcode='P0002';
+    end if;
+  end if;
+
+  if p_order_id is not null and not exists(
+    select 1 from erp_supply.orders
+    where id=p_order_id and organization_id=v_org
+  ) then
+    raise exception 'Pedido no visible para la organización' using errcode='42501';
   end if;
 
   select id into v_destination_id
