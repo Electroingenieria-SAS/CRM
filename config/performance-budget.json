@@ -1,0 +1,11 @@
+{
+  "maxTotalJsBytes": 900000,
+  "maxTotalCssBytes": 180000,
+  "maxSingleJsBytes": 350000,
+  "webVitals": {
+    "lcpMs": 2500,
+    "inpMs": 200,
+    "cls": 0.1
+  },
+  "initialRequestsTarget": 30
+}
