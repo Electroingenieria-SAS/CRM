@@ -19,6 +19,7 @@ const users = [
   'qa-seller@example.test',
   'qa-auditor@example.test',
   'qa-recovery@example.test',
+  'qa-superadmin@example.test',
   'qa-coordinator-a@example.test',
   'qa-coordinator-b@example.test',
 ];

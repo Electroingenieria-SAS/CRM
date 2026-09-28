@@ -52,7 +52,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.118.0
       - name: Start isolated local Supabase
         run: supabase start
       - name: Rebuild database from migrations and synthetic seed
@@ -100,7 +100,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.118.0
       - name: Start isolated Supabase and rebuild schema
         run: |
           supabase start
@@ -133,6 +133,11 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/authenticated_e2e.sql
+      - name: Seed synthetic Customer Intelligence dataset
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/customer_intelligence_e2e.sql
       - name: Verify Auth and operational session contract
         run: node tests/fixtures/verify-authenticated-e2e-session.mjs
       - name: Prove atomic task claim concurrency
@@ -145,6 +150,7 @@ jobs:
           tests/e2e/authenticated-orders.spec.ts
           tests/e2e/operational-order-workflow.spec.ts
           tests/e2e/authenticated-freight.spec.ts
+          tests/e2e/customer-intelligence.spec.ts
       - name: Upload authenticated Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
