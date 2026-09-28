@@ -96,7 +96,9 @@ function DesktopWeek({
   return (
     <div className={styles.desktopWeek}>
       <div className={styles.weekGrid} role="table">
-        <div className={styles.corner} role="columnheader">Equipo</div>
+        <div className={styles.corner} role="columnheader">
+          Equipo
+        </div>
         {days.map((day) => (
           <div className={styles.dayHead} role="columnheader" key={day}>
             <strong>{dayLabel(day)}</strong>
