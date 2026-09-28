@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(33);
 
 select has_table('erp_supply','customers','stable customer identity table exists');
 select has_table('erp_supply','invoices','invoice payment ledger exists');
@@ -54,7 +54,8 @@ insert into auth.users(
 ) values
 ('00000000-0000-0000-0000-000000000000','41000000-0000-0000-0000-000000000001','authenticated','authenticated','ci-admin@example.test','',now(),'{}','{}',now(),now()),
 ('00000000-0000-0000-0000-000000000000','41000000-0000-0000-0000-000000000002','authenticated','authenticated','ci-sales@example.test','',now(),'{}','{}',now(),now()),
-('00000000-0000-0000-0000-000000000000','41000000-0000-0000-0000-000000000003','authenticated','authenticated','ci-other@example.test','',now(),'{}','{}',now(),now());
+('00000000-0000-0000-0000-000000000000','41000000-0000-0000-0000-000000000003','authenticated','authenticated','ci-other@example.test','',now(),'{}','{}',now(),now()),
+('00000000-0000-0000-0000-000000000000','41000000-0000-0000-0000-000000000004','authenticated','authenticated','ci-no-permission@example.test','',now(),'{}','{}',now(),now());
 
 insert into erp_supply.organizations(id,code,name) values
 ('42000000-0000-0000-0000-000000000001','CI_A','CI A'),
@@ -67,12 +68,14 @@ insert into erp_supply.profiles(
 ) values
 ('43000000-0000-0000-0000-000000000001','42000000-0000-0000-0000-000000000001','41000000-0000-0000-0000-000000000001','ci-admin@example.test','CI Admin'),
 ('43000000-0000-0000-0000-000000000002','42000000-0000-0000-0000-000000000001','41000000-0000-0000-0000-000000000002','ci-sales@example.test','CI Sales'),
-('43000000-0000-0000-0000-000000000003','42000000-0000-0000-0000-000000000002','41000000-0000-0000-0000-000000000003','ci-other@example.test','CI Other');
+('43000000-0000-0000-0000-000000000003','42000000-0000-0000-0000-000000000002','41000000-0000-0000-0000-000000000003','ci-other@example.test','CI Other'),
+('43000000-0000-0000-0000-000000000004','42000000-0000-0000-0000-000000000001','41000000-0000-0000-0000-000000000004','ci-no-permission@example.test','CI Without Permission');
 
 insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
 ('43000000-0000-0000-0000-000000000001','super_admin',true),
 ('43000000-0000-0000-0000-000000000002','ventas',true),
-('43000000-0000-0000-0000-000000000003','ventas',true);
+('43000000-0000-0000-0000-000000000003','ventas',true),
+('43000000-0000-0000-0000-000000000004','aux_logistica',true);
 
 insert into erp_supply.orders(
   organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
@@ -296,6 +299,21 @@ select is(
   public.erp_x_customer_priority_signal('SIN-HISTORIA')->>'segment',
   'NORMAL',
   'new customer receives provisional Normal signal instead of an insufficient-history failure'
+);
+
+reset role;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"41000000-0000-0000-0000-000000000004","role":"authenticated","email":"ci-no-permission@example.test"}',
+  true
+);
+set local role authenticated;
+
+select throws_ok(
+  $select public.erp_x_customer_intelligence_list(null,null,1,100)$,
+  '42501',
+  'No autorizado para consultar inteligencia de clientes',
+  'same-organization role without permission cannot read ranking'
 );
 
 reset role;
