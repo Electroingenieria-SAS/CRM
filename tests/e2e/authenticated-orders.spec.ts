@@ -24,7 +24,7 @@ test('sales user logs in, creates, filters and opens an order', async ({ page },
   await login(page, sellerEmail);
 
   const suffix = testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toUpperCase();
-  const orderNumber = `E2E-${suffix}`;
+  const orderNumber = `E2E-${suffix}-${testInfo.retry}-${Date.now()}`;
 
   await page.getByRole('button', { name: 'Crear pedido' }).click();
   await page.getByLabel('Número de pedido *').fill(orderNumber);
