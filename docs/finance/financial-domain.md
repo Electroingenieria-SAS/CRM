@@ -137,6 +137,8 @@ Las acciones de `super_admin` siguen generando auditoría.
 
 ## RLS / RBAC
 
+PostgREST expone únicamente el esquema `public`; `erp_supply` y `erp_private` no forman parte de la superficie REST directa. Las operaciones financieras públicas se exponen mediante RPC controladas.
+
 Las tablas financieras usan RLS por `organization_id`.
 
 Reglas relevantes:
