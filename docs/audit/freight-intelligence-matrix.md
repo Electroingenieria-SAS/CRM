@@ -12,8 +12,8 @@ Corte: 2026-09-28.
 | FRT-006 | P1        | Variables   | Peso/bultos/volumen no se fuerzan.                      | Regresión solo con ≥8 pares y                                  | r            | ≥ 0,50. | Implementado |
 | FRT-007 | P1        | UI          | Resultado explicable y responsive.                      | Tarjetas, rango, evidencia, fallback, histórico paginado.      | Implementado |
 | FRT-008 | P1        | Aprendizaje | Costos reales deben alimentar evaluación.               | recordActual + outcomes MAE/MAPE/sesgo.                        | Implementado |
-| FRT-009 | P1        | QA          | Recorrido autenticado.                                  | Playwright seller/auditor + Armenia.                           | En curso     |
-| FRT-010 | P1        | CI          | No merge con gates rojos.                               | Pipeline completo previo al merge.                             | En curso     |
+| FRT-009 | P1        | QA          | Recorrido autenticado.                                  | Playwright seller/auditor + Armenia; E2E autenticado verde.    | Validado     |
+| FRT-010 | P1        | CI          | No merge con gates rojos.                               | PR #9 y pipeline de `main` completos en verde; deploy exitoso.  | Validado     |
 
 ## Paridad funcional
 
