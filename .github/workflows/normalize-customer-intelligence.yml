@@ -1,0 +1,49 @@
+name: Normalize Customer Intelligence
+
+on:
+  push:
+    branches:
+      - reconstruction/p1-customer-intelligence
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: reconstruction/p1-customer-intelligence
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Apply repository Prettier
+        run: >
+          npx prettier --write
+          docs/architecture/customer-intelligence.md
+          docs/audit/functional-parity.md
+          src/app/customers/intelligence/customer-intelligence-workspace.tsx
+          src/app/customers/intelligence/use-customer-intelligence-page.ts
+          src/app/customers/intelligence/use-customer-intelligence-session.ts
+          src/infrastructure/customers/supabase-customer-intelligence-repository.ts
+          src/modules/customers/domain/customer-intelligence.ts
+          src/modules/customers/ui/customer-intelligence-detail.tsx
+          src/modules/customers/ui/customer-ranking.tsx
+          src/modules/customers/ui/pareto-chart.tsx
+          tests/e2e/customer-intelligence.spec.ts
+          tests/unit/customer-intelligence.test.ts
+      - name: Commit normalized files
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             docs/architecture/customer-intelligence.md             docs/audit/functional-parity.md             src/app/customers/intelligence/customer-intelligence-workspace.tsx             src/app/customers/intelligence/use-customer-intelligence-page.ts             src/app/customers/intelligence/use-customer-intelligence-session.ts             src/infrastructure/customers/supabase-customer-intelligence-repository.ts             src/modules/customers/domain/customer-intelligence.ts             src/modules/customers/ui/customer-intelligence-detail.tsx             src/modules/customers/ui/customer-ranking.tsx             src/modules/customers/ui/pareto-chart.tsx             tests/e2e/customer-intelligence.spec.ts             tests/unit/customer-intelligence.test.ts
+          git commit -m "style(customer-intelligence): apply repository Prettier"
+          git push origin HEAD:reconstruction/p1-customer-intelligence
