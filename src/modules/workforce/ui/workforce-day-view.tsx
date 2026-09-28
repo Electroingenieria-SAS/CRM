@@ -29,6 +29,7 @@ function ActivityChip({
   onOpen(activityId: string): void;
 }) {
   const alert = timeSignalLabel(activity.timeSignal);
+  const occupiedMinutes = Math.max(0, Math.round(activity.businessSeconds / 60));
 
   return (
     <button
@@ -41,6 +42,7 @@ function ActivityChip({
       <strong>{activity.title}</strong>
       <span>{activityStatusLabel(activity.status)}</span>
       {activity.orderNumber ? <small>Pedido {activity.orderNumber}</small> : null}
+      {occupiedMinutes > 0 ? <small>{occupiedMinutes} min ocupados</small> : null}
       {alert ? <small className={styles.alertText}>{alert}</small> : null}
     </button>
   );
@@ -64,12 +66,16 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
 
           {people.map((person) => {
             const personActivities = activitiesForDay(activities, person.id, day);
+            const currentActivity = personActivities.find((activity) =>
+              ['IN_PROGRESS', 'BLOCKED'].includes(activity.status),
+            );
             return (
               <div className={styles.rowContents} role="row" key={person.id}>
                 <div className={styles.personCell} role="rowheader">
                   <strong>{person.name}</strong>
                   <span>{person.roles.join(' · ') || 'Sin rol operativo'}</span>
                   <span data-occupancy={person.occupancy}>{occupancyLabel(person.occupancy)}</span>
+                  {currentActivity ? <small>Actual: {currentActivity.title}</small> : null}
                   {person.specialTreatment ? (
                     <small>{person.specialTreatmentLabel ?? 'Tratamiento especial'}</small>
                   ) : null}
@@ -97,6 +103,9 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
       <div className={styles.mobileDay}>
         {people.map((person) => {
           const personActivities = activitiesForDay(activities, person.id, day);
+          const currentActivity = personActivities.find((activity) =>
+            ['IN_PROGRESS', 'BLOCKED'].includes(activity.status),
+          );
           return (
             <article className={styles.mobilePerson} key={person.id}>
               <header>
@@ -106,6 +115,7 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
                 </div>
                 <span data-occupancy={person.occupancy}>{occupancyLabel(person.occupancy)}</span>
               </header>
+              {currentActivity ? <p className={styles.currentActivity}>Actual: {currentActivity.title}</p> : null}
               <div className={styles.mobileTimeline}>
                 {workforceDaySlots.map((slot, index) => {
                   const rows = activitiesForSlot(personActivities, index);
