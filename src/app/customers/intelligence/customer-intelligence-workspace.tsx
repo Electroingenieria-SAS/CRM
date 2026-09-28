@@ -11,7 +11,9 @@ import {
   CustomerIntelligenceFilters,
   type CustomerIntelligenceFilterValues,
 } from '@/modules/customers/ui/customer-intelligence-filters';
-import { CustomerIntelligenceDetailPanel } from '@/modules/customers/ui/customer-intelligence-detail';
+import {
+  CustomerIntelligenceDetailPanel,
+} from '@/modules/customers/ui/customer-intelligence-detail';
 import { CustomerRanking } from '@/modules/customers/ui/customer-ranking';
 import { ParetoChart } from '@/modules/customers/ui/pareto-chart';
 import { AppShell } from '@/shared/ui/app-shell';
@@ -58,8 +60,8 @@ export function CustomerIntelligenceWorkspace(props: Props) {
           <p className="eyebrow">Customer Intelligence</p>
           <h1>Ranking y Pareto de clientes</h1>
           <p>
-            Clasificación automática y explicable basada únicamente en volumen de pedidos válidos y valor
-            efectivamente pagado mediante facturas registradas.
+            Clasificación automática y explicable basada únicamente en volumen de pedidos válidos y
+            valor efectivamente pagado mediante facturas registradas.
           </p>
         </div>
         <div className={styles.actions}>
