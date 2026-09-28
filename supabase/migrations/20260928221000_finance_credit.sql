@@ -203,6 +203,8 @@ begin
     raise exception 'Idempotency key requerida' using errcode='22023';
   end if;
 
+  perform erp_private.finance_idempotency_lock('CREDIT_REQUEST',p_idempotency_key);
+
   select * into v_request
   from erp_supply.credit_requests
   where organization_id=v_org and idempotency_key=trim(p_idempotency_key)
