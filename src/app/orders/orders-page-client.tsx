@@ -8,9 +8,10 @@ import { SupabaseSessionRepository } from '@/infrastructure/auth/supabase-sessio
 import { SupabaseOrdersRepository } from '@/infrastructure/orders/supabase-orders-repository';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import { OrdersService } from '@/modules/orders/application/orders-service';
-import type { CreateOrderInput, OrderListItem } from '@/modules/orders/application/order.schemas';
+import type { CreateOrderInput, OrderDetailResponse, OrderListItem } from '@/modules/orders/application/order.schemas';
 import { AppShell } from '@/shared/ui/app-shell';
 import { CreateOrderForm } from '@/modules/orders/ui/create-order-form';
+import { OrderDetail } from '@/modules/orders/ui/order-detail';
 import { OrdersFilters, type OrdersFilterValues } from '@/modules/orders/ui/orders-filters';
 import { OrdersList } from '@/modules/orders/ui/orders-list';
 import styles from './orders-page.module.css';
@@ -49,6 +50,7 @@ export function OrdersPageClient() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [detail, setDetail] = useState<OrderDetailResponse | null>(null);
 
   const loadOrders = useCallback(
     async (nextFilters: OrdersFilterValues = filters) => {
@@ -109,6 +111,16 @@ export function OrdersPageClient() {
       cancelled = true;
     };
   }, [auth, orders, router, sessionRepository]);
+
+  async function openDetail(orderId: string) {
+    if (!orders) return;
+    setMessage(null);
+    try {
+      setDetail(await orders.get(orderId));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No fue posible cargar el pedido.');
+    }
+  }
 
   if (!context) {
     return (
@@ -178,8 +190,10 @@ export function OrdersPageClient() {
         />
 
         {message ? <p className={styles.message} role="alert">{message}</p> : null}
-        {loading ? <p className={styles.loading} role="status">Consultando la operación…</p> : <OrdersList items={items} />}
+        {loading ? <p className={styles.loading} role="status">Consultando la operación…</p> : <OrdersList items={items} onSelect={(orderId) => void openDetail(orderId)} />}
       </section>
+
+      {detail ? <OrderDetail detail={detail} onClose={() => setDetail(null)} /> : null}
     </AppShell>
   );
 }
