@@ -155,6 +155,12 @@ export const orderDetailResponseSchema = z.object({
     ),
     missingRequirements: z.array(z.record(z.string(), z.unknown())),
     blockingIssueOpen: z.boolean(),
+    reopenCandidates: z.array(
+      z.object({
+        code: z.string(),
+        name: z.string(),
+      }),
+    ),
   }),
   assignmentCandidates: z.array(
     z.object({
