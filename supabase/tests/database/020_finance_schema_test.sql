@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(26);
 
 select has_table('erp_supply','credit_requests','credit requests exist');
 select has_table('erp_supply','financial_validations','financial validations exist');
@@ -36,6 +36,23 @@ select is(
    where n.nspname='public' and p.proname='erp_x_finance_register_invoice'),
   false,
   'invoice API is SECURITY INVOKER'
+);
+
+select is(
+  (select prosecdef from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='public' and p.proname='erp_x_financial_gate'),
+  true,
+  'Orders financial gate is the only narrow SECURITY DEFINER finance contract'
+);
+
+select ok(
+  (
+    select coalesce(p.proconfig,'{}'::text[]) @> array['search_path=pg_catalog, public, erp_supply, erp_private']
+    from pg_proc p
+    join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='public' and p.proname='erp_x_financial_gate'
+  ),
+  'financial gate has an explicit trusted search_path'
 );
 
 select is(
