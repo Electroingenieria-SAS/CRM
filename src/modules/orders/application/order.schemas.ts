@@ -103,6 +103,7 @@ export const createOrderResponseSchema = z.object({
   contractVersion: z.string(),
 });
 
+export type OrderListItem = z.infer<typeof orderListItemSchema>;
 export type CreateOrderInput = z.input<typeof createOrderSchema>;
 export type OrderListResponse = z.infer<typeof orderListResponseSchema>;
 export type CreateOrderResponse = z.infer<typeof createOrderResponseSchema>;
