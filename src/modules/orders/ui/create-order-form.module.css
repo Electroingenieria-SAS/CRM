@@ -87,10 +87,9 @@
 
 .item {
   display: grid;
-  grid-template-columns: minmax(220px, 2fr) minmax(110px, 0.7fr) minmax(130px, 0.8fr) minmax(
-      120px,
-      0.8fr
-    ) auto;
+  grid-template-columns:
+    minmax(220px, 2fr) minmax(110px, 0.7fr) minmax(130px, 0.8fr) minmax(120px, 0.8fr)
+    auto;
   gap: var(--space-3);
   align-items: end;
   margin: 0;
