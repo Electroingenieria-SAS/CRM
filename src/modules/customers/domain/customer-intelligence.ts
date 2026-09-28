@@ -94,3 +94,56 @@ export function orderPriorityForSegment(segment: CustomerSegment) {
       return 'LOW';
   }
 }
+
+
+export type InvoiceState = 'REGISTERED' | 'PARTIALLY_REVERSED' | 'REVERSED' | 'VOID';
+
+export function effectiveInvoicePaid(
+  amount: number,
+  reversedAmount: number,
+  status: InvoiceState,
+): number {
+  if (status === 'REGISTERED') return Math.max(amount, 0);
+  if (status === 'PARTIALLY_REVERSED') {
+    return Math.max(amount - reversedAmount, 0);
+  }
+  return 0;
+}
+
+export interface ParetoPoint {
+  readonly customerId: string;
+  readonly overallRank: number;
+  readonly cumulativeOrdersPct: number;
+  readonly cumulativePaidPct: number;
+}
+
+export function buildPareto(rows: CustomerMetricInput[]): ParetoPoint[] {
+  const scored = calculateCustomerScores(rows).sort(
+    (left, right) =>
+      right.score - left.score ||
+      right.paidAmount - left.paidAmount ||
+      right.orderCount - left.orderCount ||
+      left.customerId.localeCompare(right.customerId),
+  );
+  const totalOrders = scored.reduce((total, row) => total + row.orderCount, 0);
+  const totalPaid = scored.reduce((total, row) => total + row.paidAmount, 0);
+  let cumulativeOrders = 0;
+  let cumulativePaid = 0;
+  let previousKey = '';
+  let rank = 0;
+
+  return scored.map((row, index) => {
+    const key = [row.score, row.paidAmount, row.orderCount].join('|');
+    if (key !== previousKey) rank = index + 1;
+    previousKey = key;
+    cumulativeOrders += row.orderCount;
+    cumulativePaid += row.paidAmount;
+
+    return {
+      customerId: row.customerId,
+      overallRank: rank,
+      cumulativeOrdersPct: totalOrders ? (100 * cumulativeOrders) / totalOrders : 0,
+      cumulativePaidPct: totalPaid ? (100 * cumulativePaid) / totalPaid : 0,
+    };
+  });
+}
