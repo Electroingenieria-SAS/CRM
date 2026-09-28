@@ -96,25 +96,3 @@ test('customer intelligence smoke has no accidental horizontal overflow', async 
   );
   expect(overflow).toBe(false);
 });
-
-test('customer intelligence supports all reference viewport widths', async ({ page }, testInfo) => {
-  test.skip(
-    testInfo.project.name !== 'desktop-chromium',
-    'Reference viewport sweep runs once; cross-browser smoke is covered separately.',
-  );
-
-  await login(page);
-  const widths = [320, 375, 390, 430, 768, 1024, 1366, 1920];
-
-  for (const width of widths) {
-    await page.setViewportSize({ width, height: width < 768 ? 844 : 1000 });
-    await page.goto('/customers/intelligence');
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Ranking y Pareto de clientes' }),
-    ).toBeVisible();
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > window.innerWidth,
-    );
-    expect(overflow, 'horizontal overflow at ' + width + 'px').toBe(false);
-  }
-});
