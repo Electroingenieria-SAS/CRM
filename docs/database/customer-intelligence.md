@@ -32,8 +32,9 @@ Por tanto:
 
 ## Tablas
 
-- customers: identidad estable.
+- customers: identidad estable; una identidad provisional conserva su UUID si posteriormente recibe documento.
 - invoices: ledger mínimo de pago proveniente de facturación.
+- FKs compuestas impiden asociar customer_id o invoice/order entre organizaciones distintas.
 - customer_intelligence_algorithm_versions: pesos/umbrales versionados.
 - customer_intelligence_runs: ejecución y fingerprint.
 - customer_intelligence_current: snapshot consultable.
