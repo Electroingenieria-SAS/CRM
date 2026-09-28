@@ -90,6 +90,7 @@ declare
   v_actor uuid:=erp_private.current_profile_id();
   v_activity erp_supply.workforce_activities%rowtype;
   v_event jsonb;
+  v_from_status text;
 begin
   select ev.payload into v_event from erp_supply.workforce_activity_events ev
   where ev.organization_id=v_org and ev.idempotency_key=trim(p_idempotency_key) limit 1;
@@ -307,6 +308,8 @@ begin
     raise exception 'La actividad cambió; actualiza la vista antes de continuar' using errcode='40001';
   end if;
 
+  v_from_status:=v_activity.status;
+
   update erp_supply.workforce_activities
   set status='CANCELLED',
       actual_end=case when actual_start is not null then now() else null end,
@@ -325,7 +328,7 @@ begin
     organization_id,activity_id,actor_profile_id,event_type,from_status,to_status,
     idempotency_key,payload
   ) values(
-    v_org,p_activity_id,v_actor,'ACTIVITY_CANCELLED',v_activity.status,'CANCELLED',
+    v_org,p_activity_id,v_actor,'ACTIVITY_CANCELLED',v_from_status,'CANCELLED',
     trim(p_idempotency_key),v_event
   );
 
