@@ -55,7 +55,14 @@ test('seller obtains an explainable Armenia estimate and relevant history', asyn
   await expect(result).toContainText(/fallback CITY/i);
   await expect(result).not.toContainText(/Sin evidencia suficiente/i);
   await expect(result.getByLabel('Rango histórico esperado')).toBeVisible();
+
+  await page.getByLabel('Transportadora', { exact: true }).nth(0).selectOption('');
+  await page.getByRole('button', { name: 'Estimar flete' }).click();
+  await expect(page.getByTestId('freight-general-result')).toBeVisible();
+  await expect(page.getByTestId('freight-general-result')).toContainText(/Referencia general del destino/i);
+
   await selectOptionContaining(page, 'Destino', 1, /Armenia/i);
+  await selectOptionContaining(page, 'Departamento', 0, /Quind/i);
   await selectOptionContaining(page, 'Transportadora', 1, /Colvanes/i);
   await page.getByRole('button', { name: 'Filtrar histórico' }).click();
   await expect(page.getByRole('table')).toContainText(/Armenia/i);
