@@ -59,15 +59,23 @@ declare
   v_search text:=nullif(lower(trim(coalesce(p_search,''))),'');
   v_total bigint;
   v_items jsonb;
+  v_actor uuid:=erp_private.current_profile_id();
+  v_full_review boolean;
 begin
   if not erp_private.can_access_module('credit','read') then
     raise exception 'No autorizado para consultar crédito' using errcode='42501';
   end if;
 
+  v_full_review:=
+    erp_private.can_access_module('credit','update')
+    or erp_private.can_access_module('credit','approve')
+    or erp_private.can_access_module('credit','admin');
+
   select count(*) into v_total
   from erp_supply.credit_requests c
   join erp_supply.customers customer on customer.id=c.customer_id
   where c.organization_id=v_org
+    and (v_full_review or c.requested_by=v_actor)
     and (v_status is null or c.status=v_status)
     and (
       v_search is null
