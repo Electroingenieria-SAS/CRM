@@ -13,6 +13,7 @@ declare
   v_city_key text:=erp_private.freight_city_key(p_payload->>'city');
   v_department_key text:=erp_private.freight_department_key(p_payload->>'department');
   v_carrier_code text:=nullif(erp_private.freight_normalize(p_payload->>'carrierCode'),'');
+  v_carrier_id_input uuid:=nullif(p_payload->>'carrierId','')::uuid;
   v_carrier_id uuid;
   v_destination_id uuid;
   v_observation_id uuid;
@@ -44,9 +45,31 @@ begin
     end if;
   end if;
 
-  if v_carrier_code is not null then
+  if v_carrier_id_input is not null then
+    select id into v_carrier_id from erp_supply.freight_carriers
+    where organization_id=v_org and id=v_carrier_id_input and active limit 1;
+  elsif v_carrier_code is not null then
     select id into v_carrier_id from erp_supply.freight_carriers
     where organization_id=v_org and code=v_carrier_code and active limit 1;
+  end if;
+
+  if (v_carrier_id_input is not null or v_carrier_code is not null)
+     and v_carrier_id is null then
+    raise exception 'Transportadora inválida' using errcode='P0002';
+  end if;
+
+  if nullif(p_payload->>'orderId','') is not null and not exists(
+    select 1 from erp_supply.orders
+    where id=(p_payload->>'orderId')::uuid and organization_id=v_org
+  ) then
+    raise exception 'Pedido no visible para la organización' using errcode='42501';
+  end if;
+
+  if nullif(p_payload->>'predictionId','') is not null and not exists(
+    select 1 from erp_supply.freight_predictions
+    where id=(p_payload->>'predictionId')::uuid and organization_id=v_org
+  ) then
+    raise exception 'Predicción no visible para la organización' using errcode='42501';
   end if;
 
   select id into v_destination_id
@@ -96,12 +119,13 @@ begin
   return (
     with evaluated as (
       select
-        p.id,p.fallback_scope,p.estimate_mid,o.actual_cost,
+        p.id,p.fallback_scope,p.estimate_mid,o.actual_cost,p.carrier_id,c.name carrier_name,
         abs(o.actual_cost-p.estimate_mid) absolute_error,
         case when o.actual_cost>0 then abs(o.actual_cost-p.estimate_mid)/o.actual_cost*100 end ape,
         p.estimate_mid-o.actual_cost bias
       from erp_supply.freight_predictions p
       join erp_supply.freight_observations o on o.prediction_id=p.id
+      left join erp_supply.freight_carriers c on c.id=p.carrier_id
       where p.organization_id=v_org and p.estimate_mid is not null
     )
     select jsonb_build_object(
@@ -116,6 +140,18 @@ begin
         from (
           select fallback_scope,count(*) n,avg(absolute_error) mae,avg(ape) mape
           from evaluated group by fallback_scope
+        ) x
+      ),'[]'::jsonb),
+      'byCarrier',coalesce((
+        select jsonb_agg(jsonb_build_object(
+          'carrierId',carrier_id,'carrierName',carrier_name,'count',n,
+          'mae',round(mae,0),'mapePct',round(mape,1),'bias',round(bias,0)
+        ) order by carrier_name nulls last)
+        from (
+          select carrier_id,carrier_name,count(*) n,
+                 avg(absolute_error) mae,avg(ape) mape,avg(bias) bias
+          from evaluated
+          group by carrier_id,carrier_name
         ) x
       ),'[]'::jsonb)
     )
