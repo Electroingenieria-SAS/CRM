@@ -23,7 +23,11 @@ function CatalogFields({ form }: { form: ReturnType<typeof useWorkforceCreateFor
       <label>
         Categoría
         <select value={form.category} onChange={(event) => form.selectCategory(event.target.value)}>
-          {form.categories.map(([code, label]) => <option value={code} key={code}>{label}</option>)}
+          {form.categories.map(([code, label]) => (
+            <option value={code} key={code}>
+              {label}
+            </option>
+          ))}
         </select>
       </label>
       <label>
@@ -32,13 +36,21 @@ function CatalogFields({ form }: { form: ReturnType<typeof useWorkforceCreateFor
           value={form.subcategory}
           onChange={(event) => form.selectSubcategory(event.target.value)}
         >
-          {form.subcategories.map((item) => <option value={item} key={item}>{item}</option>)}
+          {form.subcategories.map((item) => (
+            <option value={item} key={item}>
+              {item}
+            </option>
+          ))}
         </select>
       </label>
       <label className={styles.full}>
         Actividad específica
         <select value={form.catalogId} onChange={(event) => form.setCatalogId(event.target.value)}>
-          {form.activities.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+          {form.activities.map((item) => (
+            <option value={item.id} key={item.id}>
+              {item.name}
+            </option>
+          ))}
         </select>
       </label>
     </>
@@ -89,7 +101,11 @@ function AssignmentFields({
           onChange={(event) => form.setAssignee(event.target.value)}
         >
           <option value="">Yo mismo</option>
-          {people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
+          {people.map((person) => (
+            <option value={person.id} key={person.id}>
+              {person.name}
+            </option>
+          ))}
         </select>
       </label>
       {allowAutoAssign ? (
@@ -115,13 +131,19 @@ export function WorkforceCreateForm(props: WorkforceCreateFormProps) {
           <span className="eyebrow">Planificación</span>
           <h2>Nueva actividad</h2>
         </div>
-        <button type="button" onClick={props.onCancel}>Cerrar</button>
+        <button type="button" onClick={props.onCancel}>
+          Cerrar
+        </button>
       </header>
 
       <div className={styles.grid}>
         <CatalogFields form={form} />
         <TimingFields form={form} />
-        <AssignmentFields form={form} people={props.people} allowAutoAssign={props.allowAutoAssign} />
+        <AssignmentFields
+          form={form}
+          people={props.people}
+          allowAutoAssign={props.allowAutoAssign}
+        />
         <label className={styles.full}>
           Descripción
           <textarea
@@ -133,7 +155,9 @@ export function WorkforceCreateForm(props: WorkforceCreateFormProps) {
       </div>
 
       <footer>
-        <button type="button" onClick={props.onCancel}>Cancelar</button>
+        <button type="button" onClick={props.onCancel}>
+          Cancelar
+        </button>
         <button type="submit" disabled={form.busy || !form.catalogId}>
           {form.busy ? 'Guardando…' : 'Planificar actividad'}
         </button>

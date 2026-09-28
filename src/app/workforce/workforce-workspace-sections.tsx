@@ -69,7 +69,9 @@ export function WorkforceToolbar({
         <button type="button" onClick={() => onNavigate(-1)} aria-label="Periodo anterior">
           ←
         </button>
-        <button type="button" onClick={onToday}>Hoy</button>
+        <button type="button" onClick={onToday}>
+          Hoy
+        </button>
         <button type="button" onClick={() => onNavigate(1)} aria-label="Periodo siguiente">
           →
         </button>

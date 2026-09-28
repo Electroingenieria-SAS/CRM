@@ -8,15 +8,13 @@ import { activityStatusLabel } from '@/modules/workforce/ui/workforce-calendar-u
 import { formatBusinessDate } from '@/shared/time/time-zone';
 import styles from './workforce-detail.module.css';
 
-export type WorkforceEvidenceType =
-  | 'BEFORE_PHOTO'
-  | 'AFTER_PHOTO'
-  | 'FINAL_PHOTO'
-  | 'FILE';
+export type WorkforceEvidenceType = 'BEFORE_PHOTO' | 'AFTER_PHOTO' | 'FINAL_PHOTO' | 'FILE';
 
 type Activity = WorkforceActivityDetailResponse['activity'];
 
-export function evidenceOptions(policy: string): readonly (readonly [WorkforceEvidenceType, string])[] {
+export function evidenceOptions(
+  policy: string,
+): readonly (readonly [WorkforceEvidenceType, string])[] {
   if (policy === 'BEFORE_AFTER') {
     return [
       ['BEFORE_PHOTO', 'Foto inicial'],
@@ -37,22 +35,37 @@ export function WorkforceDetailHeader({
   return (
     <header>
       <div>
-        <span className="eyebrow">{activity.categoryLabel} · {activity.subcategory}</span>
+        <span className="eyebrow">
+          {activity.categoryLabel} · {activity.subcategory}
+        </span>
         <h2 id="workforce-detail-title">{activity.title}</h2>
-        <p>{activity.assigneeName} · {activityStatusLabel(activity.status)}</p>
+        <p>
+          {activity.assigneeName} · {activityStatusLabel(activity.status)}
+        </p>
       </div>
-      <button type="button" onClick={onClose} autoFocus aria-label="Cerrar detalle">×</button>
+      <button type="button" onClick={onClose} autoFocus aria-label="Cerrar detalle">
+        ×
+      </button>
     </header>
   );
 }
 
 export function WorkforceDetailFacts({ activity }: { activity: Activity }) {
   const facts = [
-    ['Horario', `${formatBusinessDate(activity.plannedStart)} → ${formatBusinessDate(activity.plannedEnd)}`],
-    ['Inicio real', activity.actualStart ? formatBusinessDate(activity.actualStart) : 'Sin iniciar'],
+    [
+      'Horario',
+      `${formatBusinessDate(activity.plannedStart)} → ${formatBusinessDate(activity.plannedEnd)}`,
+    ],
+    [
+      'Inicio real',
+      activity.actualStart ? formatBusinessDate(activity.actualStart) : 'Sin iniciar',
+    ],
     ['Pedido', activity.orderNumber ?? 'Sin pedido relacionado'],
     ['Semáforo', activity.timeSignal === 'OVER_60_MINUTES' ? 'Más de 1 hora' : 'Normal'],
-    ['Evidencia', activity.evidenceComplete ? 'Completa' : `Pendiente · ${activity.evidencePolicy}`],
+    [
+      'Evidencia',
+      activity.evidenceComplete ? 'Completa' : `Pendiente · ${activity.evidencePolicy}`,
+    ],
     ['Versión', String(activity.version)],
   ] as const;
 
@@ -95,7 +108,11 @@ export function WorkforcePlannedActions({
           <label>
             Responsable
             <select value={assignee} onChange={(event) => onAssignee(event.target.value)}>
-              {people.map((person) => <option value={person.id} key={person.id}>{person.name}</option>)}
+              {people.map((person) => (
+                <option value={person.id} key={person.id}>
+                  {person.name}
+                </option>
+              ))}
             </select>
           </label>
           <button
@@ -150,7 +167,11 @@ export function WorkforceInProgressActions({
           value={evidenceType}
           onChange={(event) => onEvidenceType(event.target.value as WorkforceEvidenceType)}
         >
-          {options.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+          {options.map(([value, label]) => (
+            <option value={value} key={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </label>
       <label className={styles.fileInput}>
@@ -203,7 +224,9 @@ export function WorkforceTerminalActions({
   return (
     <>
       {activity.status === 'BLOCKED' ? (
-        <button type="button" disabled={busy} onClick={() => void onResume()}>Reanudar</button>
+        <button type="button" disabled={busy} onClick={() => void onResume()}>
+          Reanudar
+        </button>
       ) : null}
       {!final ? (
         <>
@@ -240,7 +263,9 @@ export function WorkforceDetailHistory({ detail }: { detail: WorkforceActivityDe
               </li>
             ))}
           </ul>
-        ) : <p>Sin evidencias registradas.</p>}
+        ) : (
+          <p>Sin evidencias registradas.</p>
+        )}
       </section>
       <section>
         <h3>Historial</h3>
@@ -248,7 +273,9 @@ export function WorkforceDetailHistory({ detail }: { detail: WorkforceActivityDe
           {detail.events.map((event) => (
             <li key={event.id}>
               <strong>{event.eventType}</strong>
-              <span>{event.fromStatus ?? '—'} → {event.toStatus ?? '—'}</span>
+              <span>
+                {event.fromStatus ?? '—'} → {event.toStatus ?? '—'}
+              </span>
               <small>{formatBusinessDate(event.createdAt)}</small>
             </li>
           ))}

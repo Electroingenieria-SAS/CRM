@@ -83,8 +83,27 @@ export function useWorkforceState(
   }, [application, goToLogin]);
 
   return {
-    context, catalog, schedule, indicators, detail, mode, anchor, creating, loading, busy,
-    message, notice, setSchedule, setIndicators, setDetail, setMode, setAnchor, setCreating,
-    setLoading, setBusy, setMessage, setNotice,
+    context,
+    catalog,
+    schedule,
+    indicators,
+    detail,
+    mode,
+    anchor,
+    creating,
+    loading,
+    busy,
+    message,
+    notice,
+    setSchedule,
+    setIndicators,
+    setDetail,
+    setMode,
+    setAnchor,
+    setCreating,
+    setLoading,
+    setBusy,
+    setMessage,
+    setNotice,
   };
 }

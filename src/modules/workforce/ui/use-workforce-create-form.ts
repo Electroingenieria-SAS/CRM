@@ -79,8 +79,26 @@ export function useWorkforceCreateForm(
   }
 
   return {
-    categories, category, subcategories, subcategory, activities, catalogId, assignee,
-    autoAssign, start, end, description, busy, selectCategory, selectSubcategory,
-    setCatalogId, setAssignee, setAutoAssign, setStart, setEnd, setDescription, submit,
+    categories,
+    category,
+    subcategories,
+    subcategory,
+    activities,
+    catalogId,
+    assignee,
+    autoAssign,
+    start,
+    end,
+    description,
+    busy,
+    selectCategory,
+    selectSubcategory,
+    setCatalogId,
+    setAssignee,
+    setAutoAssign,
+    setStart,
+    setEnd,
+    setDescription,
+    submit,
   };
 }

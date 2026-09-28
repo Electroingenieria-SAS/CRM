@@ -122,7 +122,9 @@ export function createWorkforcePageActions(deps: ActionDependencies) {
       try {
         deps.setDetail(await deps.application.workforce.detail(id));
       } catch (error) {
-        deps.setMessage(error instanceof Error ? error.message : 'No fue posible abrir la actividad.');
+        deps.setMessage(
+          error instanceof Error ? error.message : 'No fue posible abrir la actividad.',
+        );
       }
     },
     upload: async (
@@ -132,13 +134,14 @@ export function createWorkforcePageActions(deps: ActionDependencies) {
       if (!deps.application || !deps.context || !deps.detail) return;
       await mutate(
         deps.detail.activity.id,
-        () => deps.application!.workforce.uploadEvidence({
-          organizationId: deps.context!.organization.id,
-          activityId: deps.detail!.activity.id,
-          evidenceType,
-          file,
-          idempotencyKey: crypto.randomUUID(),
-        }),
+        () =>
+          deps.application!.workforce.uploadEvidence({
+            organizationId: deps.context!.organization.id,
+            activityId: deps.detail!.activity.id,
+            evidenceType,
+            file,
+            idempotencyKey: crypto.randomUUID(),
+          }),
         'Evidencia registrada.',
       );
     },

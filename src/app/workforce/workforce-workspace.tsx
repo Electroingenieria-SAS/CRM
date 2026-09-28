@@ -57,11 +57,13 @@ interface WorkforceWorkspaceProps {
 
 function navigationFor(context: SessionContext): AppShellNavigationItem[] {
   const items: AppShellNavigationItem[] = [];
-  if (hasModuleCapability(context, 'orders', 'read')) items.push({ href: '/orders', label: 'Pedidos' });
+  if (hasModuleCapability(context, 'orders', 'read'))
+    items.push({ href: '/orders', label: 'Pedidos' });
   if (hasModuleCapability(context, 'customer_intelligence', 'read')) {
     items.push({ href: '/customers/intelligence', label: 'Clientes' });
   }
-  if (hasModuleCapability(context, 'freight', 'read')) items.push({ href: '/freight', label: 'Fletes' });
+  if (hasModuleCapability(context, 'freight', 'read'))
+    items.push({ href: '/freight', label: 'Fletes' });
   items.push({ href: '/workforce', label: 'Jornada', current: true });
   return items;
 }
@@ -103,8 +105,16 @@ export function WorkforceWorkspace(props: WorkforceWorkspaceProps) {
         />
       ) : null}
 
-      {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
-      {props.message ? <p className={styles.notice} role="alert">{props.message}</p> : null}
+      {props.notice ? (
+        <p className={styles.notice} role="status">
+          {props.notice}
+        </p>
+      ) : null}
+      {props.message ? (
+        <p className={styles.notice} role="alert">
+          {props.message}
+        </p>
+      ) : null}
       {props.loading ? <p role="status">Actualizando cronograma…</p> : null}
 
       {!props.loading ? (
