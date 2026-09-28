@@ -5,6 +5,7 @@ import {
   classifyCustomer,
   effectiveInvoicePaid,
   orderPriorityForSegment,
+  rankCustomerScores,
   scoreCustomer,
 } from '@/modules/customers/domain/customer-intelligence';
 
@@ -27,6 +28,20 @@ describe('customer intelligence domain', () => {
     expect(orderPriorityForSegment('NORMAL')).toBe('MEDIUM');
     expect(orderPriorityForSegment('PREMIUM')).toBe('HIGH');
     expect(orderPriorityForSegment('URGENT')).toBe('URGENT');
+  });
+
+  it('ranks customers deterministically and preserves dense ties', () => {
+    const ranked = rankCustomerScores([
+      { customerId: 'low', orderCount: 1, paidAmount: 100 },
+      { customerId: 'tie-a', orderCount: 5, paidAmount: 5000 },
+      { customerId: 'tie-b', orderCount: 5, paidAmount: 5000 },
+      { customerId: 'top', orderCount: 20, paidAmount: 100000 },
+    ]);
+
+    expect(ranked[0]?.customerId).toBe('top');
+    expect(ranked[0]?.overallRank).toBe(1);
+    expect(ranked[1]?.overallRank).toBe(ranked[2]?.overallRank);
+    expect(ranked.at(-1)?.customerId).toBe('low');
   });
 
   it('handles ties and outliers reproducibly', () => {
