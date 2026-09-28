@@ -3,9 +3,11 @@
 import type { ParetoResponse } from '@/modules/customers/application/customer-intelligence.schemas';
 import styles from './customer-intelligence.module.css';
 
-type ParetoPoint = ParetoResponse['ordersSeries'][number];
+type ParetoSeries = ParetoResponse['ordersSeries'];
 
-function polyline(points: ParetoPoint[]) {
+function polyline(points: ParetoSeries) {
+  if (!points.length) return '';
+
   return points
     .map((point) => {
       const x = point.customerPct;
@@ -29,7 +31,7 @@ export function ParetoChart({ data }: Props) {
       <div className={styles.chartPanel}>
         <h3 id="pareto-title">Concentración Pareto real</h3>
         <p>
-          Cada curva ordena los clientes por su propio factor. No se fuerza una distribución 80/20.
+          Cada curva ordena clientes por su propio factor. No se fuerza una relación 80/20.
         </p>
         {hasData ? (
           <>
@@ -37,7 +39,7 @@ export function ParetoChart({ data }: Props) {
               className={styles.chart}
               viewBox="0 0 100 100"
               role="img"
-              aria-label="Curvas Pareto independientes de pedidos y valor pagado por facturas registradas"
+              aria-label="Curvas acumuladas independientes de pedidos y valor pagado por porcentaje de clientes"
               preserveAspectRatio="none"
             >
               <line x1="0" y1="100" x2="100" y2="100" stroke="currentColor" opacity="0.25" />
@@ -60,7 +62,7 @@ export function ParetoChart({ data }: Props) {
             </svg>
             <div className={styles.legend} aria-hidden="true">
               <span>Pedidos acumulados</span>
-              <span>Facturación pagada acumulada (línea discontinua)</span>
+              <span>Valor pagado acumulado (línea discontinua)</span>
             </div>
           </>
         ) : (
