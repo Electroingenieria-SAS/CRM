@@ -1,13 +1,39 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createOrdersWorkforceBrowserApplication } from '@/composition/orders-workforce-browser-application';
+import {
+  createOrdersWorkforceBrowserApplication,
+  type OrdersWorkforceBrowserApplication,
+} from '@/composition/orders-workforce-browser-application';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type { OrderWorkforceHealth } from '@/modules/integrations/orders-workforce/application/orders-workforce.schemas';
 
 const unavailableMessage = 'Este entorno no tiene un backend de staging configurado.';
+
+interface WorkspaceData {
+  context: SessionContext;
+  health: OrderWorkforceHealth | null;
+  forbidden: boolean;
+}
+
+async function loadWorkspace(
+  application: OrdersWorkforceBrowserApplication,
+): Promise<WorkspaceData | null> {
+  const context = await application.auth.restoreContext();
+  if (!context) return null;
+
+  if (!hasModuleCapability(context, 'orders', 'read')) {
+    return { context, health: null, forbidden: true };
+  }
+
+  return {
+    context,
+    health: await application.health.health(),
+    forbidden: false,
+  };
+}
 
 export function useOrdersWorkforcePage() {
   const router = useRouter();
@@ -21,23 +47,6 @@ export function useOrdersWorkforcePage() {
   );
   const [notice, setNotice] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    if (!application) return;
-    const restored = await application.auth.restoreContext();
-    if (!restored) {
-      router.replace('/login');
-      return;
-    }
-    if (!hasModuleCapability(restored, 'orders', 'read')) {
-      setMessage('Tu perfil no tiene acceso a la operación de pedidos.');
-      setContext(restored);
-      return;
-    }
-
-    setContext(restored);
-    setHealth(await application.health.health());
-  }, [application, router]);
-
   useEffect(() => {
     if (!application) return;
 
@@ -46,7 +55,20 @@ export function useOrdersWorkforcePage() {
       if (event.type === 'signed_out') router.replace('/login');
     });
 
-    void load()
+    void loadWorkspace(application)
+      .then((workspace) => {
+        if (!active) return;
+        if (!workspace) {
+          router.replace('/login');
+          return;
+        }
+
+        setContext(workspace.context);
+        setHealth(workspace.health);
+        if (workspace.forbidden) {
+          setMessage('Tu perfil no tiene acceso a la operación de pedidos.');
+        }
+      })
       .catch((error) => {
         if (active) {
           setMessage(
@@ -62,7 +84,7 @@ export function useOrdersWorkforcePage() {
       active = false;
       unsubscribe();
     };
-  }, [application, load, router]);
+  }, [application, router]);
 
   async function reconcile(repair: boolean) {
     if (!application) return;
