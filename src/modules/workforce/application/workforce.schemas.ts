@@ -253,3 +253,7 @@ export type WorkforceActivityDetailResponse = z.infer<typeof workforceActivityDe
 export type WorkforceMutationResponse = z.infer<typeof workforceMutationResponseSchema>;
 export type WorkforceIndicatorsResponse = z.infer<typeof workforceIndicatorsResponseSchema>;
 export type WorkforceEvidenceInput = z.input<typeof workforceEvidenceInputSchema>;
+
+export type WorkforceCatalogItem = z.infer<typeof workforceCatalogItemSchema>;
+export type WorkforcePerson = z.infer<typeof workforcePersonSchema>;
+export type WorkforceActivitySummary = z.infer<typeof workforceActivitySummarySchema>;
