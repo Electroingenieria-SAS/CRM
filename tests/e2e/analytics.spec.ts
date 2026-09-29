@@ -59,7 +59,7 @@ test('dashboard, filters, VSM and report explorer use synthetic analytics data',
 
   await page.getByRole('link', { name: 'Reportes' }).click();
   await expect(page.getByRole('heading', { name: 'Reportes reutilizables' })).toBeVisible();
-  await page.getByLabel('Reporte').selectOption('stage_times');
+  await page.getByRole('combobox', { name: 'Reporte' }).selectOption('stage_times');
   await setRange(page);
   await page.getByLabel('Buscar').fill('AN-E2E');
   await page.getByRole('button', { name: 'Aplicar' }).click();
