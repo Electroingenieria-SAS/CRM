@@ -180,7 +180,7 @@ export class LogisticsService {
     if (!evidenceId) throw new Error('La evidencia de entrega es obligatoria.');
     const idempotencyKey = requiredKey(key);
     await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
-    return this.repository.deliver(
+    const result = await this.repository.deliver(
       shipmentId,
       receivedBy?.trim() || undefined,
       observation?.trim() || undefined,
@@ -188,6 +188,8 @@ export class LogisticsService {
       version,
       idempotencyKey,
     );
+    await this.orders.completeDelivery(orderId, `${idempotencyKey}:orders-complete`);
+    return result;
   }
 
   async returnShipment(
