@@ -164,12 +164,11 @@ begin
           and status='FAILED'
           and created_at>=now()-interval '24 hours'
       ),
-      'staleApplying',(
+      'applying',(
         select count(*)::integer
         from erp_supply.analytics_import_batches
         where organization_id=v_org
           and status='APPLYING'
-          and updated_at<now()-interval '10 minutes'
       )
     ),
     'orderWorkforce',v_workforce->'summary',
