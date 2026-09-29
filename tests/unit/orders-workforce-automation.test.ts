@@ -41,6 +41,7 @@ describe('OrdersWorkforceAutomationService', () => {
       reconcile: vi.fn(),
     };
     const workforce: WorkforceAutomationPort = {
+      assertOrderCompletionReady: vi.fn().mockResolvedValue(undefined),
       applyOrderEvent: vi.fn().mockResolvedValue({
         activityId: '00000000-0000-4000-8000-000000000005',
         status: 'PLANNED',
@@ -82,7 +83,8 @@ describe('OrdersWorkforceAutomationService', () => {
       markFailed: vi.fn(),
       reconcile: vi.fn(),
     };
-    const workforce: WorkforceAutomationPort = { applyOrderEvent: vi.fn() };
+    const workforce: WorkforceAutomationPort = {
+      assertOrderCompletionReady: vi.fn().mockResolvedValue(undefined), applyOrderEvent: vi.fn() };
     const service = new OrdersWorkforceAutomationService(outbox, workforce);
 
     const result = await service.processOutboxItem('00000000-0000-4000-8000-000000000006');
@@ -110,6 +112,7 @@ describe('OrdersWorkforceAutomationService', () => {
       reconcile: vi.fn(),
     };
     const workforce: WorkforceAutomationPort = {
+      assertOrderCompletionReady: vi.fn().mockResolvedValue(undefined),
       applyOrderEvent: vi.fn().mockRejectedValue(new Error('evidence required')),
     };
     const service = new OrdersWorkforceAutomationService(outbox, workforce);
