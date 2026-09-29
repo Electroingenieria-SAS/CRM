@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import styles from './inventory-ui.module.css';
+import styles from './inventory-reservation-actions.module.css';
 
 interface Props {
   reservationId: string;

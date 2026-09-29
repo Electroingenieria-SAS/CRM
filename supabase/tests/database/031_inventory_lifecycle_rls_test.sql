@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(15);
+select plan(17);
 
 insert into auth.users(
   instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,
@@ -48,12 +48,63 @@ cross join (
 ) v(id,number)
 where o.code='EI';
 
+insert into erp_supply.organizations(
+  id,code,name,timezone,active
+) values (
+  'b6000000-0000-4000-8000-000000000001',
+  'INV-OTHER','Inventory Other Org','America/Bogota',true
+);
+
+insert into erp_supply.material_master(
+  id,organization_id,reference,name,unit
+) values (
+  'b7000000-0000-4000-8000-000000000001',
+  'b6000000-0000-4000-8000-000000000001',
+  'OTHER-INV','Material otra organización','UND'
+);
+
+insert into erp_supply.inventory_locations(
+  id,organization_id,code,name
+) values (
+  'b8000000-0000-4000-8000-000000000001',
+  'b6000000-0000-4000-8000-000000000001',
+  'OTHER-BOD','Bodega otra organización'
+);
+
+insert into erp_supply.inventory_balances(
+  id,organization_id,material_id,location_id,on_hand,reserved,committed
+) values (
+  'b9000000-0000-4000-8000-000000000001',
+  'b6000000-0000-4000-8000-000000000001',
+  'b7000000-0000-4000-8000-000000000001',
+  'b8000000-0000-4000-8000-000000000001',
+  9,0,0
+);
+
 select set_config(
   'request.jwt.claims',
   '{"sub":"b1000000-0000-4000-8000-000000000001","role":"authenticated","email":"inventory-pgtap@example.test"}',
   true
 );
 set local role authenticated;
+
+select is(
+  (
+    select count(*)
+    from erp_supply.inventory_balances
+    where organization_id='b6000000-0000-4000-8000-000000000001'
+  ),
+  0::bigint,
+  'RLS hides inventory balances from another organization'
+);
+
+select throws_ok(
+  $select public.erp_x_inventory_availability(
+    'b7000000-0000-4000-8000-000000000001',null
+  )$,
+  '22023',null,
+  'availability contract cannot resolve another organization material'
+);
 
 select lives_ok(
   $$select public.erp_x_inventory_receive(
