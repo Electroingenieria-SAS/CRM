@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   inventoryAdjustmentResultSchema,
+  inventoryAvailabilitySchema,
   inventoryCountQueueSchema,
   inventoryCountResultSchema,
   inventoryListSchema,
@@ -49,6 +50,14 @@ export class SupabaseInventoryRepository implements InventoryRepository {
   async locations() {
     const { data, error } = await this.client.rpc('erp_x_inventory_locations');
     return inventoryLocationSchema.array().parse(rpcPayload(data, error));
+  }
+
+  async availability(materialId: string, variantId?: string) {
+    const { data, error } = await this.client.rpc('erp_x_inventory_availability', {
+      p_material_id: materialId,
+      p_variant_id: variantId ?? null,
+    });
+    return inventoryAvailabilitySchema.parse(rpcPayload(data, error));
   }
 
   async list(query: InventoryListQuery = {}) {

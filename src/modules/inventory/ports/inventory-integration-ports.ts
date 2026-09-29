@@ -3,6 +3,7 @@ import type {
   InventoryReserveInput,
 } from '@/modules/inventory/ports/inventory-repository';
 import type {
+  InventoryAvailability,
   InventoryReceiptResult,
   InventoryReservationResult,
 } from '@/modules/inventory/application/inventory.schemas';
@@ -45,6 +46,14 @@ export interface CuttingInventoryPort {
     reason: string,
     idempotencyKey: string,
   ): Promise<InventoryReservationResult>;
+}
+
+export interface OrdersInventoryAvailabilityPort {
+  availability(materialId: string, variantId?: string): Promise<InventoryAvailability>;
+}
+
+export interface PurchasingInventoryAvailabilityPort {
+  availability(materialId: string, variantId?: string): Promise<InventoryAvailability>;
 }
 
 export interface OrdersInventoryTracePort {

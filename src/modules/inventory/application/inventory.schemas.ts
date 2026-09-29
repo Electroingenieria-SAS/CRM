@@ -138,6 +138,17 @@ export const inventoryOrderTraceSchema = z.object({
   contractVersion: z.string(),
 });
 
+export const inventoryAvailabilitySchema = z.object({
+  materialId: z.string().uuid(),
+  variantId: z.string().uuid().nullable(),
+  unit: z.string(),
+  onHand: z.coerce.number().nonnegative(),
+  reserved: z.coerce.number().nonnegative(),
+  committed: z.coerce.number().nonnegative(),
+  available: z.coerce.number().nonnegative(),
+  contractVersion: z.string(),
+});
+
 export const inventoryReceiptResultSchema = z.object({
   movementId: z.string().uuid(),
   balance: inventoryBalanceSchema,
@@ -194,6 +205,7 @@ export type InventoryListItem = z.infer<typeof inventoryListItemSchema>;
 export type InventoryMaterialDetail = z.infer<typeof inventoryMaterialDetailSchema>;
 export type InventoryOrderTrace = z.infer<typeof inventoryOrderTraceSchema>;
 export type InventoryLocation = z.infer<typeof inventoryLocationSchema>;
+export type InventoryAvailability = z.infer<typeof inventoryAvailabilitySchema>;
 export type InventoryReceiptResult = z.infer<typeof inventoryReceiptResultSchema>;
 export type InventoryReservationResult = z.infer<typeof inventoryReservationResultSchema>;
 export type InventoryAdjustmentResult = z.infer<typeof inventoryAdjustmentResultSchema>;

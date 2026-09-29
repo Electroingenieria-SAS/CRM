@@ -1,5 +1,6 @@
 import type {
   InventoryAdjustmentResult,
+  InventoryAvailability,
   InventoryCountQueue,
   InventoryCountResult,
   InventoryList,
@@ -50,6 +51,7 @@ export interface InventoryReserveInput {
 
 export interface InventoryRepository {
   locations(): Promise<InventoryLocation[]>;
+  availability(materialId: string, variantId?: string): Promise<InventoryAvailability>;
   list(query?: InventoryListQuery): Promise<InventoryList>;
   materialDetail(query: InventoryMaterialQuery): Promise<InventoryMaterialDetail>;
   orderTrace(orderId: string, page?: number, pageSize?: number): Promise<InventoryOrderTrace>;

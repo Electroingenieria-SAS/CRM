@@ -35,6 +35,10 @@ export class InventoryService {
     return this.repository.locations();
   }
 
+  availability(materialId: string, variantId?: string) {
+    return this.repository.availability(materialId, variantId);
+  }
+
   list(query: InventoryListQuery = {}) {
     return this.repository.list({
       ...query,
