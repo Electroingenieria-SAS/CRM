@@ -530,8 +530,29 @@ exception when others then
   if v_batch.id is not null then
     update erp_supply.analytics_import_batches
     set status='FAILED',
+        rejected_rows=greatest(rejected_rows,total_rows-applied_rows),
         result=jsonb_build_object('error',sqlerrm,'failedAt',now())
-    where id=v_batch.id;
+    where id=v_batch.id
+    returning * into v_batch;
+
+    return jsonb_build_object(
+      'batchId',v_batch.id,
+      'idempotent',false,
+      'status','FAILED',
+      'totalRows',v_batch.total_rows,
+      'appliedRows',v_batch.applied_rows,
+      'rejectedRows',v_batch.rejected_rows,
+      'errors',jsonb_build_array(jsonb_build_object(
+        'rowNumber',1,
+        'status','FAILED',
+        'errors',jsonb_build_array(jsonb_build_object(
+          'field','batch',
+          'code','APPLY_FAILED',
+          'message',sqlerrm
+        ))
+      )),
+      'contractVersion','1.0.0'
+    );
   end if;
   raise;
 end;
