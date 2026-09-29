@@ -40,9 +40,32 @@ insert into erp_supply.modules(code,name,description,icon,sort_order,active) val
 ('vsm','VSM y tiempos','Lead time, tiempos productivos y esperas','activity',150,true),
 ('reports','Reportes','Indicadores y exportaciones','chart-no-axes-combined',160,true),
 ('imports','Importaciones','Carga histórica por CSV','file-up',170,true),
+('assistant','PACO','Asistente operativo guiado y alertas','message-circle',180,true),
 ('audit','Auditoría','Eventos, cambios y evidencias','scan-search',190,true),
 ('admin','Administración','Usuarios, roles, calendarios y reglas','settings',200,true)
 on conflict (code) do nothing;
+
+-- Administrative MFA policy.
+insert into erp_supply.security_role_policies(
+  role_code,require_mfa,sensitive_admin
+) values
+('super_admin',true,true)
+on conflict (role_code) do update set
+  require_mfa=excluded.require_mfa,
+  sensitive_admin=excluded.sensitive_admin,
+  updated_at=now();
+
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
+select r.code,'assistant',true,true,true,false,(r.code='super_admin')
+from erp_supply.roles r
+where r.active
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_create=excluded.can_create,
+  can_update=excluded.can_update,
+  can_admin=excluded.can_admin;
 
 insert into erp_supply.role_module_permissions(
   role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
