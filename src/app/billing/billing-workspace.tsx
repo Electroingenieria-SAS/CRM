@@ -140,7 +140,12 @@ function InvoiceForm(props: {
   );
 }
 
-function BillingDetail(props: Pick<BillingWorkspaceProps, 'selected' | 'busy' | 'onRegisterInvoice' | 'onUploadPvpAnnex' | 'onComplete'>) {
+function BillingDetail(
+  props: Pick<
+    BillingWorkspaceProps,
+    'selected' | 'busy' | 'onRegisterInvoice' | 'onUploadPvpAnnex' | 'onComplete'
+  > & { canCreate: boolean; canRelease: boolean },
+) {
   const item = props.selected;
   if (!item) {
     return <section className={styles.detail}><p>Selecciona un pedido para gestionar su documento.</p></section>;
@@ -167,7 +172,7 @@ function BillingDetail(props: Pick<BillingWorkspaceProps, 'selected' | 'busy' | 
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp,application/pdf"
-            disabled={props.busy}
+            disabled={props.busy || !props.canCreate}
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (file) void props.onUploadPvpAnnex(item, file);
@@ -175,8 +180,14 @@ function BillingDetail(props: Pick<BillingWorkspaceProps, 'selected' | 'busy' | 
           />
           <small>{item.pvpAnnexCount} anexo(s) registrado(s).</small>
         </label>
+      ) : props.canCreate ? (
+        <InvoiceForm
+          item={item}
+          busy={props.busy}
+          onSubmit={(input) => props.onRegisterInvoice(item, input)}
+        />
       ) : (
-        <InvoiceForm item={item} busy={props.busy} onSubmit={(input) => props.onRegisterInvoice(item, input)} />
+        <p className={styles.empty}>Tu perfil tiene acceso de lectura, no de emisión.</p>
       )}
 
       <div className={styles.summary}>
@@ -188,7 +199,12 @@ function BillingDetail(props: Pick<BillingWorkspaceProps, 'selected' | 'busy' | 
       <button
         type="button"
         className={styles.release}
-        disabled={props.busy || !item.billingReady || item.financial.decision !== 'APPROVED'}
+        disabled={
+          props.busy ||
+          !props.canRelease ||
+          !item.billingReady ||
+          item.financial.decision !== 'APPROVED'
+        }
         onClick={() => void props.onComplete(item)}
       >
         Liberar hacia logística
@@ -198,6 +214,9 @@ function BillingDetail(props: Pick<BillingWorkspaceProps, 'selected' | 'busy' | 
 }
 
 export function BillingWorkspace(props: BillingWorkspaceProps) {
+  const canCreate = hasModuleCapability(props.context, 'billing', 'create');
+  const canRelease = hasModuleCapability(props.context, 'billing', 'update');
+
   return (
     <AppShell
       userName={props.context.profile.name}
@@ -236,7 +255,7 @@ export function BillingWorkspace(props: BillingWorkspaceProps) {
               onSelect={props.onSelect}
             />
           </section>
-          <BillingDetail {...props} />
+          <BillingDetail {...props} canCreate={canCreate} canRelease={canRelease} />
         </div>
 
         {props.busy ? <p role="status">Actualizando facturación…</p> : null}
