@@ -13,6 +13,7 @@ interface DeliveryActionsProps {
   satisfaction: LogisticsDetail['satisfaction'];
   busy: boolean;
   canUpdate: boolean;
+  canSatisfaction: boolean;
   onDeliver(
     shipmentId: string,
     orderId: string,
@@ -188,7 +189,7 @@ export function LogisticsDeliveryActions(props: DeliveryActionsProps) {
         </details>
       ) : null}
 
-      {props.shipment.status === 'DELIVERED' && !props.satisfaction ? (
+      {props.shipment.status === 'DELIVERED' && !props.satisfaction && props.canSatisfaction ? (
         <div className={styles.actionBlock}>
           <h3>Satisfacción</h3>
           <label>
