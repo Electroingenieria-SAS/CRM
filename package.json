@@ -1,6 +1,6 @@
 {
   "name": "@electroingenieria/crm",
-  "version": "0.1.0",
+  "version": "0.9.0-rc.1",
   "private": true,
   "engines": {
     "node": ">=24.0.0"
@@ -19,7 +19,11 @@
     "architecture:check": "node scripts/check-architecture.mjs",
     "security:secrets": "node scripts/check-secrets.mjs",
     "security:history": "node scripts/check-history-secrets.mjs",
-    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run architecture:check && npm run security:secrets && npm run security:history && npm run test && npm run build"
+    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run architecture:check && npm run security:secrets && npm run security:history && npm run security:edge && npm run security:release && npm run test && npm run build",
+    "performance:budget": "node scripts/check-performance-budget.mjs",
+    "security:edge": "node scripts/check-edge-functions.mjs",
+    "release:metadata": "node scripts/release-metadata.mjs",
+    "security:release": "node scripts/check-release-security.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

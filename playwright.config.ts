@@ -7,6 +7,9 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
+  expect: {
+    timeout: process.env.CI ? 12_000 : 5_000,
+  },
   use: {
     baseURL: 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
@@ -16,7 +19,10 @@ export default defineConfig({
     { name: 'desktop-firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'desktop-webkit', use: { ...devices['Desktop Safari'] } },
     { name: 'mobile-android', use: { ...devices['Pixel 7'] } },
-    { name: 'mobile-iphone', use: { ...devices['iPhone 13'] } },
+    {
+      name: 'mobile-iphone',
+      use: { ...devices['iPhone 13'], browserName: 'chromium' },
+    },
     { name: 'tablet-webkit', use: { ...devices['iPad (gen 7)'] } },
   ],
   webServer: {

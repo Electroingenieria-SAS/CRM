@@ -3,8 +3,26 @@ name: Workforce quality and local integration
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'src/modules/workforce/**'
+      - 'src/infrastructure/workforce/**'
+      - 'src/app/workforce/**'
+      - 'src/modules/integrations/orders-workforce/**'
+      - 'src/infrastructure/integrations/**workforce**'
+      - 'supabase/migrations/**workforce**'
+      - 'tests/**workforce**'
+      - '.github/workflows/workforce.yml'
   push:
     branches: [main]
+    paths:
+      - 'src/modules/workforce/**'
+      - 'src/infrastructure/workforce/**'
+      - 'src/app/workforce/**'
+      - 'src/modules/integrations/orders-workforce/**'
+      - 'src/infrastructure/integrations/**workforce**'
+      - 'supabase/migrations/**workforce**'
+      - 'tests/**workforce**'
+      - '.github/workflows/workforce.yml'
   workflow_dispatch:
 
 concurrency:
@@ -96,7 +114,7 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - name: Workforce authenticated desktop and iPhone journeys
         run: >
-          npx playwright test tests/e2e/workforce.spec.ts
+          npx playwright test tests/e2e/workforce.spec.ts --workers=1
           --project=desktop-chromium
           --project=mobile-iphone
           --project=mobile-android

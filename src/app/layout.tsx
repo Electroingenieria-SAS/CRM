@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
+import { ClientRuntime } from '@/app/client-runtime';
 
 export const metadata: Metadata = {
   title: 'CRM · Electroingeniería',
   description: 'CRM empresarial de Electroingeniería S.A.S.',
+  manifest: '/manifest.webmanifest',
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -20,7 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#main-content">
           Saltar al contenido principal
         </a>
-        {children}
+        <ClientRuntime>{children}</ClientRuntime>
       </body>
     </html>
   );

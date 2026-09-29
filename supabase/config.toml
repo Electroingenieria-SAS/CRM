@@ -22,8 +22,15 @@ additional_redirect_urls = ["http://127.0.0.1:3000/**"]
 jwt_expiry = 3600
 enable_signup = false
 
+[auth.rate_limit]
+# Synthetic E2E performs many sign-ins against one local IP; production limits are managed separately.
+sign_in_sign_ups = 1000
+
 [inbucket]
 enabled = true
 port = 55324
 smtp_port = 55325
 pop3_port = 55326
+
+[functions.admin-users]
+verify_jwt = true
