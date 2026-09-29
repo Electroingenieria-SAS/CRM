@@ -48,7 +48,7 @@ test('Admin, Audit and PACO close the release-critical operator journey', async 
 
   await page.getByRole('button', { name: 'Registrar actividad' }).click();
   await expect(page.getByLabel('Registro guiado de actividad')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Actividad' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Actividad', exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Cancelar consulta' }).last().click();
   await expect(page.getByText('Consulta cancelada. Empecemos de nuevo.')).toBeVisible();
