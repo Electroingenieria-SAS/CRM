@@ -48,6 +48,30 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
     }
   }
 
+  async completeDelivery(orderId: string, key: string) {
+    const detail = await this.orders.get(orderId);
+    if (!['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].includes(
+      detail.order.current_step_code,
+    )) {
+      return;
+    }
+
+    const complete = detail.workflow.actions.find(
+      (action) => action.code === 'COMPLETE' && action.enabled,
+    );
+    if (!complete) {
+      throw new Error('Orders no habilita el cierre de la etapa logística.');
+    }
+
+    await this.workflow.complete(
+      orderId,
+      'DELIVERED',
+      'Entrega logística confirmada.',
+      detail.order.version,
+      key,
+    );
+  }
+
   async add(
     orderId: string,
     evidenceType: string,
