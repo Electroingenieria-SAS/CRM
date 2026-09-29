@@ -62,5 +62,12 @@ export function logStructured(entry: StructuredLog) {
   else if (entry.level === 'debug') console.debug(line);
   else console.info(line);
 
+  if (
+    typeof window !== 'undefined' &&
+    (entry.level === 'warn' || entry.level === 'error')
+  ) {
+    window.dispatchEvent(new CustomEvent('crm:telemetry', { detail: payload }));
+  }
+
   return payload;
 }
