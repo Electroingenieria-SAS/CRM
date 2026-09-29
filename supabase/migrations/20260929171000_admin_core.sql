@@ -41,7 +41,7 @@ returns boolean
 language plpgsql
 security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
-as $
+as $$
 declare
   v_org uuid:=erp_private.current_org_id();
   v_profile uuid:=erp_private.current_profile_id();
@@ -67,7 +67,7 @@ begin
 
   return v_count<=p_limit;
 end;
-$;
+$$;
 
 revoke all on function erp_private.admin_rate_limit(text,integer,integer) from public,anon;
 grant execute on function erp_private.admin_rate_limit(text,integer,integer) to authenticated;
