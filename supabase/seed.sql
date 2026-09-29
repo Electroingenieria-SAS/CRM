@@ -444,3 +444,43 @@ on conflict (role_code,module_code) do update set
   can_approve=excluded.can_approve,
   can_admin=excluded.can_admin;
 
+-- PACO alert policies. Role-based only; no person names are hardcoded.
+insert into erp_supply.assistant_settings(
+  organization_id,cooldown_minutes,leadership_roles,voice_enabled
+)
+select
+  id,
+  30,
+  array['super_admin','gerencia','jefe_logistica','lider_logistica','coordinador_logistico']::text[],
+  true
+from erp_supply.organizations
+where code='EI'
+on conflict (organization_id) do update set
+  cooldown_minutes=excluded.cooldown_minutes,
+  leadership_roles=excluded.leadership_roles,
+  voice_enabled=excluded.voice_enabled,
+  updated_at=now();
+
+insert into erp_supply.assistant_role_alert_policies(
+  organization_id,role_code,inactivity_threshold_minutes,
+  inactivity_alerts,delayed_order_alerts,active
+)
+select
+  o.id,
+  r.role_code,
+  20,
+  true,
+  true,
+  true
+from erp_supply.organizations o
+cross join (
+  values ('aux_logistica'),('auxiliar_corte'),('recepcion_mercancia')
+) r(role_code)
+where o.code='EI'
+on conflict (organization_id,role_code) do update set
+  inactivity_threshold_minutes=excluded.inactivity_threshold_minutes,
+  inactivity_alerts=excluded.inactivity_alerts,
+  delayed_order_alerts=excluded.delayed_order_alerts,
+  active=true,
+  updated_at=now();
+
