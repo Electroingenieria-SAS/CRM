@@ -94,6 +94,7 @@ export interface LogisticsEvidencePort {
 
 export interface LogisticsOrdersPort {
   ensureOperationalStarted(orderId: string, key: string): Promise<void>;
+  completeDelivery(orderId: string, key: string): Promise<void>;
 }
 
 export interface LogisticsInventoryPort {
