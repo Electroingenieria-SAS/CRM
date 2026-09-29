@@ -344,3 +344,27 @@ on conflict(step_code) do update set
   active=excluded.active,
   metadata=excluded.metadata,
   updated_at=now();
+
+
+-- Inventory capability mapping for the current module-level RBAC model.
+-- read = consulta; create = recepción/reserva/conteo; update = lifecycle operativo;
+-- approve = ajustes, reversos y aprobación de conteos.
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+) values
+('auditoria','inventory',true,false,false,false,false),
+('ventas','inventory',true,false,false,false,false),
+('compras','inventory',true,false,false,false,false),
+('recepcion_mercancia','inventory',true,true,false,false,false),
+('aux_logistica','inventory',true,true,true,false,false),
+('auxiliar_corte','inventory',true,false,true,false,false),
+('coordinador_logistico','inventory',true,true,true,true,false),
+('lider_logistica','inventory',true,true,true,true,false),
+('jefe_logistica','inventory',true,true,true,true,false),
+('gerencia','inventory',true,false,false,true,false)
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_create=excluded.can_create,
+  can_update=excluded.can_update,
+  can_approve=excluded.can_approve,
+  can_admin=excluded.can_admin;
