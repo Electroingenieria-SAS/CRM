@@ -43,5 +43,5 @@ export interface OrdersWorkforceIndicatorSnapshot {
 }
 
 export interface OrdersWorkforceIndicatorsPort {
-  snapshot(from: string, to: string): Promise<OrdersWorkforceIndicatorSnapshot>;
+  snapshot(from?: string, to?: string): Promise<OrdersWorkforceIndicatorSnapshot>;
 }
