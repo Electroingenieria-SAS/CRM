@@ -1,6 +1,9 @@
 'use client';
 
-import type { AdminRoleCatalog, AdminUsersResponse } from '@/modules/admin/application/admin.schemas';
+import type {
+  AdminRoleCatalog,
+  AdminUsersResponse,
+} from '@/modules/admin/application/admin.schemas';
 import { AdminUserCard } from './admin-user-card';
 import type { AdminActiveFilter } from './use-admin-users-data';
 import styles from './admin.module.css';
@@ -40,7 +43,12 @@ export function AdminUsersPanel(props: Props) {
           <option value="active">Activos</option>
           <option value="inactive">Inactivos</option>
         </select>
-        <button className="primary-button" disabled={props.busy} onClick={() => void props.load()} type="button">
+        <button
+          className="primary-button"
+          disabled={props.busy}
+          onClick={() => void props.load()}
+          type="button"
+        >
           Aplicar
         </button>
       </div>

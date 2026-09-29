@@ -14,20 +14,23 @@ export function usePacoAlerts(
 ) {
   const [alerts, setAlerts] = useState<AssistantAlert[]>([]);
 
-  const refresh = useCallback(async (announce: boolean) => {
-    if (!application || !context || !hasModuleCapability(context, 'assistant', 'read')) return;
-    try {
-      const next = await application.paco.alerts(true);
-      setAlerts(next);
-      if (announce && voiceEnabled) {
-        for (const alert of next.filter((item) => item.shouldNotify).slice(0, 2)) {
-          speakPaco(alert.message);
+  const refresh = useCallback(
+    async (announce: boolean) => {
+      if (!application || !context || !hasModuleCapability(context, 'assistant', 'read')) return;
+      try {
+        const next = await application.paco.alerts(true);
+        setAlerts(next);
+        if (announce && voiceEnabled) {
+          for (const alert of next.filter((item) => item.shouldNotify).slice(0, 2)) {
+            speakPaco(alert.message);
+          }
         }
+      } catch {
+        // Advisory alerts never block the assistant.
       }
-    } catch {
-      // Advisory alerts never block the assistant.
-    }
-  }, [application, context, voiceEnabled]);
+    },
+    [application, context, voiceEnabled],
+  );
 
   useEffect(() => {
     if (!context || !hasModuleCapability(context, 'assistant', 'read')) return;

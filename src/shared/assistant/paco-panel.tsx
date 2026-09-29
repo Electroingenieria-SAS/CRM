@@ -32,37 +32,72 @@ export function PacoPanel(props: Props) {
   return (
     <aside className={styles.panel} aria-label="PACO asistente operativo">
       <header className={styles.header}>
-        <div><strong>PACO</strong><small>Asistente operativo</small></div>
+        <div>
+          <strong>PACO</strong>
+          <small>Asistente operativo</small>
+        </div>
         <div className={styles.headerActions}>
           <button type="button" onClick={() => props.setVoiceEnabled(!props.voiceEnabled)}>
             {props.voiceEnabled ? 'Voz activa' : 'Voz apagada'}
           </button>
-          <button type="button" onClick={props.close} aria-label="Cerrar PACO">×</button>
+          <button type="button" onClick={props.close} aria-label="Cerrar PACO">
+            ×
+          </button>
         </div>
       </header>
       <PacoAlertList alerts={props.alerts} acknowledge={props.acknowledge} />
       <div className={styles.quick}>
         {quickActions.map((action) => (
-          <button key={action} type="button" onClick={() => void props.send(action)} disabled={props.busy}>{action}</button>
+          <button
+            key={action}
+            type="button"
+            onClick={() => void props.send(action)}
+            disabled={props.busy}
+          >
+            {action}
+          </button>
         ))}
       </div>
       <div className={styles.messages} aria-live="polite">
         {props.messages.slice(-12).map((message) => (
-          <p className={styles.message} data-role={message.role} key={message.id}>{message.text}</p>
+          <p className={styles.message} data-role={message.role} key={message.id}>
+            {message.text}
+          </p>
         ))}
         {props.busy ? <p className={styles.typing}>PACO está consultando…</p> : null}
       </div>
       {props.wizard ? (
-        <PacoActivityWizard paco={props.paco} onCancel={props.cancel} onComplete={props.completeWizard} />
+        <PacoActivityWizard
+          paco={props.paco}
+          onCancel={props.cancel}
+          onComplete={props.completeWizard}
+        />
       ) : null}
-      <form className={styles.composer} onSubmit={(event) => { event.preventDefault(); void props.send(props.input); }}>
-        <input aria-label="Mensaje para PACO" value={props.input} placeholder="Escribe tu consulta…" onChange={(event) => props.setInput(event.target.value)} />
+      <form
+        className={styles.composer}
+        onSubmit={(event) => {
+          event.preventDefault();
+          void props.send(props.input);
+        }}
+      >
+        <input
+          aria-label="Mensaje para PACO"
+          value={props.input}
+          placeholder="Escribe tu consulta…"
+          onChange={(event) => props.setInput(event.target.value)}
+        />
         {canUseSpeechRecognition() ? (
-          <button type="button" onClick={props.listen} disabled={props.listening}>{props.listening ? 'Escuchando…' : 'Voz'}</button>
+          <button type="button" onClick={props.listen} disabled={props.listening}>
+            {props.listening ? 'Escuchando…' : 'Voz'}
+          </button>
         ) : null}
-        <button type="submit" disabled={props.busy || !props.input.trim()}>Enviar</button>
+        <button type="submit" disabled={props.busy || !props.input.trim()}>
+          Enviar
+        </button>
       </form>
-      <button className={styles.cancel} type="button" onClick={props.cancel}>Cancelar consulta</button>
+      <button className={styles.cancel} type="button" onClick={props.cancel}>
+        Cancelar consulta
+      </button>
     </aside>
   );
 }

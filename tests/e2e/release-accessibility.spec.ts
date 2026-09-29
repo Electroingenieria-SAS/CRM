@@ -21,7 +21,12 @@ async function accessibilityViolations(page: Page) {
     const visible = (element: Element) => {
       const style = getComputedStyle(element);
       const rect = element.getBoundingClientRect();
-      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      return (
+        style.display !== 'none' &&
+        style.visibility !== 'hidden' &&
+        rect.width > 0 &&
+        rect.height > 0
+      );
     };
     const named = (element: Element) => {
       const html = element as HTMLElement;
@@ -39,9 +44,7 @@ async function accessibilityViolations(page: Page) {
     const luminance = (color: number[]) => {
       const channel = color.map((value) => {
         const normalized = value / 255;
-        return normalized <= 0.03928
-          ? normalized / 12.92
-          : ((normalized + 0.055) / 1.055) ** 2.4;
+        return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
       });
       return 0.2126 * channel[0]! + 0.7152 * channel[1]! + 0.0722 * channel[2]!;
     };
@@ -80,7 +83,8 @@ async function accessibilityViolations(page: Page) {
       const weight = Number.parseInt(style.fontWeight, 10) || 400;
       const large = size >= 24 || (size >= 18.66 && weight >= 700);
       const minimum = large ? 3 : 4.5;
-      if (ratio + 0.01 < minimum) issues.push(`contrast:${element.tagName.toLowerCase()}:${ratio.toFixed(2)}`);
+      if (ratio + 0.01 < minimum)
+        issues.push(`contrast:${element.tagName.toLowerCase()}:${ratio.toFixed(2)}`);
     }
     return [...new Set(issues)];
   });
@@ -94,7 +98,9 @@ test('release routes keep a WCAG AA semantic baseline', async ({ page }, testInf
     await page.goto(route);
     await expect(page.locator('h1').first()).toBeVisible();
     expect(await accessibilityViolations(page), route).toEqual([]);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+    ).toBe(true);
 
     await page.keyboard.press('Tab');
     expect(await page.evaluate(() => document.activeElement?.tagName !== 'BODY')).toBe(true);

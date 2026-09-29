@@ -1,7 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { AdminOrganization, MfaEnrollment, MfaStatus } from '@/modules/admin/application/admin.schemas';
+import type {
+  AdminOrganization,
+  MfaEnrollment,
+  MfaStatus,
+} from '@/modules/admin/application/admin.schemas';
 import type { ReturnTypeOfAdminSession } from '../use-admin-session';
 
 export function useAdminSecurityData(session: ReturnTypeOfAdminSession) {
@@ -45,7 +49,9 @@ export function useAdminSecurityData(session: ReturnTypeOfAdminSession) {
       setEnrollment(await application.mfa.enroll());
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No fue posible iniciar MFA.');
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function verify() {
@@ -53,12 +59,17 @@ export function useAdminSecurityData(session: ReturnTypeOfAdminSession) {
     setBusy(true);
     try {
       await application.mfa.verify(enrollment.factorId, code);
-      setEnrollment(null); setCode('');
-      setMessage('MFA verificado. La sesión ya puede ejecutar operaciones administrativas sensibles.');
+      setEnrollment(null);
+      setCode('');
+      setMessage(
+        'MFA verificado. La sesión ya puede ejecutar operaciones administrativas sensibles.',
+      );
       await load();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No fue posible verificar MFA.');
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function saveOrganization() {
@@ -69,12 +80,26 @@ export function useAdminSecurityData(session: ReturnTypeOfAdminSession) {
       setMessage('Organización actualizada y auditada.');
       await load();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible actualizar la organización.');
-    } finally { setBusy(false); }
+      setMessage(
+        error instanceof Error ? error.message : 'No fue posible actualizar la organización.',
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   return {
-    mfa, enrollment, code, setCode, name, setName, timezone, setTimezone, busy,
-    enroll, verify, saveOrganization,
+    mfa,
+    enrollment,
+    code,
+    setCode,
+    name,
+    setName,
+    timezone,
+    setTimezone,
+    busy,
+    enroll,
+    verify,
+    saveOrganization,
   };
 }

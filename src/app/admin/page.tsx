@@ -36,19 +36,34 @@ export default function AdminUsersPage() {
           <p>Gestión de identidad operativa sin almacenar ni recuperar contraseñas.</p>
         </div>
       </header>
-      {session.message ? <p className={styles.message} role="status">{session.message}</p> : null}
+      {session.message ? (
+        <p className={styles.message} role="status">
+          {session.message}
+        </p>
+      ) : null}
       <AdminUsersPanel
         {...data}
         canAdmin={canAdmin}
-        onProfile={(id, name, code) => data.mutation(() => app!.admin.updateProfile(id, name, code), 'Perfil actualizado.')}
+        onProfile={(id, name, code) =>
+          data.mutation(() => app!.admin.updateProfile(id, name, code), 'Perfil actualizado.')
+        }
         onActive={(id, active, reason) =>
-          data.mutation(() => app!.admin.setActive(id, active, reason), active ? 'Usuario activado.' : 'Usuario desactivado.')
+          data.mutation(
+            () => app!.admin.setActive(id, active, reason),
+            active ? 'Usuario activado.' : 'Usuario desactivado.',
+          )
         }
         onRoles={(id, roles, primary, reason) =>
-          data.mutation(() => app!.admin.setRoles(id, roles, primary, reason), 'Roles actualizados.')
+          data.mutation(
+            () => app!.admin.setRoles(id, roles, primary, reason),
+            'Roles actualizados.',
+          )
         }
         onReset={(id) =>
-          data.mutation(() => app!.admin.startPasswordReset(id), 'Correo de restablecimiento solicitado.')
+          data.mutation(
+            () => app!.admin.startPasswordReset(id),
+            'Correo de restablecimiento solicitado.',
+          )
         }
       />
       {canAdmin && data.roles ? (

@@ -18,9 +18,12 @@ function navigation(context: SessionContext, current: AdminShellProps['current']
     { href: '/admin/roles', label: 'Roles y permisos', current: current === 'roles' },
     { href: '/admin/security', label: 'Seguridad', current: current === 'security' },
   ];
-  if (hasModuleCapability(context, 'audit', 'read')) items.push({ href: '/audit', label: 'Auditoría' });
-  if (hasModuleCapability(context, 'dashboard', 'read')) items.push({ href: '/analytics', label: 'Panel' });
-  if (hasModuleCapability(context, 'orders', 'read')) items.push({ href: '/orders', label: 'Pedidos' });
+  if (hasModuleCapability(context, 'audit', 'read'))
+    items.push({ href: '/audit', label: 'Auditoría' });
+  if (hasModuleCapability(context, 'dashboard', 'read'))
+    items.push({ href: '/analytics', label: 'Panel' });
+  if (hasModuleCapability(context, 'orders', 'read'))
+    items.push({ href: '/orders', label: 'Pedidos' });
   return items;
 }
 

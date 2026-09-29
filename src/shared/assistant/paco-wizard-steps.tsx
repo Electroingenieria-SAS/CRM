@@ -7,8 +7,24 @@ export function PacoWizardClassification({ data }: { data: PacoWizardData }) {
   if (data.step === 0) {
     return (
       <div className={styles.choiceGrid}>
-        <button type="button" onClick={() => { data.setKind('ACTIVITY'); data.setStep(1); }}>Actividad</button>
-        <button type="button" onClick={() => { data.setKind('DELIVERABLE'); data.setStep(1); }}>Entregable</button>
+        <button
+          type="button"
+          onClick={() => {
+            data.setKind('ACTIVITY');
+            data.setStep(1);
+          }}
+        >
+          Actividad
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            data.setKind('DELIVERABLE');
+            data.setStep(1);
+          }}
+        >
+          Entregable
+        </button>
       </div>
     );
   }
@@ -18,9 +34,13 @@ export function PacoWizardClassification({ data }: { data: PacoWizardData }) {
         Categoría
         <select value={data.category} onChange={(event) => data.setCategory(event.target.value)}>
           <option value="">Seleccionar</option>
-          {data.categories.map((value) => <option key={value}>{value}</option>)}
+          {data.categories.map((value) => (
+            <option key={value}>{value}</option>
+          ))}
         </select>
-        <button disabled={!data.category} type="button" onClick={() => data.setStep(2)}>Continuar</button>
+        <button disabled={!data.category} type="button" onClick={() => data.setStep(2)}>
+          Continuar
+        </button>
       </label>
     );
   }
@@ -30,9 +50,15 @@ export function PacoWizardClassification({ data }: { data: PacoWizardData }) {
       Actividad específica
       <select value={data.catalogId} onChange={(event) => data.setCatalogId(event.target.value)}>
         <option value="">Seleccionar</option>
-        {data.activities.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        {data.activities.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.name}
+          </option>
+        ))}
       </select>
-      <button disabled={!data.catalogId} type="button" onClick={() => data.setStep(3)}>Continuar</button>
+      <button disabled={!data.catalogId} type="button" onClick={() => data.setStep(3)}>
+        Continuar
+      </button>
     </label>
   );
 }
@@ -60,10 +86,14 @@ export function PacoWizardContext({ data }: { data: PacoWizardData }) {
       <select value={data.assignee} onChange={(event) => data.setAssignee(event.target.value)}>
         <option value="">Seleccionar</option>
         {data.people.map((person) => (
-          <option key={person.id} value={person.id}>{person.name} · {person.occupancy}</option>
+          <option key={person.id} value={person.id}>
+            {person.name} · {person.occupancy}
+          </option>
         ))}
       </select>
-      <button disabled={!data.assignee} type="button" onClick={() => data.setStep(5)}>Continuar</button>
+      <button disabled={!data.assignee} type="button" onClick={() => data.setStep(5)}>
+        Continuar
+      </button>
     </label>
   );
 }
@@ -72,9 +102,25 @@ export function PacoWizardSchedule({ data }: { data: PacoWizardData }) {
   if (data.step === 5) {
     return (
       <div className={styles.timeGrid}>
-        <label>Inicio<input type="datetime-local" value={data.start} onChange={(event) => data.setStart(event.target.value)} /></label>
-        <label>Fin<input type="datetime-local" value={data.end} onChange={(event) => data.setEnd(event.target.value)} /></label>
-        <button type="button" onClick={() => data.setStep(6)}>Revisar</button>
+        <label>
+          Inicio
+          <input
+            type="datetime-local"
+            value={data.start}
+            onChange={(event) => data.setStart(event.target.value)}
+          />
+        </label>
+        <label>
+          Fin
+          <input
+            type="datetime-local"
+            value={data.end}
+            onChange={(event) => data.setEnd(event.target.value)}
+          />
+        </label>
+        <button type="button" onClick={() => data.setStep(6)}>
+          Revisar
+        </button>
       </div>
     );
   }
@@ -85,7 +131,9 @@ export function PacoWizardSchedule({ data }: { data: PacoWizardData }) {
       <span>{data.catalog.find((item) => item.id === data.catalogId)?.name}</span>
       <span>{data.people.find((person) => person.id === data.assignee)?.name}</span>
       <span>{data.orderLabel ? `Pedido ${data.orderLabel}` : 'Sin pedido asociado'}</span>
-      <span>{data.start} → {data.end}</span>
+      <span>
+        {data.start} → {data.end}
+      </span>
       <button disabled={data.busy} type="button" onClick={() => void data.create()}>
         {data.busy ? 'Registrando…' : 'Confirmar actividad'}
       </button>

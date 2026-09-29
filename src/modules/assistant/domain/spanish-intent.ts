@@ -46,7 +46,13 @@ const examples: Record<Exclude<PacoIntent, 'UNKNOWN'>, string[]> = {
     'que esta pasando',
     'pendientes criticos',
   ],
-  OPEN_MODULE: ['abrir modulo', 'ir a pedidos', 'ir a inventario', 'abrir jornada', 'abrir reportes'],
+  OPEN_MODULE: [
+    'abrir modulo',
+    'ir a pedidos',
+    'ir a inventario',
+    'abrir jornada',
+    'abrir reportes',
+  ],
   CANCEL: ['cancelar consulta', 'cancelar', 'salir de consulta', 'olvida esto', 'empezar de nuevo'],
   HELP: ['ayuda', 'que puedes hacer', 'opciones', 'como me ayudas', 'comandos'],
 };
@@ -83,11 +89,7 @@ function distance(left: string, right: string) {
     for (let row = 1; row <= a.length; row += 1) {
       const old = rows[row] ?? 0;
       const cost = a[row - 1] === b[column - 1] ? 0 : 1;
-      rows[row] = Math.min(
-        (rows[row] ?? 0) + 1,
-        (rows[row - 1] ?? 0) + 1,
-        previous + cost,
-      );
+      rows[row] = Math.min((rows[row] ?? 0) + 1, (rows[row - 1] ?? 0) + 1, previous + cost);
       previous = old;
     }
   }
@@ -125,7 +127,9 @@ export function extractOrderReference(message: string) {
 function routeFor(message: string) {
   const normalized = normalizeSpanish(message);
   return moduleRoutes.find((module) =>
-    module.tokens.some((token) => normalized.split(' ').some((word) => similarity(word, token) >= 0.75)),
+    module.tokens.some((token) =>
+      normalized.split(' ').some((word) => similarity(word, token) >= 0.75),
+    ),
   )?.path;
 }
 
@@ -152,5 +156,9 @@ export function classifyPacoIntent(message: string): IntentMatch {
   }
 
   if (best.confidence < 0.46) return { intent: 'UNKNOWN', confidence: best.confidence, reference };
-  return { ...best, reference: best.reference ?? reference, modulePath: best.modulePath ?? modulePath };
+  return {
+    ...best,
+    reference: best.reference ?? reference,
+    modulePath: best.modulePath ?? modulePath,
+  };
 }

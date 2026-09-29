@@ -34,7 +34,11 @@ export default function AdminSecurityPage() {
           <p>Las mutaciones administrativas sensibles exigen una sesión AAL2.</p>
         </div>
       </header>
-      {session.message ? <p className={styles.message} role="status">{session.message}</p> : null}
+      {session.message ? (
+        <p className={styles.message} role="status">
+          {session.message}
+        </p>
+      ) : null}
       <AdminMfaPanel
         mfa={data.mfa}
         enrollment={data.enrollment}

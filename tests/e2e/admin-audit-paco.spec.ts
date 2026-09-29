@@ -16,7 +16,9 @@ async function login(page: Page) {
   await expect(page).toHaveURL(/\/orders\/?$/);
 }
 
-test('Admin, Audit and PACO close the release-critical operator journey', async ({ page }, testInfo) => {
+test('Admin, Audit and PACO close the release-critical operator journey', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Release journey runs once.');
 
   await login(page);

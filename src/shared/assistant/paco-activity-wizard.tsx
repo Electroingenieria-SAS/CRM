@@ -22,7 +22,9 @@ export function PacoActivityWizard({ paco, onCancel, onComplete }: Props) {
     <section className={styles.wizard} aria-label="Registro guiado de actividad">
       <div className={styles.wizardHeader}>
         <strong>Registrar actividad</strong>
-        <button type="button" onClick={onCancel}>Cancelar consulta</button>
+        <button type="button" onClick={onCancel}>
+          Cancelar consulta
+        </button>
       </div>
       {data.message ? <p role="status">{data.message}</p> : null}
       <PacoWizardClassification data={data} />

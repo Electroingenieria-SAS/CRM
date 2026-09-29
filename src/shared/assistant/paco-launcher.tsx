@@ -65,7 +65,9 @@ function PacoLauncherReady(props: ReadyProps) {
         }}
       >
         PACO
-        {openAlerts.length ? <span className={styles.counter}>{Math.min(openAlerts.length, 9)}</span> : null}
+        {openAlerts.length ? (
+          <span className={styles.counter}>{Math.min(openAlerts.length, 9)}</span>
+        ) : null}
       </button>
       {props.open ? (
         <PacoPanel

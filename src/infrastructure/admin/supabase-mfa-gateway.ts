@@ -1,8 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import {
-  mfaEnrollmentSchema,
-  mfaStatusSchema,
-} from '@/modules/admin/application/admin.schemas';
+import { mfaEnrollmentSchema, mfaStatusSchema } from '@/modules/admin/application/admin.schemas';
 import type { MfaGateway } from '@/modules/admin/ports/mfa-gateway';
 import { AppError } from '@/shared/errors/app-error';
 

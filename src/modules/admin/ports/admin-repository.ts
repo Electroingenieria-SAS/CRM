@@ -20,7 +20,11 @@ export interface AdminRepository {
     enabled: boolean,
     reason: string,
   ): Promise<void>;
-  updateOrganization(name: string, timezone: string, settings: Record<string, unknown>): Promise<void>;
+  updateOrganization(
+    name: string,
+    timezone: string,
+    settings: Record<string, unknown>,
+  ): Promise<void>;
   startPasswordReset(profileId: string): Promise<void>;
   invite(input: AdminInviteInput): Promise<void>;
 }

@@ -23,9 +23,17 @@ export function AdminOrganizationPanel(props: Props) {
         </label>
         <label>
           Zona horaria
-          <input value={props.timezone} onChange={(event) => props.setTimezone(event.target.value)} />
+          <input
+            value={props.timezone}
+            onChange={(event) => props.setTimezone(event.target.value)}
+          />
         </label>
-        <button className="primary-button" disabled={!props.canAdmin || props.busy} onClick={() => void props.save()} type="button">
+        <button
+          className="primary-button"
+          disabled={!props.canAdmin || props.busy}
+          onClick={() => void props.save()}
+          type="button"
+        >
           Guardar configuración
         </button>
       </div>

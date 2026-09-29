@@ -35,7 +35,10 @@ export function useAdminSession() {
         setContext(session);
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible restaurar la sesión.');
+        if (active)
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible restaurar la sesión.',
+          );
       })
       .finally(() => {
         if (active) setLoading(false);

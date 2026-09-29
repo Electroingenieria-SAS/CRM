@@ -17,7 +17,9 @@ export function PacoAlertList({
         <article className={styles.alert} data-severity={alert.severity} key={alert.id}>
           <strong>{alert.title}</strong>
           <span>{alert.message}</span>
-          <button type="button" onClick={() => void acknowledge(alert.id)}>Entendido</button>
+          <button type="button" onClick={() => void acknowledge(alert.id)}>
+            Entendido
+          </button>
         </article>
       ))}
     </section>

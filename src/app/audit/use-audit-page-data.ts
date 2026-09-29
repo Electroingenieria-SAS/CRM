@@ -22,35 +22,44 @@ export function useAuditPageData() {
     const unsubscribe = application.auth.onSessionChange((event) => {
       if (event.type === 'signed_out') router.replace('/login');
     });
-    void application.auth.restoreContext().then((session) => {
-      if (!active) return;
-      if (!session) router.replace('/login');
-      else setContext(session);
-    }).catch((error) => {
-      if (active) setMessage(error instanceof Error ? error.message : 'No fue posible restaurar la sesión.');
-    });
+    void application.auth
+      .restoreContext()
+      .then((session) => {
+        if (!active) return;
+        if (!session) router.replace('/login');
+        else setContext(session);
+      })
+      .catch((error) => {
+        if (active)
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible restaurar la sesión.',
+          );
+      });
     return () => {
       active = false;
       unsubscribe();
     };
   }, [application, router]);
 
-  const load = useCallback(async (page = 1) => {
-    if (!application || !context) return;
-    if (!hasModuleCapability(context, 'audit', 'read')) {
-      setMessage('Tu perfil no tiene acceso a Auditoría.');
-      return;
-    }
-    setBusy(true);
-    setMessage(null);
-    try {
-      setResponse(await application.audit.list({ ...query, page, pageSize: 50 }));
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible consultar Auditoría.');
-    } finally {
-      setBusy(false);
-    }
-  }, [application, context, query]);
+  const load = useCallback(
+    async (page = 1) => {
+      if (!application || !context) return;
+      if (!hasModuleCapability(context, 'audit', 'read')) {
+        setMessage('Tu perfil no tiene acceso a Auditoría.');
+        return;
+      }
+      setBusy(true);
+      setMessage(null);
+      try {
+        setResponse(await application.audit.list({ ...query, page, pageSize: 50 }));
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible consultar Auditoría.');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [application, context, query],
+  );
 
   useEffect(() => {
     if (!context) return;

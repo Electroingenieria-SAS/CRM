@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
-import type { AdminRoleCatalog, AdminUsersResponse } from '@/modules/admin/application/admin.schemas';
+import type {
+  AdminRoleCatalog,
+  AdminUsersResponse,
+} from '@/modules/admin/application/admin.schemas';
 import type { ReturnTypeOfAdminSession } from './use-admin-session';
 
 export type AdminActiveFilter = 'all' | 'active' | 'inactive';

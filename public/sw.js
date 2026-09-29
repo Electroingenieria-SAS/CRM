@@ -4,7 +4,12 @@ const OFFLINE_URL = '/offline';
 const PRECACHE = [OFFLINE_URL, '/icons/crm-icon.svg', '/icons/crm-maskable.svg'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(STATIC_CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener('activate', (event) => {

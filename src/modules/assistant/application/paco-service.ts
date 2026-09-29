@@ -78,10 +78,14 @@ export class PacoService {
         return this.summary();
       default:
         return {
-          text:
-            'No estoy seguro de esa solicitud. Puedo consultar pedidos, colas, ocupación, pendientes, registrar actividades o abrir módulos.',
+          text: 'No estoy seguro de esa solicitud. Puedo consultar pedidos, colas, ocupación, pendientes, registrar actividades o abrir módulos.',
           action: 'NONE',
-          suggestions: ['Resumen ahora', 'Ver cola', 'Registrar actividad', 'Quién está disponible'],
+          suggestions: [
+            'Resumen ahora',
+            'Ver cola',
+            'Registrar actividad',
+            'Quién está disponible',
+          ],
         };
     }
   }
@@ -179,9 +183,7 @@ export class PacoService {
     return {
       text:
         'Cola actual: ' +
-        rows
-          .map((row) => `${row.name}: ${row.count} (${row.blocked} bloqueados)`)
-          .join(' · '),
+        rows.map((row) => `${row.name}: ${row.count} (${row.blocked} bloqueados)`).join(' · '),
       action: 'NONE',
       suggestions: ['Resumen ahora', 'Abrir panel'],
     };
@@ -224,8 +226,7 @@ export class PacoService {
 
   private help(): PacoReply {
     return {
-      text:
-        'Puedo consultar pedidos y colas, mostrar ocupación y pendientes, registrar actividades guiadas, mostrar alertas y abrir módulos.',
+      text: 'Puedo consultar pedidos y colas, mostrar ocupación y pendientes, registrar actividades guiadas, mostrar alertas y abrir módulos.',
       action: 'NONE',
       suggestions: ['Resumen ahora', 'Consultar pedido', 'Registrar actividad', 'Ver ocupación'],
     };

@@ -24,7 +24,9 @@ export default function ErrorPage({
       <section className="surface" role="alert" aria-labelledby="error-title">
         <p className="eyebrow">Estado controlado</p>
         <h1 id="error-title">No fue posible cargar esta vista</h1>
-        <p>La aplicación conservó un estado seguro. Puedes volver a intentarlo sin perder la sesión.</p>
+        <p>
+          La aplicación conservó un estado seguro. Puedes volver a intentarlo sin perder la sesión.
+        </p>
         <button className="primary-button" type="button" onClick={reset}>
           Reintentar
         </button>

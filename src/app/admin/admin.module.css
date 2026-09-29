@@ -1,1 +1,161 @@
-.header{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:1rem}.header h1,.panel h2,.panel h3{margin:0}.header p,.muted{color:var(--text-muted)}.toolbar,.form,.grid,.rolesGrid,.metricGrid{display:grid;gap:.75rem}.toolbar{grid-template-columns:minmax(180px,1fr) 180px auto;margin-bottom:1rem}.panel{padding:1rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);margin-bottom:1rem}.grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.card{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface)}.cardHeader,.actions,.roleHeader{display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap}.badge{display:inline-flex;padding:.25rem .5rem;border-radius:999px;background:var(--brand-soft);font-size:.78rem}.form{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}.form label,.field{display:grid;gap:.35rem;font-size:.82rem;font-weight:700;color:var(--text-muted)}.form input,.form select,.toolbar input,.toolbar select,.field input,.field select{min-height:44px;padding:.65rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);color:var(--text)}.actions button,.secondary{min-height:42px;padding:.55rem .75rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer}.danger{border-color:currentColor}.roles{display:flex;gap:.35rem;flex-wrap:wrap}.rolesGrid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.permissionRow{display:grid;grid-template-columns:minmax(130px,1fr) repeat(5,68px);gap:.4rem;align-items:center;padding:.45rem 0;border-top:1px solid var(--border)}.permissionRow label{text-align:center;font-size:.72rem}.message{padding:.75rem;border:1px solid var(--border);border-radius:var(--radius-md);margin:.75rem 0}.mfa{display:grid;gap:.8rem}.qr{max-width:220px;width:100%;height:auto}.metricGrid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.metric{padding:.8rem;border:1px solid var(--border);border-radius:var(--radius-md)}@media(max-width:760px){.header{align-items:stretch;flex-direction:column}.toolbar{grid-template-columns:1fr}.permissionRow{grid-template-columns:1fr;align-items:start}.permissionRow label{text-align:left}.form{grid-template-columns:1fr}}
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+.header h1,
+.panel h2,
+.panel h3 {
+  margin: 0;
+}
+.header p,
+.muted {
+  color: var(--text-muted);
+}
+.toolbar,
+.form,
+.grid,
+.rolesGrid,
+.metricGrid {
+  display: grid;
+  gap: 0.75rem;
+}
+.toolbar {
+  grid-template-columns: minmax(180px, 1fr) 180px auto;
+  margin-bottom: 1rem;
+}
+.panel {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  margin-bottom: 1rem;
+}
+.grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.card {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.cardHeader,
+.actions,
+.roleHeader {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-flex;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  font-size: 0.78rem;
+}
+.form {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: end;
+}
+.form label,
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.form input,
+.form select,
+.toolbar input,
+.toolbar select,
+.field input,
+.field select {
+  min-height: 44px;
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+}
+.actions button,
+.secondary {
+  min-height: 42px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+}
+.danger {
+  border-color: currentColor;
+}
+.roles {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.rolesGrid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+.permissionRow {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) repeat(5, 68px);
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--border);
+}
+.permissionRow label {
+  text-align: center;
+  font-size: 0.72rem;
+}
+.message {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: 0.75rem 0;
+}
+.mfa {
+  display: grid;
+  gap: 0.8rem;
+}
+.qr {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+}
+.metricGrid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.metric {
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+@media (max-width: 760px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+  .permissionRow {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .permissionRow label {
+    text-align: left;
+  }
+  .form {
+    grid-template-columns: 1fr;
+  }
+}

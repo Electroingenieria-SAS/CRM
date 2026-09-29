@@ -7,7 +7,9 @@ const totalBudgetKb = Number(process.env.PERF_JS_TOTAL_GZIP_KB ?? 2500);
 const chunkBudgetKb = Number(process.env.PERF_JS_CHUNK_GZIP_KB ?? 650);
 
 if (!fs.existsSync(root)) {
-  console.error('PERFORMANCE BUDGET FALLÓ · .next/static/chunks no existe; ejecuta next build primero.');
+  console.error(
+    'PERFORMANCE BUDGET FALLÓ · .next/static/chunks no existe; ejecuta next build primero.',
+  );
   process.exit(1);
 }
 

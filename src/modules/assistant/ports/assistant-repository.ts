@@ -1,6 +1,4 @@
-import type {
-  AssistantAlert,
-} from '@/modules/assistant/application/assistant.schemas';
+import type { AssistantAlert } from '@/modules/assistant/application/assistant.schemas';
 
 export interface AssistantRepository {
   rateLimit(operation: string): Promise<{ allowed: boolean; retryAfterSeconds: number }>;

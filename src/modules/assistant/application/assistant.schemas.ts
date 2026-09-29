@@ -25,10 +25,12 @@ export const assistantRateLimitSchema = z.object({
   contractVersion: z.string(),
 });
 
-export const assistantMutationSchema = z.object({
-  success: z.literal(true),
-  contractVersion: z.string(),
-}).passthrough();
+export const assistantMutationSchema = z
+  .object({
+    success: z.literal(true),
+    contractVersion: z.string(),
+  })
+  .passthrough();
 
 export type AssistantAlert = z.infer<typeof assistantAlertSchema>;
 

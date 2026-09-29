@@ -26,7 +26,9 @@ export default function GlobalError({
           <section className="surface" role="alert">
             <h1>CRM temporalmente no disponible</h1>
             <p>La aplicación protegió la sesión y no guardó información sensible en este error.</p>
-            <button type="button" onClick={reset}>Reintentar</button>
+            <button type="button" onClick={reset}>
+              Reintentar
+            </button>
           </section>
         </main>
       </body>

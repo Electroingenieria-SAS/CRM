@@ -54,10 +54,7 @@ export function speakPaco(text: string) {
   return true;
 }
 
-export function startPacoRecognition(
-  onText: (text: string) => void,
-  onError: () => void,
-) {
+export function startPacoRecognition(onText: (text: string) => void, onError: () => void) {
   const Constructor = browserRecognition();
   if (!Constructor) {
     onError();

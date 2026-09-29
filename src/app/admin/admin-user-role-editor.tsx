@@ -22,7 +22,9 @@ export function AdminUserRoleEditor({ user, roles, canAdmin, onActive, onRoles }
 
   function toggle(role: string) {
     setSelected((current) => {
-      const next = current.includes(role) ? current.filter((item) => item !== role) : [...current, role];
+      const next = current.includes(role)
+        ? current.filter((item) => item !== role)
+        : [...current, role];
       if (!next.includes(primary)) setPrimary(next[0] ?? '');
       return next;
     });
@@ -57,13 +59,23 @@ export function AdminUserRoleEditor({ user, roles, canAdmin, onActive, onRoles }
         </div>
         <label>
           Rol principal
-          <select value={primary} disabled={!canAdmin || busy} onChange={(event) => setPrimary(event.target.value)}>
-            {selected.map((role) => <option key={role}>{role}</option>)}
+          <select
+            value={primary}
+            disabled={!canAdmin || busy}
+            onChange={(event) => setPrimary(event.target.value)}
+          >
+            {selected.map((role) => (
+              <option key={role}>{role}</option>
+            ))}
           </select>
         </label>
         <label>
           Motivo
-          <input value={reason} placeholder="Justificación del cambio" onChange={(event) => setReason(event.target.value)} />
+          <input
+            value={reason}
+            placeholder="Justificación del cambio"
+            onChange={(event) => setReason(event.target.value)}
+          />
         </label>
         <div className={styles.actions}>
           <button

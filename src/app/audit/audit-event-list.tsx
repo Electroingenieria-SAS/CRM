@@ -31,9 +31,20 @@ export function AuditEventList({ response, busy, load }: Props) {
               <span>{new Date(event.createdAt).toLocaleString('es-CO')}</span>
             </div>
             <div className={styles.grid}>
-              <div><small>Recurso</small><span>{event.resourceType} · {event.resourceId ?? '—'}</span></div>
-              <div><small>Request ID</small><span>{event.requestId ?? '—'}</span></div>
-              <div><small>Metadata</small><span className={styles.code}>{fmt(event.metadata)}</span></div>
+              <div>
+                <small>Recurso</small>
+                <span>
+                  {event.resourceType} · {event.resourceId ?? '—'}
+                </span>
+              </div>
+              <div>
+                <small>Request ID</small>
+                <span>{event.requestId ?? '—'}</span>
+              </div>
+              <div>
+                <small>Metadata</small>
+                <span className={styles.code}>{fmt(event.metadata)}</span>
+              </div>
             </div>
           </article>
         ))}
@@ -41,11 +52,21 @@ export function AuditEventList({ response, busy, load }: Props) {
       </section>
       {response ? (
         <div className={styles.pagination}>
-          <button type="button" disabled={busy || response.pagination.page <= 1} onClick={() => void load(response.pagination.page - 1)}>
+          <button
+            type="button"
+            disabled={busy || response.pagination.page <= 1}
+            onClick={() => void load(response.pagination.page - 1)}
+          >
             Anterior
           </button>
-          <span>Página {response.pagination.page} de {Math.max(response.pagination.totalPages, 1)}</span>
-          <button type="button" disabled={busy || response.pagination.page >= response.pagination.totalPages} onClick={() => void load(response.pagination.page + 1)}>
+          <span>
+            Página {response.pagination.page} de {Math.max(response.pagination.totalPages, 1)}
+          </span>
+          <button
+            type="button"
+            disabled={busy || response.pagination.page >= response.pagination.totalPages}
+            onClick={() => void load(response.pagination.page + 1)}
+          >
             Siguiente
           </button>
         </div>

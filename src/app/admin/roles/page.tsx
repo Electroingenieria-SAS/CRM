@@ -42,7 +42,11 @@ export default function AdminRolesPage() {
             placeholder="Obligatorio para modificar permisos"
           />
         </label>
-        {session.message ? <p className={styles.message} role="status">{session.message}</p> : null}
+        {session.message ? (
+          <p className={styles.message} role="status">
+            {session.message}
+          </p>
+        ) : null}
       </section>
       <AdminRolePermissions
         catalog={data.catalog}

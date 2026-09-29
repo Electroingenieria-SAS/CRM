@@ -19,7 +19,11 @@ export function usePacoChat(
   const router = useRouter();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 'welcome', role: 'assistant', text: 'Hola. Soy PACO. Puedo ayudarte con pedidos, colas, ocupación, actividades y pendientes.' },
+    {
+      id: 'welcome',
+      role: 'assistant',
+      text: 'Hola. Soy PACO. Puedo ayudarte con pedidos, colas, ocupación, actividades y pendientes.',
+    },
   ]);
   const [wizard, setWizard] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -32,7 +36,9 @@ export function usePacoChat(
   async function send(text: string) {
     const message = text.trim();
     if (!message || busy) return;
-    setBusy(true); add('user', message); setInput('');
+    setBusy(true);
+    add('user', message);
+    setInput('');
     try {
       const reply = await application.paco.ask(message);
       if (reply.action === 'CANCEL') {
@@ -45,12 +51,20 @@ export function usePacoChat(
       if (/resumen|cola|ocupad|dispon/i.test(message)) await refreshAlerts(false);
     } catch (error) {
       add('assistant', error instanceof Error ? error.message : 'No pude completar la consulta.');
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   function cancel() {
     setWizard(false);
-    setMessages([{ id: crypto.randomUUID(), role: 'assistant', text: 'Consulta cancelada. Empecemos de nuevo.' }]);
+    setMessages([
+      {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        text: 'Consulta cancelada. Empecemos de nuevo.',
+      },
+    ]);
     setInput('');
   }
 
@@ -58,11 +72,32 @@ export function usePacoChat(
     if (listening) return;
     setListening(true);
     const stop = startPacoRecognition(
-      (text) => { setListening(false); setInput(text); },
-      () => { setListening(false); add('assistant', 'No pude usar el micrófono. Puedes continuar escribiendo.'); },
+      (text) => {
+        setListening(false);
+        setInput(text);
+      },
+      () => {
+        setListening(false);
+        add('assistant', 'No pude usar el micrófono. Puedes continuar escribiendo.');
+      },
     );
-    window.setTimeout(() => { stop(); setListening(false); }, 12_000);
+    window.setTimeout(() => {
+      stop();
+      setListening(false);
+    }, 12_000);
   }
 
-  return { input, setInput, messages, wizard, setWizard, busy, listening, send, cancel, listen, add };
+  return {
+    input,
+    setInput,
+    messages,
+    wizard,
+    setWizard,
+    busy,
+    listening,
+    send,
+    cancel,
+    listen,
+    add,
+  };
 }

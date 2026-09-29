@@ -2,13 +2,13 @@
 
 ## Blockers de cutover
 
-| ID | Tema | Estado | Cierre requerido |
-| --- | --- | --- | --- |
-| B1 | Edge Function legacy `erp-auditoria-metrics` pública/privilegiada | Externo al repo nuevo | Hardening o retiro coordinado con consumidores |
-| B2 | Leaked Password Protection | Limitación plan Free | Upgrade Pro+ o aceptación formal del riesgo compensado |
-| B3 | Ruleset de `main` | Configuración manual | PR obligatorio + checks + no force push |
-| B4 | Proyecto Vercel nuevo / Preview | No existe | Crear proyecto separado y validar Preview |
-| B5 | Restore de dump reciente | No ejecutado | Restore smoke en destino no productivo |
+| ID  | Tema                                                              | Estado                | Cierre requerido                                       |
+| --- | ----------------------------------------------------------------- | --------------------- | ------------------------------------------------------ |
+| B1  | Edge Function legacy `erp-auditoria-metrics` pública/privilegiada | Externo al repo nuevo | Hardening o retiro coordinado con consumidores         |
+| B2  | Leaked Password Protection                                        | Limitación plan Free  | Upgrade Pro+ o aceptación formal del riesgo compensado |
+| B3  | Ruleset de `main`                                                 | Configuración manual  | PR obligatorio + checks + no force push                |
+| B4  | Proyecto Vercel nuevo / Preview                                   | No existe             | Crear proyecto separado y validar Preview              |
+| B5  | Restore de dump reciente                                          | No ejecutado          | Restore smoke en destino no productivo                 |
 
 ## Post-release permitido
 

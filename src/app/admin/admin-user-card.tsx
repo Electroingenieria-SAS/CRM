@@ -40,7 +40,9 @@ export function AdminUserCard(props: Props) {
       <div className={styles.roles}>
         {props.user.roles.map((role) => (
           <span className={styles.badge} key={role.code}>
-            {role.name}{role.primary ? ' · principal' : ''}{role.requireMfa ? ' · MFA' : ''}
+            {role.name}
+            {role.primary ? ' · principal' : ''}
+            {role.requireMfa ? ' · MFA' : ''}
           </span>
         ))}
       </div>

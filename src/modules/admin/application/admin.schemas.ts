@@ -68,10 +68,12 @@ export const adminOrganizationSchema = z.object({
   contractVersion: z.string(),
 });
 
-export const adminMutationSchema = z.object({
-  success: z.literal(true),
-  contractVersion: z.string(),
-}).passthrough();
+export const adminMutationSchema = z
+  .object({
+    success: z.literal(true),
+    contractVersion: z.string(),
+  })
+  .passthrough();
 
 export const adminPasswordResetSchema = z.object({
   profileId: z.string().uuid(),

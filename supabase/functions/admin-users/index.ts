@@ -36,7 +36,7 @@ function cors(origin: string | null) {
     'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json',
-    'Vary': 'Origin',
+    Vary: 'Origin',
   };
 }
 
@@ -113,13 +113,16 @@ Deno.serve(async (req) => {
   const roles = stringArray(body.roles);
   const primaryRole = text(body.primaryRole, 80).toLowerCase();
 
-  const { data: prepared, error: prepareError } = await userClient.rpc('erp_x_admin_invite_prepare', {
-    p_email: email,
-    p_display_name: displayName,
-    p_employee_code: employeeCode,
-    p_roles: roles,
-    p_primary_role: primaryRole,
-  });
+  const { data: prepared, error: prepareError } = await userClient.rpc(
+    'erp_x_admin_invite_prepare',
+    {
+      p_email: email,
+      p_display_name: displayName,
+      p_employee_code: employeeCode,
+      p_roles: roles,
+      p_primary_role: primaryRole,
+    },
+  );
 
   if (prepareError || !prepared) {
     return json(origin, prepareError?.code === '42501' ? 403 : 400, {

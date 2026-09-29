@@ -53,7 +53,11 @@ export default function AuditPage() {
         setQuery={data.setQuery}
         onApply={() => void data.load(1)}
       />
-      {data.message ? <p className={styles.message} role="status">{data.message}</p> : null}
+      {data.message ? (
+        <p className={styles.message} role="status">
+          {data.message}
+        </p>
+      ) : null}
       {data.busy ? <p role="status">Consultando eventos…</p> : null}
       <AuditEventList response={data.response} busy={data.busy} load={data.load} />
     </AppShell>

@@ -1,10 +1,7 @@
 'use client';
 
 import type { AdminRoleCatalog } from '@/modules/admin/application/admin.schemas';
-import {
-  adminCapabilities,
-  type AdminCapability,
-} from './use-admin-roles-data';
+import { adminCapabilities, type AdminCapability } from './use-admin-roles-data';
 import styles from '../admin.module.css';
 
 interface Props {
@@ -12,7 +9,12 @@ interface Props {
   canAdmin: boolean;
   busy: boolean;
   reason: string;
-  change(role: string, module: string, capability: AdminCapability, enabled: boolean): Promise<void>;
+  change(
+    role: string,
+    module: string,
+    capability: AdminCapability,
+    enabled: boolean,
+  ): Promise<void>;
 }
 
 export function AdminRolePermissions({ catalog, canAdmin, busy, reason, change }: Props) {
@@ -27,7 +29,9 @@ export function AdminRolePermissions({ catalog, canAdmin, busy, reason, change }
             </div>
             <div className={styles.roles}>
               {role.requireMfa ? <span className={styles.badge}>MFA obligatorio</span> : null}
-              {role.sensitiveAdmin ? <span className={styles.badge}>Administrativo sensible</span> : null}
+              {role.sensitiveAdmin ? (
+                <span className={styles.badge}>Administrativo sensible</span>
+              ) : null}
             </div>
           </div>
           {role.permissions.map((permission) => (

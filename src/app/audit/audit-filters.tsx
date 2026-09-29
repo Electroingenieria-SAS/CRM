@@ -31,26 +31,40 @@ export function AuditFilters({ query, busy, setQuery, onApply }: Props) {
       ))}
       <label>
         Módulo
-        <input value={query.module ?? ''} onChange={(event) => setQuery({ ...query, module: event.target.value })} />
+        <input
+          value={query.module ?? ''}
+          onChange={(event) => setQuery({ ...query, module: event.target.value })}
+        />
       </label>
       <label>
         Acción
-        <input value={query.action ?? ''} onChange={(event) => setQuery({ ...query, action: event.target.value })} />
+        <input
+          value={query.action ?? ''}
+          onChange={(event) => setQuery({ ...query, action: event.target.value })}
+        />
       </label>
       <label>
         Recurso
-        <input value={query.resource ?? ''} onChange={(event) => setQuery({ ...query, resource: event.target.value })} />
+        <input
+          value={query.resource ?? ''}
+          onChange={(event) => setQuery({ ...query, resource: event.target.value })}
+        />
       </label>
       <label>
         Resultado
-        <select value={query.result ?? ''} onChange={(event) => setQuery({ ...query, result: event.target.value })}>
+        <select
+          value={query.result ?? ''}
+          onChange={(event) => setQuery({ ...query, result: event.target.value })}
+        >
           <option value="">Todos</option>
           {['SUCCESS', 'FAILED', 'DENIED', 'REQUESTED', 'ACKNOWLEDGED'].map((result) => (
             <option key={result}>{result}</option>
           ))}
         </select>
       </label>
-      <button className="primary-button" type="submit" disabled={busy}>Aplicar</button>
+      <button className="primary-button" type="submit" disabled={busy}>
+        Aplicar
+      </button>
     </form>
   );
 }

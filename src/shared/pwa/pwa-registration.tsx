@@ -37,7 +37,8 @@ export function PwaRegistration() {
         });
       });
 
-    return () => navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+    return () =>
+      navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
   }, []);
 
   return null;

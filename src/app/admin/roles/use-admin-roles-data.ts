@@ -35,7 +35,12 @@ export function useAdminRolesData(session: ReturnTypeOfAdminSession) {
     return () => window.clearTimeout(timer);
   }, [load]);
 
-  async function change(role: string, module: string, capability: AdminCapability, enabled: boolean) {
+  async function change(
+    role: string,
+    module: string,
+    capability: AdminCapability,
+    enabled: boolean,
+  ) {
     if (!application || !reason.trim()) return;
     setBusy(true);
     setMessage(null);

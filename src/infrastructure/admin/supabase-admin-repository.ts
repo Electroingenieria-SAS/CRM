@@ -21,7 +21,8 @@ function adminError(error: { code?: string; message?: string } | null, fallback:
   }
   if (error?.code === '22023') return new AppError('VALIDATION', error.message ?? fallback);
   if (error?.code === '23505') return new AppError('BUSINESS_RULE', 'El usuario ya existe.');
-  if (error?.code === 'P0002') return new AppError('BUSINESS_RULE', 'El recurso ya no está disponible.');
+  if (error?.code === 'P0002')
+    return new AppError('BUSINESS_RULE', 'El recurso ya no está disponible.');
   return new AppError('DATABASE', fallback);
 }
 

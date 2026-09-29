@@ -20,7 +20,9 @@ export function AdminInviteForm({ roles, disabled, onInvite }: AdminInviteFormPr
 
   function toggleRole(role: string) {
     setSelectedRoles((current) => {
-      const next = current.includes(role) ? current.filter((item) => item !== role) : [...current, role];
+      const next = current.includes(role)
+        ? current.filter((item) => item !== role)
+        : [...current, role];
       if (!next.includes(primaryRole)) setPrimaryRole(next[0] ?? '');
       return next;
     });
@@ -49,7 +51,9 @@ export function AdminInviteForm({ roles, disabled, onInvite }: AdminInviteFormPr
   return (
     <section className={styles.panel}>
       <h2>Invitar usuario</h2>
-      <p className={styles.muted}>La invitación usa Supabase Auth; el CRM nunca crea ni muestra una contraseña.</p>
+      <p className={styles.muted}>
+        La invitación usa Supabase Auth; el CRM nunca crea ni muestra una contraseña.
+      </p>
       <div className={styles.form}>
         <label>
           Correo
@@ -89,7 +93,9 @@ export function AdminInviteForm({ roles, disabled, onInvite }: AdminInviteFormPr
         </label>
         <button
           className="primary-button"
-          disabled={disabled || busy || !email || !displayName || !selectedRoles.length || !primaryRole}
+          disabled={
+            disabled || busy || !email || !displayName || !selectedRoles.length || !primaryRole
+          }
           onClick={() => void submit()}
           type="button"
         >
