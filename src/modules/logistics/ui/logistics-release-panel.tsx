@@ -29,6 +29,23 @@ function needsFreight(route: LogisticsRoute) {
   return route === 'LOCAL_DISPATCH' || route === 'NATIONAL_DISPATCH';
 }
 
+function buildReleaseInput(
+  freightRequired: boolean,
+  destinationId: string,
+  carrierId: string,
+  prediction: FreightPredictionResult | null,
+): LogisticsReleaseInput {
+  if (!freightRequired) return {};
+  return {
+    destinationId: destinationId || undefined,
+    carrierId: carrierId || prediction?.carrierId || undefined,
+    predictionId: prediction?.predictionId,
+    estimatedFreight: prediction?.estimateMid,
+    estimatedFreightLow: prediction?.estimateLow,
+    estimatedFreightHigh: prediction?.estimateHigh,
+  };
+}
+
 function ReleaseSummary({ candidate }: { candidate: LogisticsCandidate }) {
   return (
     <>
@@ -41,20 +58,9 @@ function ReleaseSummary({ candidate }: { candidate: LogisticsCandidate }) {
         <span className={styles.badge}>{candidate.routeCode.replaceAll('_', ' ')}</span>
       </div>
       <dl className={styles.definitionGrid}>
-        <div>
-          <dt>Destino</dt>
-          <dd>
-            {candidate.city || 'Sin ciudad'} · {candidate.address || 'Sin dirección'}
-          </dd>
-        </div>
-        <div>
-          <dt>Facturación</dt>
-          <dd>{candidate.readiness.billingReady ? 'Lista' : 'Pendiente'}</dd>
-        </div>
-        <div>
-          <dt>Finance</dt>
-          <dd>{candidate.readiness.financialDecision}</dd>
-        </div>
+        <div><dt>Destino</dt><dd>{candidate.city || 'Sin ciudad'} · {candidate.address || 'Sin dirección'}</dd></div>
+        <div><dt>Facturación</dt><dd>{candidate.readiness.billingReady ? 'Lista' : 'Pendiente'}</dd></div>
+        <div><dt>Finance</dt><dd>{candidate.readiness.financialDecision}</dd></div>
       </dl>
     </>
   );
@@ -73,9 +79,7 @@ function PredictionCard({ prediction }: { prediction: FreightPredictionResult })
   return (
     <div className={styles.prediction}>
       <strong>{amount}</strong>
-      <span>
-        {prediction.carrierName || 'Sin transportadora sugerida'} · {prediction.evidenceLevel}
-      </span>
+      <span>{prediction.carrierName || 'Sin transportadora sugerida'} · {prediction.evidenceLevel}</span>
       {prediction.estimateLow !== undefined && prediction.estimateHigh !== undefined ? (
         <small>
           Rango: {prediction.estimateLow.toLocaleString('es-CO')} –{' '}
@@ -100,11 +104,7 @@ function FreightControls(props: {
     <div className={styles.formGrid}>
       <label>
         Destino Freight
-        <select
-          required
-          value={props.destinationId}
-          onChange={(e) => props.setDestinationId(e.target.value)}
-        >
+        <select required value={props.destinationId} onChange={(e) => props.setDestinationId(e.target.value)}>
           <option value="">Seleccionar destino</option>
           {props.catalog.destinations.map((destination) => (
             <option key={destination.id} value={destination.id}>
@@ -118,9 +118,7 @@ function FreightControls(props: {
         <select value={props.carrierId} onChange={(e) => props.setCarrierId(e.target.value)}>
           <option value="">Sugerir con histórico</option>
           {props.catalog.carriers.map((carrier) => (
-            <option key={carrier.id} value={carrier.id}>
-              {carrier.name}
-            </option>
+            <option key={carrier.id} value={carrier.id}>{carrier.name}</option>
           ))}
         </select>
       </label>
@@ -142,12 +140,36 @@ function FreightControls(props: {
   );
 }
 
+function ReleaseButton(props: {
+  candidate: LogisticsCandidate;
+  busy: boolean;
+  canRelease: boolean;
+  freightRequired: boolean;
+  destinationId: string;
+  input: LogisticsReleaseInput;
+  onRelease: ReleasePanelProps['onRelease'];
+}) {
+  return (
+    <button
+      type="button"
+      className={styles.primary}
+      disabled={
+        props.busy ||
+        !props.canRelease ||
+        !props.candidate.readiness.readyForLogistics ||
+        (props.freightRequired && !props.destinationId)
+      }
+      onClick={() => void props.onRelease(props.candidate.orderId, props.input)}
+    >
+      Liberar pedido
+    </button>
+  );
+}
+
 export function LogisticsReleasePanel(props: ReleasePanelProps) {
   const [destinationId, setDestinationId] = useState('');
   const [carrierId, setCarrierId] = useState('');
-  const candidate = props.candidate;
-
-  if (!candidate) {
+  if (!props.candidate) {
     return (
       <section className={styles.panel}>
         <h2>Liberación</h2>
@@ -156,28 +178,17 @@ export function LogisticsReleasePanel(props: ReleasePanelProps) {
     );
   }
 
-  const freightRequired = needsFreight(candidate.routeCode);
-  const prediction = props.prediction?.destinationId === destinationId ? props.prediction : null;
-
-  const release = () => {
-    const input: LogisticsReleaseInput = {};
-    if (freightRequired) {
-      input.destinationId = destinationId || undefined;
-      input.carrierId = carrierId || prediction?.carrierId || undefined;
-      input.predictionId = prediction?.predictionId;
-      input.estimatedFreight = prediction?.estimateMid;
-      input.estimatedFreightLow = prediction?.estimateLow;
-      input.estimatedFreightHigh = prediction?.estimateHigh;
-    }
-    void props.onRelease(candidate.orderId, input);
-  };
+  const freightRequired = needsFreight(props.candidate.routeCode);
+  const prediction =
+    props.prediction?.destinationId === destinationId ? props.prediction : null;
+  const input = buildReleaseInput(freightRequired, destinationId, carrierId, prediction);
 
   return (
     <section className={styles.panel} aria-labelledby="release-title">
-      <ReleaseSummary candidate={candidate} />
+      <ReleaseSummary candidate={props.candidate} />
       {freightRequired ? (
         <FreightControls
-          candidate={candidate}
+          candidate={props.candidate}
           catalog={props.catalog}
           busy={props.busy}
           destinationId={destinationId}
@@ -188,19 +199,15 @@ export function LogisticsReleasePanel(props: ReleasePanelProps) {
         />
       ) : null}
       {prediction ? <PredictionCard prediction={prediction} /> : null}
-      <button
-        type="button"
-        className={styles.primary}
-        disabled={
-          props.busy ||
-          !props.canRelease ||
-          !candidate.readiness.readyForLogistics ||
-          (freightRequired && !destinationId)
-        }
-        onClick={release}
-      >
-        Liberar pedido
-      </button>
+      <ReleaseButton
+        candidate={props.candidate}
+        busy={props.busy}
+        canRelease={props.canRelease}
+        freightRequired={freightRequired}
+        destinationId={destinationId}
+        input={input}
+        onRelease={props.onRelease}
+      />
     </section>
   );
 }
