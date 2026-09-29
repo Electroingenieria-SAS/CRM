@@ -2,34 +2,34 @@
 
 `✓` significa validado con evidencia; `—` aún no migrado.
 
-| Funcionalidad                      |   CRM fuente   |    CRM nuevo    |        Tests        | Mobile | Seguridad | Estado                 |
-| ---------------------------------- | :------------: | :-------------: | :-----------------: | :----: | :-------: | ---------------------- |
-| Shell/base técnica                 |       ✓        |        ✓        |          ✓          |   ✓    |     ✓     | Validado en staging    |
-| Login / sesión                     |       ✓        |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging    |
-| Recuperación de contraseña         | Fuente parcial |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging    |
-| Dashboard / centro de operaciones  |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado |
-| Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
-| Crédito                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
-| Cartera                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
-| Caja                               |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
-| Compras                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Corte                              |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Facturación                        |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; pendiente CI |
-| Despachos / entrega / satisfacción |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; pendiente CI |
-| Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11        |
-| Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI       |
-| Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero    |
-| VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Histórico/importaciones            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Auditoría                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Administración / roles             |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| PACO asistente                     |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Funcionalidad                      |   CRM fuente   |    CRM nuevo    |        Tests        | Mobile | Seguridad | Estado                            |
+| ---------------------------------- | :------------: | :-------------: | :-----------------: | :----: | :-------: | --------------------------------- |
+| Shell/base técnica                 |       ✓        |        ✓        |          ✓          |   ✓    |     ✓     | Validado en staging               |
+| Login / sesión                     |       ✓        |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging               |
+| Recuperación de contraseña         | Fuente parcial |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging               |
+| Dashboard / centro de operaciones  |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado            |
+| Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
+| Crédito                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
+| Cartera                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
+| Caja                               |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
+| Compras                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Corte                              |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Facturación                        |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; pendiente CI        |
+| Despachos / entrega / satisfacción |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; pendiente CI        |
+| Inventario                         |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
+| Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11                   |
+| Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI                  |
+| Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero               |
+| VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Histórico/importaciones            |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Auditoría                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Administración / roles             |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| PACO asistente                     |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
 
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
 
@@ -44,4 +44,4 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 > Finanzas reconstruye Crédito, Cartera y Caja con fuente monetaria basada en facturas registradas netas de reversos. No se inventa cupo reutilizable ni días de mora sin fuente auditable. Orders consume únicamente un gate financiero mínimo y Customer Intelligence una proyección `totalPaid`.
 
 
-> Hilo 10 conserva Finance como fuente de facturas/pagos, separa costo estimado de costo real, usa evidencia privada referenciada, controla estados logísticos e integra Orders/Freight mediante ports. Inventory permanece desacoplado hasta que PR #16 llegue a `main`.
+> Hilo 10 conserva Finance como fuente de facturas/pagos, separa costo estimado de costo real, usa evidencia privada referenciada y controla estados logísticos. Inventory ya está en `main`; su contrato actual termina en Receiving/Picking/Cutting y no expone una mutación de despacho por `orderId`, por lo que Logistics no escribe sus tablas ni inventa una adaptación incompatible.
