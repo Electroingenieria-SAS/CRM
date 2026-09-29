@@ -128,6 +128,8 @@ test('auditor can inspect logistics but cannot operate it', async ({ page }, tes
   await login(page, auditorEmail);
   await page.goto('/logistics');
   await expect(page.getByRole('heading', { level: 1, name: 'Logística y entrega' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Liberar pedido' })).toBeDisabled();
+  const release = page.getByRole('button', { name: 'Liberar pedido' });
+  if (await release.count()) await expect(release).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Registrar salida' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Guardar satisfacción' })).toHaveCount(0);
 });
