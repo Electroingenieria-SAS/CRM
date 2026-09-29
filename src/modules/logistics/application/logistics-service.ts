@@ -110,8 +110,9 @@ export class LogisticsService {
     return result;
   }
 
-  failDelivery(
+  async failDelivery(
     shipmentId: string,
+    orderId: string,
     reason: string,
     observation: string | undefined,
     evidenceId: string | undefined,
@@ -119,13 +120,15 @@ export class LogisticsService {
     key: string,
   ) {
     if (!reason.trim()) throw new Error('El motivo de no entrega es obligatorio.');
+    const idempotencyKey = requiredKey(key);
+    await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
     return this.repository.failDelivery(
       shipmentId,
       reason.trim(),
       observation?.trim() || undefined,
       evidenceId,
       version,
-      requiredKey(key),
+      idempotencyKey,
     );
   }
 
@@ -133,8 +136,9 @@ export class LogisticsService {
     return this.repository.reprogram(shipmentId, version, requiredKey(key));
   }
 
-  deliver(
+  async deliver(
     shipmentId: string,
+    orderId: string,
     receivedBy: string | undefined,
     observation: string | undefined,
     evidenceId: string,
@@ -142,13 +146,15 @@ export class LogisticsService {
     key: string,
   ) {
     if (!evidenceId) throw new Error('La evidencia de entrega es obligatoria.');
+    const idempotencyKey = requiredKey(key);
+    await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
     return this.repository.deliver(
       shipmentId,
       receivedBy?.trim() || undefined,
       observation?.trim() || undefined,
       evidenceId,
       version,
-      requiredKey(key),
+      idempotencyKey,
     );
   }
 
