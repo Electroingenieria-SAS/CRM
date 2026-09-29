@@ -188,11 +188,29 @@ with check (
   )
 );
 
+create policy delivery_satisfaction_update
+on erp_supply.delivery_satisfaction for update to authenticated
+using (
+  organization_id=erp_private.current_org_id()
+  and (
+    erp_private.can_access_module('shipping','update')
+    or erp_private.can_access_module('sales','create')
+  )
+)
+with check (
+  organization_id=erp_private.current_org_id()
+  and recorded_by=erp_private.current_profile_id()
+  and (
+    erp_private.can_access_module('shipping','update')
+    or erp_private.can_access_module('sales','create')
+  )
+);
+
 grant select,insert,update on erp_supply.logistics_shipments to authenticated;
 grant select,insert on erp_supply.logistics_events to authenticated;
 grant usage,select on sequence erp_supply.logistics_events_id_seq to authenticated;
 grant select,insert on erp_supply.delivery_attempts to authenticated;
-grant select,insert on erp_supply.delivery_satisfaction to authenticated;
+grant select,insert,update on erp_supply.delivery_satisfaction to authenticated;
 
 insert into erp_supply.modules(code,name,description,icon,sort_order,active) values
   ('billing','Facturación','Facturas, soportes y liberación','receipt-text',110,true),
