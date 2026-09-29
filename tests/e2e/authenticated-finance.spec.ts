@@ -84,7 +84,13 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
     .getByLabel('Justificación')
     .fill('Crédito revisado con información disponible.');
   await reviewedRow.getByRole('button', { name: 'Aprobar' }).click();
-  await expect(reviewedRow).toContainText('APPROVED');
+  await expect(page.getByRole('status')).toContainText('Crédito aprobado');
+  const approvedRow = page
+    .getByRole('row')
+    .filter({ hasText: 'Cliente Crédito E2E' })
+    .filter({ hasText: 'APPROVED' })
+    .first();
+  await expect(approvedRow).toBeVisible();
 
   await page.getByRole('link', { name: 'Cartera' }).click();
   await page.getByLabel('Buscar en Cartera').fill('FIN-E2E-CARTERA');
