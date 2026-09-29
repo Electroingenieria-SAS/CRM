@@ -49,9 +49,7 @@ export function createInventoryPageActions(context: ActionContext) {
   const mutate = (operation: () => Promise<unknown>, success: string) =>
     runMutation(context, operation, success);
 
-  const receive = (
-    input: Omit<InventoryReceiveInput, 'materialId' | 'variantId' | 'unit'>,
-  ) => {
+  const receive = (input: Omit<InventoryReceiveInput, 'materialId' | 'variantId' | 'unit'>) => {
     if (!application || !detail) return Promise.resolve();
     return mutate(
       () =>
@@ -68,9 +66,7 @@ export function createInventoryPageActions(context: ActionContext) {
     );
   };
 
-  const reserve = (
-    input: Omit<InventoryReserveInput, 'materialId' | 'variantId' | 'unit'>,
-  ) => {
+  const reserve = (input: Omit<InventoryReserveInput, 'materialId' | 'variantId' | 'unit'>) => {
     if (!application || !detail) return Promise.resolve();
     return mutate(
       () =>
@@ -113,12 +109,7 @@ export function createInventoryPageActions(context: ActionContext) {
     returnReusable: (reservationId: string, reason: string) =>
       action(
         (app) =>
-          app.inventory.returnReusable(
-            reservationId,
-            undefined,
-            reason,
-            crypto.randomUUID(),
-          ),
+          app.inventory.returnReusable(reservationId, undefined, reason, crypto.randomUUID()),
         'Sobrante reutilizable devuelto.',
       ),
     waste: (reservationId: string, reason: string) =>

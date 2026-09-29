@@ -189,7 +189,12 @@ export function InventoryAdjustmentForm(
       </label>
       <label>
         Motivo
-        <textarea value={reason} onChange={(event) => setReason(event.target.value)} rows={2} required />
+        <textarea
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          rows={2}
+          required
+        />
       </label>
       <label className={styles.confirm}>
         <input

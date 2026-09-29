@@ -103,20 +103,14 @@ export function InventoryWorkspace(props: Props) {
           setLocationId={props.setLocationId}
           searchNow={props.searchNow}
         />
-        <InventoryFeedback
-          notice={props.notice}
-          message={props.message}
-          loading={props.loading}
-        />
+        <InventoryFeedback notice={props.notice} message={props.message} loading={props.loading} />
 
         {!props.loading ? (
           <>
             <InventoryList
               data={props.list}
               loading={props.busy}
-              onOpen={(materialId, variantId) =>
-                void props.openDetail(materialId, variantId)
-              }
+              onOpen={(materialId, variantId) => void props.openDetail(materialId, variantId)}
             />
             <InventoryPagination pagination={props.list.pagination} goPage={props.goPage} />
           </>

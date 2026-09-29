@@ -36,7 +36,11 @@ export function InventoryReservationActions(props: Props) {
       <div>
         {hasReserved ? (
           <>
-            <button type="button" disabled={props.busy} onClick={() => void props.onPick(props.reservationId)}>
+            <button
+              type="button"
+              disabled={props.busy}
+              onClick={() => void props.onPick(props.reservationId)}
+            >
               Pasar a picking
             </button>
             <button
@@ -53,7 +57,9 @@ export function InventoryReservationActions(props: Props) {
             <button
               type="button"
               disabled={props.busy}
-              onClick={() => void props.onConsume(props.reservationId, reason || 'Consumo operativo')}
+              onClick={() =>
+                void props.onConsume(props.reservationId, reason || 'Consumo operativo')
+              }
             >
               Consumir
             </button>

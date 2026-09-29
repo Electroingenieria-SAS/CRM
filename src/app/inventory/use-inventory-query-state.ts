@@ -49,9 +49,7 @@ function useInventoryBootstrap(
       })
       .catch((error) => {
         if (active) {
-          setMessage(
-            error instanceof Error ? error.message : 'No fue posible abrir Inventario.',
-          );
+          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Inventario.');
         }
       })
       .finally(() => {

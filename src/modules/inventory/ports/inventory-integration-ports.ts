@@ -9,10 +9,7 @@ import type {
 } from '@/modules/inventory/application/inventory.schemas';
 
 export interface ReceivingInventoryPort {
-  receive(
-    input: InventoryReceiveInput,
-    idempotencyKey: string,
-  ): Promise<InventoryReceiptResult>;
+  receive(input: InventoryReceiveInput, idempotencyKey: string): Promise<InventoryReceiptResult>;
 }
 
 export interface PickingInventoryPort {

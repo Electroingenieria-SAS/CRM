@@ -28,9 +28,7 @@ interface Props {
 }
 
 export function InventoryCountWorkspace(props: Props) {
-  const selected = props.data.items.find(
-    (item) => item.balanceId === props.selectedBalanceId,
-  );
+  const selected = props.data.items.find((item) => item.balanceId === props.selectedBalanceId);
 
   return (
     <AppShell
@@ -62,10 +60,7 @@ export function InventoryCountWorkspace(props: Props) {
         >
           <label>
             Buscar material o ubicación
-            <input
-              value={props.search}
-              onChange={(event) => props.setSearch(event.target.value)}
-            />
+            <input value={props.search} onChange={(event) => props.setSearch(event.target.value)} />
           </label>
           <button type="submit" disabled={props.loading}>
             Buscar

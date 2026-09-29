@@ -62,7 +62,6 @@ Corte: 2026-09-28 · baseline fuente `4bdceeaa54847581f83e9425aa0310aae8b0547d`.
 | OWF-004 | P1 | Reasignación | Sobrescribir assignee en actividad activa atribuiría tiempo de A a B. | Indicadores humanos falsos. | Cerrar segmento A y crear continuación B sobre el mismo order_task. | runtime RPC + pgTAP 022. | Implementado |
 | OWF-005 | P1 | Jornada/indicadores | Usar duración calendario o polling produciría métricas incorrectas y más llamadas. | Productividad/ocupación falsa y costo innecesario. | Business seconds Workforce, intervalos bloqueados, lectura agregada y sin polling. | indicator RPC + UI + policies. | Implementado |
 
-
 | INV-001 | P0 | Inventario | Stock editable o negativo rompería la fuente de verdad. | Saldo y trazabilidad inconsistentes. | Ledger inmutable + balance materializado con constraints de físico, reservado y comprometido. | Migraciones Inventory + pgTAP 030/031. | Implementado |
 | INV-002 | P0 | Concurrencia | Dos pedidos podrían reservar las mismas unidades. | Sobre-reserva y operación imposible. | Row locks transaccionales + reserva all-or-nothing + prueba concurrente 10 vs 8+8. | tests/integration/inventory-concurrency.mjs. | Implementado |
 | INV-003 | P0 | Idempotencia | Retries de recepción, reserva o devolución podrían duplicar movimientos. | Stock duplicado o doble afectación. | inventory_operations con clave única por organización y resultado persistido. | Integration concurrency + pgTAP. | Implementado |

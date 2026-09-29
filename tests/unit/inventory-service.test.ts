@@ -91,12 +91,12 @@ describe('inventory service', () => {
     expect(() =>
       service.returnReusable('11111111-1111-4111-8111-111111111111', 1, '', 'return-1'),
     ).toThrow('La devolución requiere un motivo.');
-    expect(() =>
-      service.waste('11111111-1111-4111-8111-111111111111', 1, '', 'waste-1'),
-    ).toThrow('El desperdicio requiere un motivo.');
-    expect(() =>
-      service.adjust('11111111-1111-4111-8111-111111111111', 1, '', 'adjust-1'),
-    ).toThrow('El ajuste requiere un motivo.');
+    expect(() => service.waste('11111111-1111-4111-8111-111111111111', 1, '', 'waste-1')).toThrow(
+      'El desperdicio requiere un motivo.',
+    );
+    expect(() => service.adjust('11111111-1111-4111-8111-111111111111', 1, '', 'adjust-1')).toThrow(
+      'El ajuste requiere un motivo.',
+    );
   });
 
   it('accepts a zero physical count but rejects a negative count', () => {

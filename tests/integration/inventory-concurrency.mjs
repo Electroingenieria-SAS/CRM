@@ -189,7 +189,12 @@ const [returnA, returnB] = await Promise.all([
   a.rpc('erp_x_inventory_return', returnArgs),
   b.rpc('erp_x_inventory_return', returnArgs),
 ]);
-if (returnA.error || returnB.error || returnA.data?.status !== 'CLOSED' || returnB.data?.status !== 'CLOSED') {
+if (
+  returnA.error ||
+  returnB.error ||
+  returnA.data?.status !== 'CLOSED' ||
+  returnB.data?.status !== 'CLOSED'
+) {
   throw new Error('Double return idempotency failed.');
 }
 

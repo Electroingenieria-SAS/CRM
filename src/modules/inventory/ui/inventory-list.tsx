@@ -7,7 +7,12 @@ interface Props {
   onOpen(materialId: string, variantId?: string): void;
 }
 
-function StockValues({ onHand, reserved, committed, available }: {
+function StockValues({
+  onHand,
+  reserved,
+  committed,
+  available,
+}: {
   onHand: number;
   reserved: number;
   committed: number;
@@ -15,10 +20,18 @@ function StockValues({ onHand, reserved, committed, available }: {
 }) {
   return (
     <>
-      <span>Físico <strong>{onHand}</strong></span>
-      <span>Reservado <strong>{reserved}</strong></span>
-      <span>Comprometido <strong>{committed}</strong></span>
-      <span>Disponible <strong>{available}</strong></span>
+      <span>
+        Físico <strong>{onHand}</strong>
+      </span>
+      <span>
+        Reservado <strong>{reserved}</strong>
+      </span>
+      <span>
+        Comprometido <strong>{committed}</strong>
+      </span>
+      <span>
+        Disponible <strong>{available}</strong>
+      </span>
     </>
   );
 }
@@ -51,11 +64,21 @@ export function InventoryList({ data, loading, onOpen }: Props) {
                   <span>{item.name}</span>
                   {item.variantLabel ? <small>{item.variantLabel}</small> : null}
                 </td>
-                <td>{item.locationCode} · {item.locationName}</td>
-                <td>{item.onHand} {item.unit}</td>
-                <td>{item.reserved} {item.unit}</td>
-                <td>{item.committed} {item.unit}</td>
-                <td>{item.available} {item.unit}</td>
+                <td>
+                  {item.locationCode} · {item.locationName}
+                </td>
+                <td>
+                  {item.onHand} {item.unit}
+                </td>
+                <td>
+                  {item.reserved} {item.unit}
+                </td>
+                <td>
+                  {item.committed} {item.unit}
+                </td>
+                <td>
+                  {item.available} {item.unit}
+                </td>
                 <td>
                   <button
                     type="button"

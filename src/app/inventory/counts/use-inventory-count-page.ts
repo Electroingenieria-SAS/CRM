@@ -79,14 +79,7 @@ export function useInventoryCountPage() {
     [application, search],
   );
 
-  useInventoryCountBootstrap(
-    application,
-    goLogin,
-    setContext,
-    setData,
-    setMessage,
-    setLoading,
-  );
+  useInventoryCountBootstrap(application, goLogin, setContext, setData, setMessage, setLoading);
 
   async function submit(countedQuantity: number, note: string) {
     if (!application || !selectedBalanceId) return;
@@ -104,9 +97,7 @@ export function useInventoryCountPage() {
       setData(await application.inventory.countCandidates(search, 1, 25));
       setNotice('Conteo enviado para revisión sin revelar el saldo teórico.');
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : 'No fue posible registrar el conteo.',
-      );
+      setMessage(error instanceof Error ? error.message : 'No fue posible registrar el conteo.');
     } finally {
       setBusy(false);
     }
@@ -119,9 +110,7 @@ export function useInventoryCountPage() {
     selectedBalanceId,
     loading: application ? loading : false,
     busy,
-    message: application
-      ? message
-      : 'Este entorno no tiene un backend de staging configurado.',
+    message: application ? message : 'Este entorno no tiene un backend de staging configurado.',
     notice,
     setSearch,
     select: setSelectedBalanceId,

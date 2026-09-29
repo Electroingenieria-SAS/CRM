@@ -6,12 +6,7 @@ export interface InventoryBalanceLike {
 
 export function inventoryAvailable(balance: InventoryBalanceLike): number {
   const available = balance.onHand - balance.reserved - balance.committed;
-  if (
-    balance.onHand < 0 ||
-    balance.reserved < 0 ||
-    balance.committed < 0 ||
-    available < 0
-  ) {
+  if (balance.onHand < 0 || balance.reserved < 0 || balance.committed < 0 || available < 0) {
     throw new Error('El saldo de inventario es inconsistente.');
   }
   return available;

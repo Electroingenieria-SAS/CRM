@@ -2,9 +2,7 @@ import type { InventoryMaterialDetail } from '@/modules/inventory/application/in
 import { InventoryReservationActions } from './inventory-reservation-actions';
 import styles from './inventory-ui.module.css';
 
-export function InventoryLocationsSection(props: {
-  detail: InventoryMaterialDetail;
-}) {
+export function InventoryLocationsSection(props: { detail: InventoryMaterialDetail }) {
   return (
     <section>
       <h3>Ubicaciones</h3>
@@ -14,9 +12,12 @@ export function InventoryLocationsSection(props: {
             <strong>{balance.locationCode}</strong>
             <span>{balance.locationName}</span>
             <small>
-              Físico {balance.onHand} · Reservado {balance.reserved} · Comprometido {balance.committed}
+              Físico {balance.onHand} · Reservado {balance.reserved} · Comprometido{' '}
+              {balance.committed}
             </small>
-            <b>Disponible {balance.available} {props.detail.material.unit}</b>
+            <b>
+              Disponible {balance.available} {props.detail.material.unit}
+            </b>
           </article>
         ))}
       </div>
@@ -42,7 +43,9 @@ export function InventoryReservationsSection(props: {
           {props.detail.reservations.map((reservation) => (
             <article key={reservation.id}>
               <strong>{reservation.orderNumber}</strong>
-              <span>{reservation.quantity} {reservation.unit}</span>
+              <span>
+                {reservation.quantity} {reservation.unit}
+              </span>
               <span>{reservation.status}</span>
               {props.canUpdate ? (
                 <InventoryReservationActions
@@ -59,14 +62,14 @@ export function InventoryReservationsSection(props: {
             </article>
           ))}
         </div>
-      ) : <p className={styles.empty}>Sin reservas activas.</p>}
+      ) : (
+        <p className={styles.empty}>Sin reservas activas.</p>
+      )}
     </section>
   );
 }
 
-export function InventoryMovementsSection(props: {
-  detail: InventoryMaterialDetail;
-}) {
+export function InventoryMovementsSection(props: { detail: InventoryMaterialDetail }) {
   return (
     <section>
       <h3>Movimientos</h3>
@@ -80,11 +83,14 @@ export function InventoryMovementsSection(props: {
                   {new Date(movement.createdAt).toLocaleString('es-CO')}
                 </time>
               </header>
-              <p>{movement.quantity} {movement.unit} · {movement.locationCode}</p>
+              <p>
+                {movement.quantity} {movement.unit} · {movement.locationCode}
+              </p>
               <small>
-                Físico {movement.onHandDelta >= 0 ? '+' : ''}{movement.onHandDelta} ·
-                Reservado {movement.reservedDelta >= 0 ? '+' : ''}{movement.reservedDelta} ·
-                Comprometido {movement.committedDelta >= 0 ? '+' : ''}{movement.committedDelta}
+                Físico {movement.onHandDelta >= 0 ? '+' : ''}
+                {movement.onHandDelta} · Reservado {movement.reservedDelta >= 0 ? '+' : ''}
+                {movement.reservedDelta} · Comprometido {movement.committedDelta >= 0 ? '+' : ''}
+                {movement.committedDelta}
               </small>
               <footer>
                 <span>{movement.actor}</span>
@@ -94,7 +100,9 @@ export function InventoryMovementsSection(props: {
             </article>
           ))}
         </div>
-      ) : <p className={styles.empty}>Sin movimientos registrados.</p>}
+      ) : (
+        <p className={styles.empty}>Sin movimientos registrados.</p>
+      )}
     </section>
   );
 }

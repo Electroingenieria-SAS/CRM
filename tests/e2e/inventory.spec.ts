@@ -67,7 +67,9 @@ test('inventory lifecycle is traceable from receipt to consumption', async ({ pa
   await expect(page.getByText(/Disponible 21 M/)).toBeVisible();
 });
 
-test('inventory responsive shell has no horizontal page overflow at required widths', async ({ page }, testInfo) => {
+test('inventory responsive shell has no horizontal page overflow at required widths', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Viewport sweep runs once.');
   await login(page, auxEmail);
   await page.goto('/inventory');
@@ -75,7 +77,9 @@ test('inventory responsive shell has no horizontal page overflow at required wid
   for (const width of [320, 375, 390, 430, 768, 1024, 1366, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.getByRole('heading', { name: 'Inventario y trazabilidad' })).toBeVisible();
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
     expect(overflow, 'horizontal overflow at width ' + width).toBe(false);
   }
 });
@@ -90,7 +94,6 @@ test('auditor can read inventory but cannot mutate it', async ({ page }, testInf
   await expect(page.getByRole('button', { name: 'Enviar conteo' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Pasar a picking' })).toHaveCount(0);
 });
-
 
 test('blind count capture does not expose theoretical stock', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Blind count scenario runs once.');

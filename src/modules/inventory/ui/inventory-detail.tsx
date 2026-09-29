@@ -22,8 +22,18 @@ interface Props {
   canApprove: boolean;
   canUpdate: boolean;
   onClose(): void;
-  onReceive(input: { locationId: string; quantity: number; reference?: string; reason?: string }): Promise<void>;
-  onReserve(input: { orderNumber: string; locationId?: string; quantity: number; reference?: string }): Promise<void>;
+  onReceive(input: {
+    locationId: string;
+    quantity: number;
+    reference?: string;
+    reason?: string;
+  }): Promise<void>;
+  onReserve(input: {
+    orderNumber: string;
+    locationId?: string;
+    quantity: number;
+    reference?: string;
+  }): Promise<void>;
   onRelease(reservationId: string, reason: string): Promise<void>;
   onPick(reservationId: string): Promise<void>;
   onConsume(reservationId: string, reason: string): Promise<void>;
@@ -49,10 +59,14 @@ export function InventoryDetail(props: Props) {
       <header className={styles.detailHeader}>
         <div>
           <p className="eyebrow">Trazabilidad del material</p>
-          <h2 id="inventory-detail-title">{material.reference} · {material.name}</h2>
+          <h2 id="inventory-detail-title">
+            {material.reference} · {material.name}
+          </h2>
           {material.variant ? <p>{material.variant.label}</p> : null}
         </div>
-        <button type="button" onClick={props.onClose}>Cerrar detalle</button>
+        <button type="button" onClick={props.onClose}>
+          Cerrar detalle
+        </button>
       </header>
 
       <div className={styles.summaryGrid}>

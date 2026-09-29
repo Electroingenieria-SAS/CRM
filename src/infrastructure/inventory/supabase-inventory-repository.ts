@@ -112,12 +112,7 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryReservationResultSchema.parse(rpcPayload(data, error));
   }
 
-  async release(
-    reservationId: string,
-    quantity: number | undefined,
-    reason: string,
-    key: string,
-  ) {
+  async release(reservationId: string, quantity: number | undefined, reason: string, key: string) {
     const { data, error } = await this.client.rpc('erp_x_inventory_release', {
       p_reservation_id: reservationId,
       p_quantity: quantity ?? null,
@@ -136,12 +131,7 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryReservationResultSchema.parse(rpcPayload(data, error));
   }
 
-  async consume(
-    reservationId: string,
-    quantity: number | undefined,
-    reason: string,
-    key: string,
-  ) {
+  async consume(reservationId: string, quantity: number | undefined, reason: string, key: string) {
     const { data, error } = await this.client.rpc('erp_x_inventory_consume', {
       p_reservation_id: reservationId,
       p_quantity: quantity ?? null,
@@ -166,12 +156,7 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryReservationResultSchema.parse(rpcPayload(data, error));
   }
 
-  async waste(
-    reservationId: string,
-    quantity: number | undefined,
-    reason: string,
-    key: string,
-  ) {
+  async waste(reservationId: string, quantity: number | undefined, reason: string, key: string) {
     const { data, error } = await this.client.rpc('erp_x_inventory_waste', {
       p_reservation_id: reservationId,
       p_quantity: quantity ?? null,
@@ -209,12 +194,7 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryCountCandidatesSchema.parse(rpcPayload(data, error));
   }
 
-  async submitCount(
-    balanceId: string,
-    countedQuantity: number,
-    note: string,
-    key: string,
-  ) {
+  async submitCount(balanceId: string, countedQuantity: number, note: string, key: string) {
     const { data, error } = await this.client.rpc('erp_x_inventory_submit_count', {
       p_balance_id: balanceId,
       p_counted_quantity: countedQuantity,
