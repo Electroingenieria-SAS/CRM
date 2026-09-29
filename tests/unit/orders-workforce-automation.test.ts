@@ -84,7 +84,9 @@ describe('OrdersWorkforceAutomationService', () => {
       reconcile: vi.fn(),
     };
     const workforce: WorkforceAutomationPort = {
-      assertOrderCompletionReady: vi.fn().mockResolvedValue(undefined), applyOrderEvent: vi.fn() };
+      assertOrderCompletionReady: vi.fn().mockResolvedValue(undefined),
+      applyOrderEvent: vi.fn(),
+    };
     const service = new OrdersWorkforceAutomationService(outbox, workforce);
 
     const result = await service.processOutboxItem('00000000-0000-4000-8000-000000000006');

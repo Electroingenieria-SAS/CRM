@@ -29,8 +29,16 @@ function navigation(): AppShellNavigationItem[] {
 function StatusMessages({ notice, message }: Pick<Props, 'notice' | 'message'>) {
   return (
     <>
-      {notice ? <p className={styles.notice} role="status">{notice}</p> : null}
-      {message ? <p className={styles.error} role="alert">{message}</p> : null}
+      {notice ? (
+        <p className={styles.notice} role="status">
+          {notice}
+        </p>
+      ) : null}
+      {message ? (
+        <p className={styles.error} role="alert">
+          {message}
+        </p>
+      ) : null}
     </>
   );
 }
@@ -46,7 +54,10 @@ function IntegrationHealth({ health }: { health: OrderWorkforceHealth }) {
   return (
     <section className={styles.metrics} aria-label="Estado de integración">
       {metrics.map(([label, value]) => (
-        <article key={label}><small>{label}</small><strong>{value}</strong></article>
+        <article key={label}>
+          <small>{label}</small>
+          <strong>{value}</strong>
+        </article>
       ))}
     </section>
   );
@@ -71,10 +82,20 @@ export function OrdersWorkforceWorkspace(props: Props) {
         </div>
         {props.canRepair ? (
           <div className={styles.actions}>
-            <button className="secondary-button" type="button" disabled={props.repairing} onClick={() => void props.onReconcile(false)}>
+            <button
+              className="secondary-button"
+              type="button"
+              disabled={props.repairing}
+              onClick={() => void props.onReconcile(false)}
+            >
               Revisar inconsistencias
             </button>
-            <button className="primary-button" type="button" disabled={props.repairing} onClick={() => void props.onReconcile(true)}>
+            <button
+              className="primary-button"
+              type="button"
+              disabled={props.repairing}
+              onClick={() => void props.onReconcile(true)}
+            >
               {props.repairing ? 'Reconciliando…' : 'Reconciliar'}
             </button>
           </div>

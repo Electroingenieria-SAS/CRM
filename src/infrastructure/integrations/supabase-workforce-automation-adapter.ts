@@ -164,12 +164,14 @@ export class SupabaseWorkforceAutomationAdapter implements WorkforceAutomationPo
       return this.current(activityId);
     }
     if (detail.activity.status !== 'PLANNED') return this.current(activityId);
-    return resultFromMutation(
-      await this.workforce.start(activityId, detail.activity.version, key),
-    );
+    return resultFromMutation(await this.workforce.start(activityId, detail.activity.version, key));
   }
 
-  private async block(activityId: string, event: OrderWorkforceEvent, keys: WorkforceAutomationKeys) {
+  private async block(
+    activityId: string,
+    event: OrderWorkforceEvent,
+    keys: WorkforceAutomationKeys,
+  ) {
     let detail = await this.workforce.detail(activityId);
     if (detail.activity.status === 'BLOCKED') return this.current(activityId);
 

@@ -41,8 +41,12 @@ function OrdersTable({ snapshot }: { snapshot: Snapshot }) {
         <table>
           <thead>
             <tr>
-              <th>Pedido</th><th>Etapa</th><th>Responsable</th>
-              <th>Vendedor</th><th>Workforce</th><th>Tiempo</th>
+              <th>Pedido</th>
+              <th>Etapa</th>
+              <th>Responsable</th>
+              <th>Vendedor</th>
+              <th>Workforce</th>
+              <th>Tiempo</th>
             </tr>
           </thead>
           <tbody>
@@ -76,8 +80,12 @@ function PeopleTable({ snapshot }: { snapshot: Snapshot }) {
         <table>
           <thead>
             <tr>
-              <th>Persona</th><th>Estado</th><th>Actividad</th>
-              <th>Activo</th><th>Bloqueado</th><th>Inactividad</th>
+              <th>Persona</th>
+              <th>Estado</th>
+              <th>Actividad</th>
+              <th>Activo</th>
+              <th>Bloqueado</th>
+              <th>Inactividad</th>
             </tr>
           </thead>
           <tbody>

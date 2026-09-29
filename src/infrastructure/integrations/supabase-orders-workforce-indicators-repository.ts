@@ -3,9 +3,7 @@ import { ordersWorkforceIndicatorSnapshotSchema } from '@/modules/integrations/o
 import type { OrdersWorkforceIndicatorsPort } from '@/modules/integrations/orders-workforce/application/orders-workforce-indicators';
 import { AppError } from '@/shared/errors/app-error';
 
-export class SupabaseOrdersWorkforceIndicatorsRepository
-  implements OrdersWorkforceIndicatorsPort
-{
+export class SupabaseOrdersWorkforceIndicatorsRepository implements OrdersWorkforceIndicatorsPort {
   constructor(private readonly client: SupabaseClient) {}
 
   async snapshot(from?: string, to?: string) {
