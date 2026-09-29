@@ -1,0 +1,35 @@
+name: Normalize logistics E2E format
+
+on:
+  push:
+    branches:
+      - reconstruction/p1-billing-logistics-delivery
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: reconstruction/p1-billing-logistics-delivery
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Format target and remove temporary workflow
+        run: |
+          npx prettier --write tests/e2e/authenticated-logistics.spec.ts
+          rm .github/workflows/normalize-logistics-format.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/e2e/authenticated-logistics.spec.ts .github/workflows/normalize-logistics-format.yml
+          if git diff --cached --quiet; then
+            echo "No formatting changes required."
+          else
+            git commit -m "style(logistics): normalize authenticated E2E"
+            git push origin HEAD:reconstruction/p1-billing-logistics-delivery
+          fi
