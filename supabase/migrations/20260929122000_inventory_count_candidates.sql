@@ -8,7 +8,7 @@ create or replace function public.erp_x_inventory_count_candidates(
 returns jsonb
 language plpgsql
 stable
-security invoker
+security definer
 set search_path = pg_catalog, public, erp_supply, erp_private
 as $$
 declare
