@@ -44,8 +44,13 @@ export function percentileCont(values: readonly number[], percentile: number) {
   const position = (sorted.length - 1) * percentile;
   const lower = Math.floor(position);
   const upper = Math.ceil(position);
-  if (lower === upper) return sorted[lower];
-  return sorted[lower] + (sorted[upper] - sorted[lower]) * (position - lower);
+  const lowerValue = sorted[lower];
+  const upperValue = sorted[upper];
+  if (lowerValue === undefined || upperValue === undefined) {
+    throw new Error('No fue posible calcular el percentil.');
+  }
+  if (lower === upper) return lowerValue;
+  return lowerValue + (upperValue - lowerValue) * (position - lower);
 }
 
 export function inclusiveDateDays(from: string, to: string) {
