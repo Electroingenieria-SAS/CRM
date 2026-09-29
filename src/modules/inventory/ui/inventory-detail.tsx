@@ -7,7 +7,11 @@ import {
   InventoryReceiptForm,
   InventoryReserveForm,
 } from './inventory-forms';
-import { InventoryReservationActions } from './inventory-reservation-actions';
+import {
+  InventoryLocationsSection,
+  InventoryMovementsSection,
+  InventoryReservationsSection,
+} from './inventory-detail-sections';
 import styles from './inventory-ui.module.css';
 
 interface Props {
@@ -58,21 +62,7 @@ export function InventoryDetail(props: Props) {
         <Metric label="Disponible" value={total.available} unit={material.unit} />
       </div>
 
-      <section>
-        <h3>Ubicaciones</h3>
-        <div className={styles.locationGrid}>
-          {props.detail.balances.map((balance) => (
-            <article className={styles.locationCard} key={balance.balanceId}>
-              <strong>{balance.locationCode}</strong>
-              <span>{balance.locationName}</span>
-              <small>
-                Físico {balance.onHand} · Reservado {balance.reserved} · Comprometido {balance.committed}
-              </small>
-              <b>Disponible {balance.available} {material.unit}</b>
-            </article>
-          ))}
-        </div>
-      </section>
+      <InventoryLocationsSection detail={props.detail} />
 
       {props.canCreate ? (
         <div className={styles.actionGrid}>
@@ -102,59 +92,17 @@ export function InventoryDetail(props: Props) {
         </div>
       ) : null}
 
-      <section>
-        <h3>Reservas activas</h3>
-        {props.detail.reservations.length ? (
-          <div className={styles.reservationList}>
-            {props.detail.reservations.map((reservation) => (
-              <article key={reservation.id}>
-                <strong>{reservation.orderNumber}</strong>
-                <span>{reservation.quantity} {reservation.unit}</span>
-                <span>{reservation.status}</span>
-                {props.canUpdate ? (
-                  <InventoryReservationActions
-                    reservationId={reservation.id}
-                    status={reservation.status}
-                    busy={props.busy}
-                    onRelease={props.onRelease}
-                    onPick={props.onPick}
-                    onConsume={props.onConsume}
-                    onReturn={props.onReturn}
-                    onWaste={props.onWaste}
-                  />
-                ) : null}
-              </article>
-            ))}
-          </div>
-        ) : <p className={styles.empty}>Sin reservas activas.</p>}
-      </section>
-
-      <section>
-        <h3>Movimientos</h3>
-        {props.detail.movements.length ? (
-          <div className={styles.movementList}>
-            {props.detail.movements.map((movement) => (
-              <article key={movement.id}>
-                <header>
-                  <strong>{movement.type}</strong>
-                  <time dateTime={movement.createdAt}>{new Date(movement.createdAt).toLocaleString('es-CO')}</time>
-                </header>
-                <p>{movement.quantity} {movement.unit} · {movement.locationCode}</p>
-                <small>
-                  Físico {movement.onHandDelta >= 0 ? '+' : ''}{movement.onHandDelta} ·
-                  Reservado {movement.reservedDelta >= 0 ? '+' : ''}{movement.reservedDelta} ·
-                  Comprometido {movement.committedDelta >= 0 ? '+' : ''}{movement.committedDelta}
-                </small>
-                <footer>
-                  <span>{movement.actor}</span>
-                  {movement.orderNumber ? <span>Pedido {movement.orderNumber}</span> : null}
-                  {movement.reason ? <span>{movement.reason}</span> : null}
-                </footer>
-              </article>
-            ))}
-          </div>
-        ) : <p className={styles.empty}>Sin movimientos registrados.</p>}
-      </section>
+      <InventoryReservationsSection
+        detail={props.detail}
+        busy={props.busy}
+        canUpdate={props.canUpdate}
+        onRelease={props.onRelease}
+        onPick={props.onPick}
+        onConsume={props.onConsume}
+        onReturn={props.onReturn}
+        onWaste={props.onWaste}
+      />
+      <InventoryMovementsSection detail={props.detail} />
     </section>
   );
 }

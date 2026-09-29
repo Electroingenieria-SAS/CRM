@@ -1,8 +1,12 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type { InventoryCountCandidates } from '@/modules/inventory/application/inventory.schemas';
+import {
+  InventoryCountCandidatesGrid,
+  InventoryCountCapture,
+  InventoryCountPagination,
+} from '@/app/inventory/counts/inventory-count-components';
 import { AppShell } from '@/shared/ui/app-shell';
 import styles from './inventory-count.module.css';
 
@@ -24,16 +28,7 @@ interface Props {
 }
 
 export function InventoryCountWorkspace(props: Props) {
-  const [quantity, setQuantity] = useState('');
-  const [note, setNote] = useState('');
   const selected = props.data.items.find((item) => item.balanceId === props.selectedBalanceId);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    await props.submit(Number(quantity), note);
-    setQuantity('');
-    setNote('');
-  }
 
   return (
     <AppShell
@@ -71,68 +66,15 @@ export function InventoryCountWorkspace(props: Props) {
         {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
         {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
 
-        <section className={styles.grid} aria-label="Referencias para conteo">
-          {props.data.items.map((item) => (
-            <article
-              className={
-                item.balanceId === props.selectedBalanceId
-                  ? [styles.card, styles.selected].join(' ')
-                  : styles.card
-              }
-              key={item.balanceId}
-            >
-              <strong>{item.reference}</strong>
-              <p>{item.name}</p>
-              {item.variantLabel ? <small>{item.variantLabel}</small> : null}
-              <span>{item.locationCode} · {item.locationName}</span>
-              <span>Unidad: {item.unit}</span>
-              <button type="button" onClick={() => props.select(item.balanceId)}>Contar</button>
-            </article>
-          ))}
-        </section>
-
+        <InventoryCountCandidatesGrid
+          items={props.data.items}
+          selectedBalanceId={props.selectedBalanceId}
+          select={props.select}
+        />
         {selected ? (
-          <form className={styles.countForm} onSubmit={(event) => void submit(event)}>
-            <h2>Registrar conteo · {selected.reference}</h2>
-            <p>{selected.locationCode} · {selected.locationName}</p>
-            <label>
-              Cantidad contada ({selected.unit})
-              <input
-                type="number"
-                min="0"
-                step="0.0001"
-                value={quantity}
-                onChange={(event) => setQuantity(event.target.value)}
-                required
-              />
-            </label>
-            <label>
-              Observación
-              <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} />
-            </label>
-            <button type="submit" disabled={props.busy}>Enviar conteo</button>
-          </form>
+          <InventoryCountCapture selected={selected} busy={props.busy} submit={props.submit} />
         ) : null}
-
-        <nav className={styles.pagination} aria-label="Paginación de conteos">
-          <button
-            type="button"
-            disabled={props.data.pagination.page <= 1}
-            onClick={() => void props.goPage(props.data.pagination.page - 1)}
-          >
-            Anterior
-          </button>
-          <span>
-            Página {props.data.pagination.page} de {Math.max(props.data.pagination.totalPages, 1)}
-          </span>
-          <button
-            type="button"
-            disabled={props.data.pagination.page >= props.data.pagination.totalPages}
-            onClick={() => void props.goPage(props.data.pagination.page + 1)}
-          >
-            Siguiente
-          </button>
-        </nav>
+        <InventoryCountPagination pagination={props.data.pagination} goPage={props.goPage} />
       </div>
     </AppShell>
   );
