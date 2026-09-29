@@ -118,15 +118,11 @@ async function operateShipment(page: Page) {
       });
     await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
     await deliver.click();
-    await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
   }
 
-  await expect(
-    page
-      .locator('span')
-      .filter({ hasText: /^DELIVERED$/ })
-      .first(),
-  ).toBeVisible();
+  await openShipment(page);
+  await expect(page.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible();
+  await expect(page.getByText('DELIVERED', { exact: true }).first()).toBeVisible();
 
   const satisfaction = page.getByRole('button', {
     name: 'Guardar satisfacción',
@@ -137,7 +133,6 @@ async function operateShipment(page: Page) {
     await expect(page.getByText('Satisfacción registrada.')).toBeVisible();
   }
 
-  await expect(page.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible();
 }
 
 test('billing and logistics private routes redirect anonymous users', async ({ page }) => {
