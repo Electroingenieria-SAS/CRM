@@ -251,7 +251,7 @@ select lives_ok(
   $$select public.erp_x_logistics_satisfaction(
     (select id from erp_supply.logistics_shipments
       where order_id='96000000-0000-4000-8000-000000000001'),
-    5,'Entrega satisfactoria','log-satisfaction-1'
+    5::smallint,'Entrega satisfactoria','log-satisfaction-1'
   )$$,
   'satisfaction is optional and can be recorded after delivery'
 );
