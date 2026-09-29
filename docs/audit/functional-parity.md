@@ -27,13 +27,13 @@
 | VSM / tiempos                      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
 | Reportes / analítica               |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
 | Histórico/importaciones            |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
-| Auditoría                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| Administración / roles             |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| PACO asistente                     |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Auditoría                          |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · en validación CI   |
+| Administración / roles             |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · en validación CI   |
+| PACO asistente                     |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · en validación CI   |
 
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
 
-> “Base técnica” no equivale a paridad. Auth/sesión/recuperación ya están validados en staging; MFA y administración siguen perteneciendo a un bloque posterior de seguridad/administración.
+> “Base técnica” no equivale a paridad. Auth/sesión/recuperación ya están validados en staging; Hilo 12 añade MFA TOTP administrativo con enforcement AAL2, Administración modular, Auditoría append-only y PACO operacional. Su estado final depende del CI del PR de cierre.
 
 > Pedidos ya incorpora workflow operativo de claim, asignación, inicio, bloqueo, reanudación, finalización y trazabilidad. Hilo 6 conecta las etapas operativas mapeadas con Workforce mediante outbox, lifecycle real, evidencia y ocupación; aprobaciones y otros dominios mantienen sus propios bloques.
 
@@ -42,5 +42,6 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 | Customer Intelligence / Pareto | CRM viejo V11.39.x | CRM nuevo 1.0.0 | Unit + pgTAP + E2E | Responsive | RLS/RBAC | Implementado; pendiente CI final del PR |
 
 > Finanzas reconstruye Crédito, Cartera y Caja con fuente monetaria basada en facturas registradas netas de reversos. No se inventa cupo reutilizable ni días de mora sin fuente auditable. Orders consume únicamente un gate financiero mínimo y Customer Intelligence una proyección `totalPaid`.
+
 
 > Hilo 10 conserva Finance como fuente de facturas/pagos, separa costo estimado de costo real, usa evidencia privada referenciada y controla estados logísticos. Inventory ya está en `main`; su contrato actual termina en Receiving/Picking/Cutting y no expone una mutación de despacho por `orderId`, por lo que Logistics no escribe sus tablas ni inventa una adaptación incompatible.
