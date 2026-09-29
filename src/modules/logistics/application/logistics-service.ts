@@ -2,6 +2,7 @@ import type {
   LogisticsEvidencePort,
   LogisticsFreightPort,
   LogisticsInventoryPort,
+  LogisticsOrdersPort,
   LogisticsQueueQuery,
   LogisticsReleaseInput,
   LogisticsRepository,
@@ -19,8 +20,14 @@ export class LogisticsService {
     private readonly repository: LogisticsRepository,
     private readonly freight: LogisticsFreightPort,
     private readonly evidence: LogisticsEvidencePort,
+    private readonly orders: LogisticsOrdersPort,
+    private readonly storage: OrderEvidenceStoragePort,
     private readonly inventory?: LogisticsInventoryPort,
   ) {}
+
+  candidates(search?: string, page = 1, pageSize = 25) {
+    return this.repository.candidates(search?.trim() || undefined, page, pageSize);
+  }
 
   list(query: LogisticsQueueQuery = {}) {
     return this.repository.list({
@@ -60,15 +67,16 @@ export class LogisticsService {
     file: File,
     key: string,
   ) {
+    const normalizedType = evidenceType.trim().toUpperCase();
     const stored = await this.storage.upload({
       organizationId,
       orderId,
-      evidenceType: evidenceType.trim().toUpperCase(),
+      evidenceType: normalizedType,
       file,
     });
     return this.addEvidence(
       orderId,
-      evidenceType,
+      normalizedType,
       stored.storageProvider,
       stored.storageReference,
       stored.fileName,
@@ -100,11 +108,13 @@ export class LogisticsService {
 
   async dispatch(
     shipmentId: string,
+    orderId: string,
     version: number,
     actualFreight: number | undefined,
     key: string,
   ) {
     const idempotencyKey = requiredKey(key);
+    await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
     const result = await this.repository.dispatch(
       shipmentId,
       version,
@@ -112,13 +122,10 @@ export class LogisticsService {
       idempotencyKey,
     );
 
-    if (result.orderId) {
-      await this.inventory?.onDispatched(result.orderId, `${idempotencyKey}:inventory`);
-    }
+    await this.inventory?.onDispatched(orderId, `${idempotencyKey}:inventory`);
     if (result.actualFreight !== null && result.actualFreight !== undefined) {
       await this.syncFreight(result, `${idempotencyKey}:freight`);
     }
-
     return result;
   }
 
@@ -195,6 +202,7 @@ export class LogisticsService {
       throw new Error('La devolución requiere motivo y evidencia.');
     }
     const idempotencyKey = requiredKey(key);
+    await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
     const result = await this.repository.returnShipment(
       shipmentId,
       reason.trim(),
