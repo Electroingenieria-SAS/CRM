@@ -1,6 +1,7 @@
 # ADR-0005 · Orders → Workforce mediante outbox transaccional
 
-Fecha: 2026-09-28  
+Fecha: 2026-09-28
+
 Estado: Aceptado
 
 ## Contexto
