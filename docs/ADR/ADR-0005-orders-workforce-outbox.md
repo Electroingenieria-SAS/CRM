@@ -5,30 +5,43 @@ Estado: Aceptado
 
 ## Contexto
 
-Orders ya persiste su workflow y publica eventos tipados en `order_events.payload.integrationEvent`. Workforce está siendo reconstruido en una rama independiente y es dueño de actividades, jornada, ocupación, evidencias y calendario laboral.
+Orders persiste su workflow y publica eventos tipados en `order_events.payload.integrationEvent`. Workforce, fusionado en `main` mediante PR #11, es dueño de actividades, jornada, ocupación, evidencias, calendario laboral y políticas especiales por perfil.
 
-Una llamada directa desde infraestructura de Orders a infraestructura de Workforce crearía acoplamiento circular. El polling continuo además incrementaría llamadas y no es apropiado para el plan Free.
+Una llamada `orders infrastructure → workforce infrastructure` crearía acoplamiento circular. El polling periódico además aumentaría llamadas sin aportar consistencia y no es apropiado para el plan Free.
 
 ## Decisión
 
-Se usa un outbox pequeño y específico creado en la misma transacción que `order_events` mediante trigger interno.
+Se utiliza un outbox específico creado en la misma transacción que `order_events`.
 
 - Orders continúa siendo dueño del estado del pedido.
-- Workforce continúa siendo dueño de la actividad y la ocupación.
-- El outbox guarda referencias, nunca snapshots completos del pedido.
-- `order_event_id` y `dedupe_key` garantizan idempotencia.
-- claim del outbox es atómico y soporta recuperación de locks obsoletos.
-- fallos permanecen visibles como `FAILED`; no se pierden silenciosamente.
-- reconciliación es explícita y no corre en cada render.
-- no existe polling periódico.
+- Workforce continúa siendo dueño de actividad, jornada, ocupación y evidencia.
+- El outbox conserva referencias y payload mínimo, no snapshots completos del pedido.
+- `order_event_id` y `organization_id + dedupe_key` garantizan idempotencia de captura.
+- `activityKey` identifica establemente la actividad de una `order_task`.
+- `eventKey` identifica cada mutación CLAIM/START/BLOCK/RESUME/ASSIGN/COMPLETE/CANCEL.
+- El claim del outbox es atómico y recupera locks `PROCESSING` obsoletos.
+- Los fallos permanecen visibles como `FAILED`; la reconciliación es explícita.
+- No existe polling periódico.
 
-El procesador de Application depende de `WorkforceAutomationPort`. Mientras Workforce no esté fusionado, CI usa un fake tipado; después del merge se conectará el adapter real sin cambiar Orders.
+El adapter real implementa `WorkforceAutomationPort` y usa `WorkforceService` para start, block, resume, complete y cancel. Dos RPC de integración cubren creación automática y reasignación activa sin duplicar reglas de Workforce.
 
-## Consistencia
+## Reasignación
 
-El alta del evento de integración es atómica con el evento de Orders. La aplicación de ese evento en Workforce es eventualmente consistente y recuperable. Esta decisión evita introducir un servicio de mensajería pago.
+Una reasignación de una actividad `PLANNED` utiliza la asignación normal de Workforce.
 
-Una finalización que requiera evidencia seguirá perteneciendo a Workforce. Hasta que el dominio Workforce se fusione y exponga el gate de evidencia, este PR no declara cerrada la consistencia de `COMPLETE` punta a punta.
+Si la actividad está `IN_PROGRESS` o `BLOCKED`, no se sobrescribe simplemente A → B. El tramo de A queda cerrado con trazabilidad y se crea una continuación para B vinculada al mismo `order_task_id`. Esto evita atribuir a B el tiempo ejecutado por A.
+
+## Consistencia y evidencia
+
+El evento de integración se hace durable de forma atómica con Orders. La aplicación de ese evento a Workforce es recuperable mediante outbox.
+
+Para `COMPLETE` existe una excepción deliberada: antes de comprometer la finalización de Orders, Application consulta `erp_x_order_workforce_completion_readiness`. Si la etapa está integrada y no existe actividad Workforce, la actividad no está en curso o falta la evidencia definida por Workforce, Orders no completa la etapa.
+
+Después del commit de Orders, el observer procesa el evento `OrderTaskCompleted` y cierra la actividad Workforce. Un fallo posterior queda en outbox y es reconciliable.
+
+## Tiempo laboral
+
+La creación automática obtiene una ventana válida a partir de los segmentos y festivos persistidos por Workforce. Los indicadores usan `workforce_business_seconds`, restan tiempo bloqueado y respetan las exclusiones configuradas en `workforce_profile_policies`.
 
 ## Eventos
 
@@ -38,4 +51,4 @@ Una finalización que requiera evidencia seguirá perteneciendo a Workforce. Has
 
 Integradas: ALISTAMIENTO, CORTE, LOCAL_DISPATCH, NATIONAL_DISPATCH, CLIENT_POINT y CLIENT_PICKUP.
 
-El CRM fuente auditado no tiene `PRODUCCION` como paso separado; por eso no se inventa esa integración. Cartera, Caja, Compras y Facturación tampoco se convierten en actividades operativas en este bridge.
+El workflow fuente auditado no tiene `PRODUCCION` como paso separado; no se inventa esa integración. Cartera, Caja, Compras y Facturación tampoco se convierten en actividades operativas de Workforce.
