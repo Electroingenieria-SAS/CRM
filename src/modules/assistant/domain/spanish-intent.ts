@@ -57,6 +57,13 @@ const examples: Record<Exclude<PacoIntent, 'UNKNOWN'>, string[]> = {
   HELP: ['ayuda', 'que puedes hacer', 'opciones', 'como me ayudas', 'comandos'],
 };
 
+const spellingAliases: Record<string, string> = {
+  conslta: 'consulta',
+  disponivle: 'disponible',
+  rejistrar: 'registrar',
+  rezumen: 'resumen',
+};
+
 const moduleRoutes = [
   { tokens: ['pedido', 'pedidos', 'venta', 'ventas'], path: '/orders' },
   { tokens: ['jornada', 'workforce', 'actividad', 'actividades'], path: '/workforce' },
@@ -75,7 +82,10 @@ export function normalizeSpanish(value: string) {
     .toLowerCase()
     .replace(/[^a-z0-9\s_-]/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim();
+    .trim()
+    .split(' ')
+    .map((word) => spellingAliases[word] ?? word)
+    .join(' ');
 }
 
 function distance(left: string, right: string) {
@@ -125,11 +135,14 @@ export function extractOrderReference(message: string) {
 }
 
 function routeFor(message: string) {
-  const normalized = normalizeSpanish(message);
+  const words = normalizeSpanish(message).split(' ');
+  const exact = moduleRoutes.find((module) =>
+    module.tokens.some((token) => words.includes(token)),
+  );
+  if (exact) return exact.path;
+
   return moduleRoutes.find((module) =>
-    module.tokens.some((token) =>
-      normalized.split(' ').some((word) => similarity(word, token) >= 0.75),
-    ),
+    module.tokens.some((token) => words.some((word) => similarity(word, token) >= 0.82)),
   )?.path;
 }
 
