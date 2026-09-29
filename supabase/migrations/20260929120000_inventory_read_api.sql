@@ -8,7 +8,10 @@ security invoker
 set search_path = pg_catalog, public, erp_supply, erp_private
 as $$
 begin
-  perform erp_private.inventory_require('read');
+  if erp_private.current_profile_id() is null
+     or not erp_private.can_access_module('inventory','read') then
+    raise exception 'No autorizado para consultar inventario' using errcode='42501';
+  end if;
   return coalesce((
     select jsonb_agg(jsonb_build_object(
       'id',l.id,'code',l.code,'name',l.name,'type',l.location_type,'parentId',l.parent_id
@@ -39,7 +42,10 @@ declare
   v_total integer;
   v_items jsonb;
 begin
-  perform erp_private.inventory_require('read');
+  if erp_private.current_profile_id() is null
+     or not erp_private.can_access_module('inventory','read') then
+    raise exception 'No autorizado para consultar inventario' using errcode='42501';
+  end if;
 
   select count(*) into v_total
   from erp_supply.inventory_balances b
@@ -121,7 +127,10 @@ declare
   v_reservations jsonb;
   v_movements jsonb;
 begin
-  perform erp_private.inventory_require('read');
+  if erp_private.current_profile_id() is null
+     or not erp_private.can_access_module('inventory','read') then
+    raise exception 'No autorizado para consultar inventario' using errcode='42501';
+  end if;
 
   select jsonb_build_object(
     'id',m.id,'reference',m.reference,'name',m.name,'unit',m.unit,'attributes',m.attributes,
@@ -231,7 +240,10 @@ declare
   v_reservations jsonb;
   v_movements jsonb;
 begin
-  perform erp_private.inventory_require('read');
+  if erp_private.current_profile_id() is null
+     or not erp_private.can_access_module('inventory','read') then
+    raise exception 'No autorizado para consultar inventario' using errcode='42501';
+  end if;
   if not exists(select 1 from erp_supply.orders o where o.id=p_order_id and o.organization_id=v_org) then
     raise exception 'Pedido no disponible' using errcode='22023';
   end if;
