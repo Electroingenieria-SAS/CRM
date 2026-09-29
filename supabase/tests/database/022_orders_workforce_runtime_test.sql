@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(11);
 
 insert into auth.users(
   instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,
@@ -146,6 +146,19 @@ select is(
   (select result->>'status' from reassigned_result),
   'IN_PROGRESS',
   'continuation preserves the in-progress lifecycle'
+);
+
+select is(
+  erp_private.workforce_occupancy_status(
+    '86200000-0000-4000-8000-000000000003'::uuid,
+    (
+      select planned_start + interval '1 minute'
+      from erp_supply.workforce_activities
+      where id=((select result->>'activityId' from reassigned_result))::uuid
+    )
+  ),
+  'OCCUPIED',
+  'responsible is occupied when the active continuation overlaps working time'
 );
 
 insert into erp_supply.order_workforce_outbox(
