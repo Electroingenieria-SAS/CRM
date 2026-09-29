@@ -91,10 +91,19 @@ test('planner completes the activity lifecycle with required photo evidence', as
 test('mobile Workforce uses timeline cards without page overflow', async ({ page }, testInfo) => {
   test.skip(!['mobile-iphone', 'mobile-android'].includes(testInfo.project.name));
 
-  await login(page, testInfo.project.name === 'mobile-iphone' ? alternatePlannerEmail : plannerEmail);
+  await login(
+    page,
+    testInfo.project.name === 'mobile-iphone' ? alternatePlannerEmail : plannerEmail,
+  );
   await openWorkforce(page);
 
-  for (const label of ['07:30–09:00', '09:00–10:30', '10:30–12:00', '13:30–15:30', '15:30–17:30']) {
+  for (const label of [
+    '07:30–09:00',
+    '09:00–10:30',
+    '10:30–12:00',
+    '13:30–15:30',
+    '15:30–17:30',
+  ]) {
     await expect(page.getByRole('heading', { name: label }).first()).toBeVisible();
   }
 
