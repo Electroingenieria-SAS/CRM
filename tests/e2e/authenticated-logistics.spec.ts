@@ -121,7 +121,9 @@ async function operateShipment(page: Page) {
     await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
   }
 
-  await expect(page.locator('span').filter({ hasText: /^DELIVERED$/ }).first()).toBeVisible();
+  await expect(
+    page.locator('span').filter({ hasText: /^DELIVERED$/ }).first(),
+  ).toBeVisible();
 
   const satisfaction = page.getByRole('button', { name: 'Guardar satisfacción' });
   if (await satisfaction.isVisible().catch(() => false)) {
