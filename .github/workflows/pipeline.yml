@@ -75,6 +75,8 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - name: Prove logistics concurrency and idempotency
+        run: node tests/integration/logistics-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Responsive + semantic private-shell smoke
@@ -143,6 +145,11 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/inventory_e2e.sql
+      - name: Seed synthetic Analytics dataset
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/analytics_e2e.sql
       - name: Seed synthetic Orders-Workforce integration event
         run: >
           psql "$DB_URL"
@@ -163,8 +170,6 @@ jobs:
         run: node tests/integration/finance-concurrency.mjs
       - name: Prove inventory concurrency and idempotency
         run: node tests/integration/inventory-concurrency.mjs
-      - name: Prove logistics concurrency and idempotency
-        run: node tests/integration/logistics-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Authenticated domain journeys
@@ -178,6 +183,7 @@ jobs:
           tests/e2e/customer-intelligence.spec.ts
           tests/e2e/orders-workforce-integration.spec.ts
           tests/e2e/inventory.spec.ts
+          tests/e2e/analytics.spec.ts
       - name: Upload authenticated Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7

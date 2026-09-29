@@ -7,7 +7,7 @@
 | Shell/base técnica                 |       ✓        |        ✓        |          ✓          |   ✓    |     ✓     | Validado en staging               |
 | Login / sesión                     |       ✓        |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging               |
 | Recuperación de contraseña         | Fuente parcial |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging               |
-| Dashboard / centro de operaciones  |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Dashboard / centro de operaciones  |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
 | Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado            |
 | Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
 | Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
@@ -24,9 +24,9 @@
 | Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11                   |
 | Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI                  |
 | Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero               |
-| VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| Histórico/importaciones            |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| VSM / tiempos                      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
+| Reportes / analítica               |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
+| Histórico/importaciones            |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
 | Auditoría                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
 | Administración / roles             |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
 | PACO asistente                     |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
