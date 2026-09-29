@@ -45,6 +45,7 @@ begin
         'orderType',o.order_type_code,
         'currentStep',o.current_step_code,
         'routeCode',o.delivery_route_code,
+        'orderVersion',o.version,
         'billingReady',erp_private.billing_is_ready(o.id),
         'financial',public.erp_x_financial_gate(o.id),
         'invoices',coalesce((
