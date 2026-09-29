@@ -29,7 +29,8 @@ test('integration health is visible and reconciliation detection is explicit', a
 
   await expect(page.getByRole('heading', { level: 1, name: 'Orders ↔ Workforce' })).toBeVisible();
   await expect(page.getByText('Procesando')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Pedidos en operación' })).toBeVisible();\n  await expect(page.getByRole('heading', { name: 'Ocupación por persona' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pedidos en operación' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ocupación por persona' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Revisar inconsistencias' }).click();
   await expect(page.getByRole('status')).toContainText('Revisión terminada');
