@@ -12,6 +12,7 @@ interface OperationPanelProps {
   busy: boolean;
   canUpdate: boolean;
   canCorrectCost: boolean;
+  canSatisfaction: boolean;
   onSaveGuide(shipmentId: string, carrierId: string, tracking: string): Promise<void>;
   onDispatch(
     shipmentId: string,
