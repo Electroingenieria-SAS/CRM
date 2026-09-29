@@ -38,6 +38,14 @@ export const billingQueueItemSchema = z.object({
     reason: z.string(),
   }).passthrough(),
   invoices: z.array(billingInvoiceSchema),
+  supports: z.array(z.object({
+    id: z.string().uuid(),
+    supportType: z.string(),
+    storageProvider: z.string(),
+    storageReference: z.string(),
+    validationStatus: z.string(),
+    createdAt: z.string(),
+  })),
   pvpAnnexCount: z.number().int().nonnegative(),
 });
 
