@@ -45,7 +45,11 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
     if (actions.get('COMPLETE')?.enabled) return;
 
     const refreshed = await this.orders.get(orderId);
-    if (!refreshed.workflow.actions.some((action) => action.code === 'COMPLETE' && action.enabled)) {
+    if (
+      !refreshed.workflow.actions.some(
+        (action) => action.code === 'COMPLETE' && action.enabled,
+      )
+    ) {
       throw new Error('La tarea logística debe estar iniciada antes de continuar.');
     }
   }
