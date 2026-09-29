@@ -94,6 +94,7 @@ export function LogisticsOperationPanel(props: OperationPanelProps) {
         catalog={props.catalog}
         busy={props.busy}
         canUpdate={props.canUpdate}
+        canSatisfaction={props.canSatisfaction}
         canCorrectCost={props.canCorrectCost}
         onSaveGuide={props.onSaveGuide}
         onDispatch={props.onDispatch}
