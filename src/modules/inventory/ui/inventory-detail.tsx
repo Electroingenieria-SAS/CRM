@@ -3,7 +3,7 @@ import type {
   InventoryMaterialDetail,
 } from '@/modules/inventory/application/inventory.schemas';
 import {
-  InventoryControlForms,
+  InventoryAdjustmentForm,
   InventoryReceiptForm,
   InventoryReserveForm,
 } from './inventory-forms';
@@ -26,7 +26,6 @@ interface Props {
   onReturn(reservationId: string, reason: string): Promise<void>;
   onWaste(reservationId: string, reason: string): Promise<void>;
   onAdjust(balanceId: string, delta: number, reason: string): Promise<void>;
-  onCount(balanceId: string, counted: number, note: string): Promise<void>;
 }
 
 export function InventoryDetail(props: Props) {
@@ -92,15 +91,16 @@ export function InventoryDetail(props: Props) {
         </div>
       ) : null}
 
-      <InventoryControlForms
-        detail={props.detail}
-        locations={props.locations}
-        busy={props.busy}
-        canApprove={props.canApprove}
-        canCount={props.canCreate}
-        onAdjust={props.onAdjust}
-        onCount={props.onCount}
-      />
+      {props.canApprove ? (
+        <div className={styles.controlForms}>
+          <InventoryAdjustmentForm
+            detail={props.detail}
+            locations={props.locations}
+            busy={props.busy}
+            onAdjust={props.onAdjust}
+          />
+        </div>
+      ) : null}
 
       <section>
         <h3>Reservas activas</h3>

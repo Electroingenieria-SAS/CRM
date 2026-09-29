@@ -27,6 +27,10 @@ begin
   left join erp_supply.material_variants v on v.id=b.variant_id
   join erp_supply.inventory_locations l on l.id=b.location_id
   where b.organization_id=v_org and m.active and l.active
+    and not exists (
+      select 1 from erp_supply.inventory_counts c
+      where c.balance_id=b.id and c.status='SUBMITTED'
+    )
     and (
       v_q='' or lower(concat_ws(' ',m.reference,m.name,coalesce(v.label,''),l.code,l.name))
         like '%'||v_q||'%'
@@ -49,6 +53,10 @@ begin
     left join erp_supply.material_variants v on v.id=b.variant_id
     join erp_supply.inventory_locations l on l.id=b.location_id
     where b.organization_id=v_org and m.active and l.active
+    and not exists (
+      select 1 from erp_supply.inventory_counts c
+      where c.balance_id=b.id and c.status='SUBMITTED'
+    )
       and (
         v_q='' or lower(concat_ws(' ',m.reference,m.name,coalesce(v.label,''),l.code,l.name))
           like '%'||v_q||'%'

@@ -38,7 +38,6 @@ interface Props {
   returnReusable(reservationId: string, reason: string): Promise<void>;
   waste(reservationId: string, reason: string): Promise<void>;
   adjust(balanceId: string, delta: number, reason: string): Promise<void>;
-  submitCount(balanceId: string, countedQuantity: number, note: string): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -46,6 +45,9 @@ function navigation(context: SessionContext): AppShellNavigationItem[] {
   const items: AppShellNavigationItem[] = [];
   if (hasModuleCapability(context, 'orders', 'read')) items.push({ href: '/orders', label: 'Pedidos' });
   items.push({ href: '/inventory', label: 'Inventario', current: true });
+  if (hasModuleCapability(context, 'inventory', 'create')) {
+    items.push({ href: '/inventory/counts', label: 'Conteos' });
+  }
   if (hasModuleCapability(context, 'workforce', 'read')) items.push({ href: '/workforce', label: 'Jornada' });
   return items;
 }
@@ -151,7 +153,6 @@ export function InventoryWorkspace(props: Props) {
             onReturn={props.returnReusable}
             onWaste={props.waste}
             onAdjust={props.adjust}
-            onCount={props.submitCount}
           />
         ) : null}
       </div>

@@ -234,19 +234,6 @@ export function useInventoryPage() {
             'Ajuste aplicado y auditado.',
           )
         : Promise.resolve(),
-    submitCount: (balanceId: string, countedQuantity: number, note: string) =>
-      application
-        ? mutate(
-            () =>
-              application.inventory.submitCount(
-                balanceId,
-                countedQuantity,
-                note,
-                crypto.randomUUID(),
-              ),
-            'Conteo enviado para revisión.',
-          )
-        : Promise.resolve(),
     signOut: async () => {
       await application?.auth.signOut();
       goLogin();
