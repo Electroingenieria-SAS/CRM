@@ -20,6 +20,23 @@ insert into erp_supply.freight_destinations(
 )
 on conflict (country_code,department_key,city_key) do nothing;
 
+insert into erp_supply.freight_observations(
+  id,organization_id,carrier_id,destination_id,route_code,actual_cost,
+  observed_at,source,external_key,created_by,metadata
+)
+select
+  '99100000-0000-4000-8000-000000000003',
+  o.id,
+  '99100000-0000-4000-8000-000000000001',
+  '99100000-0000-4000-8000-000000000002',
+  'NATIONAL_DISPATCH',20000,now(),'QA_SYNTHETIC',
+  'LOG-E2E-QA-OBS-001',
+  '93000000-0000-4000-8000-000000000005',
+  '{"source":"QA_SYNTHETIC"}'::jsonb
+from erp_supply.organizations o
+where o.code='EI'
+on conflict (id) do nothing;
+
 insert into erp_supply.orders(
   id,organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
   client_name,client_document,client_city,client_address,seller_profile_id,current_step_code,
