@@ -1,0 +1,39 @@
+name: Normalize Hilo 10 formatting
+
+on:
+  push:
+    branches:
+      - reconstruction/p1-billing-logistics-delivery
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: reconstruction/p1-billing-logistics-delivery
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Format Hilo 10 residual files
+        run: >
+          npx prettier --write
+          docs/audit/functional-parity.md
+          src/infrastructure/logistics/orders-logistics-adapter.ts
+      - name: Commit formatting if needed
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/audit/functional-parity.md src/infrastructure/logistics/orders-logistics-adapter.ts
+          git commit -m "style(hilo10): normalize final formatting"
+          git push origin HEAD:reconstruction/p1-billing-logistics-delivery
