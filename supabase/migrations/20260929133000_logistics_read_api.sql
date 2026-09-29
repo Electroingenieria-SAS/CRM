@@ -60,6 +60,18 @@ begin
           from erp_supply.invoices i
           where i.organization_id=v_org and i.order_id=o.id
         ),'[]'::jsonb),
+        'supports',coalesce((
+          select jsonb_agg(jsonb_build_object(
+            'id',s.id,
+            'supportType',s.support_type,
+            'storageProvider',s.storage_provider,
+            'storageReference',s.storage_reference,
+            'validationStatus',s.validation_status,
+            'createdAt',s.created_at
+          ) order by s.created_at desc)
+          from erp_supply.financial_supports s
+          where s.organization_id=v_org and s.order_id=o.id
+        ),'[]'::jsonb),
         'pvpAnnexCount',(
           select count(*)::integer
           from erp_supply.order_evidence e
