@@ -147,12 +147,14 @@ test('financial lifecycle is traceable from credit to cash', async ({ page }, te
   await page.getByRole('button', { name: 'Registrar soporte' }).click();
   await expect(page.getByRole('status')).toContainText('Soporte financiero referenciado');
   await page.getByRole('button', { name: 'Validar soporte' }).click();
-  await page.getByLabel('Factura', { exact: true }).fill('FIN-E2E-INV-001');
+  const invoiceNumber = `FIN-E2E-INV-${testInfo.retry}`;
+  await page.getByLabel('Factura', { exact: true }).fill(invoiceNumber);
   await page.getByLabel('Valor pagado registrado (COP)').fill('120000');
   await page.getByLabel('Soporte validado').selectOption({ index: 1 });
   await page.getByRole('button', { name: 'Registrar factura pagada' }).click();
   await expect(page.getByRole('status')).toContainText('Factura registrada');
-  await expect(page.getByText(/120\.000/)).toBeVisible();
+  const invoiceCard = page.getByRole('article').filter({ hasText: invoiceNumber });
+  await expect(invoiceCard).toContainText('120.000');
 });
 
 test('auditor can inspect finance but cannot mutate', async ({ page }, testInfo) => {
