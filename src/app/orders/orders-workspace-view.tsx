@@ -66,6 +66,10 @@ function catalogOptions(rows: Array<Record<string, unknown>>) {
 function navigationFor(context: SessionContext): AppShellNavigationItem[] {
   const items: AppShellNavigationItem[] = [{ href: '/orders', label: 'Pedidos', current: true }];
 
+  if (hasModuleCapability(context, 'dashboard', 'read')) {
+    items.unshift({ href: '/analytics', label: 'Panel' });
+  }
+
   if (hasModuleCapability(context, 'freight', 'read')) {
     items.push({ href: '/freight', label: 'Fletes' });
   }

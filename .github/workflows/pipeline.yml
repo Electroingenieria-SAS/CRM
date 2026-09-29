@@ -143,6 +143,11 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/inventory_e2e.sql
+      - name: Seed synthetic Analytics dataset
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/analytics_e2e.sql
       - name: Seed synthetic Orders-Workforce integration event
         run: >
           psql "$DB_URL"
@@ -170,6 +175,7 @@ jobs:
           tests/e2e/customer-intelligence.spec.ts
           tests/e2e/orders-workforce-integration.spec.ts
           tests/e2e/inventory.spec.ts
+          tests/e2e/analytics.spec.ts
       - name: Upload authenticated Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
