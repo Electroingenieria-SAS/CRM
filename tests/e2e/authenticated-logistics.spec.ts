@@ -70,10 +70,10 @@ async function releaseShipmentIfPending(page: Page) {
   await expect(page.getByRole('heading', { name: orderNumber, exact: true })).toBeVisible();
 
   await page
-    .getByLabel('Destino Freight', { exact: true })
+    .getByRole('combobox', { name: 'Destino Freight' })
     .selectOption('99100000-0000-4000-8000-000000000002');
   await page
-    .getByLabel('Transportadora', { exact: true })
+    .getByRole('combobox', { name: 'Transportadora' })
     .selectOption('99100000-0000-4000-8000-000000000001');
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   await expect(page.getByText(/Rango:|Histórico insuficiente/)).toBeVisible();
