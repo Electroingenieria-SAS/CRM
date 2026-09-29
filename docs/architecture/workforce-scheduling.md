@@ -10,7 +10,7 @@ La referencia funcional verificada conserva:
 - catálogo canónico administrable, no hardcodeado en frontend;
 - categoría, subcategoría y actividad específica;
 - evidencias `NONE | FINAL_PHOTO | BEFORE_AFTER | FILE | LINK | ERP_REFERENCE`;
-- jornada ordinaria lunes a viernes: 07:00–12:00 y 13:40–17:30;
+- jornada ordinaria: lunes 07:30–12:00 y 13:30–17:00; martes a viernes 07:30–12:00 y 13:30–17:30;
 - cronograma Día/Semana/Mes;
 - exclusión de sábados, domingos y festivos;
 - inicio directo de actividad sin aprobación previa de jefatura;
@@ -80,16 +80,17 @@ Una actividad especial/excluida sigue siendo visible; la exclusión solo afecta 
 
 Segmentos base:
 
-- 07:00–12:00;
-- 13:40–17:30.
+- lunes: 07:30–12:00 y 13:30–17:00;
+- martes a viernes: 07:30–12:00 y 13:30–17:30.
 
-La vista Día se presenta en cinco slots:
+La vista Día conserva cinco slots:
 
-- 07:00–09:00;
-- 09:00–11:00;
-- 11:00–12:00;
-- 13:40–15:40;
-- 15:40–17:30.
+- 07:30–09:00;
+- 09:00–10:30;
+- 10:30–12:00;
+- 13:30–15:30;
+- 15:30–17:00 los lunes;
+- 15:30–17:30 de martes a viernes.
 
 ## Festivos
 
