@@ -258,20 +258,28 @@ export function useLogisticsPage() {
       version: number,
       reason: string,
       observation?: string,
+      file?: File,
     ) =>
-      execute(
-        () =>
-          application!.logistics.failDelivery(
-            shipmentId,
-            orderId,
-            reason,
-            observation,
-            undefined,
-            version,
-            crypto.randomUUID(),
-          ),
-        'Intento de entrega fallido registrado.',
-      ),
+      execute(async () => {
+        const evidenceId = file
+          ? await application!.logistics.uploadEvidence(
+              context!.organization.id,
+              orderId,
+              'DELIVERY_FAILED',
+              file,
+              crypto.randomUUID(),
+            )
+          : undefined;
+        await application!.logistics.failDelivery(
+          shipmentId,
+          orderId,
+          reason,
+          observation,
+          evidenceId,
+          version,
+          crypto.randomUUID(),
+        );
+      }, 'Intento de entrega fallido registrado.'),
     reprogram: (shipmentId: string, version: number) =>
       execute(
         () => application!.logistics.reprogram(shipmentId, version, crypto.randomUUID()),
