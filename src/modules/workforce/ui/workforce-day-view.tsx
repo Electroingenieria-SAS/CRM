@@ -1,6 +1,6 @@
 'use client';
 
-import { workforceDaySlots } from '@/modules/workforce/domain/work-schedule';
+import { workforceDaySlotsFor } from '@/modules/workforce/domain/work-schedule';
 import { occupancyLabel } from '@/modules/workforce/domain/workforce-metrics';
 import type {
   WorkforceActivitySummary,
@@ -49,6 +49,8 @@ function ActivityChip({
 }
 
 export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceDayViewProps) {
+  const daySlots = workforceDaySlotsFor(day);
+
   return (
     <section aria-label="Cronograma del día" className={styles.daySection}>
       <div className={styles.desktopDay}>
@@ -57,7 +59,7 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
             <div className={styles.teamHeader} role="columnheader">
               Equipo / Actividad y estado
             </div>
-            {workforceDaySlots.map((slot) => (
+            {daySlots.map((slot) => (
               <div className={styles.slotHeader} role="columnheader" key={slot.key}>
                 {slot.label}
               </div>
@@ -80,8 +82,8 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
                     <small>{person.specialTreatmentLabel ?? 'Tratamiento especial'}</small>
                   ) : null}
                 </div>
-                {workforceDaySlots.map((slot, index) => {
-                  const rows = activitiesForSlot(personActivities, index);
+                {daySlots.map((slot, index) => {
+                  const rows = activitiesForSlot(personActivities, index, daySlots);
                   return (
                     <div className={styles.slotCell} role="cell" key={slot.key}>
                       {rows.length ? (
@@ -119,8 +121,8 @@ export function WorkforceDayView({ day, people, activities, onOpen }: WorkforceD
                 <p className={styles.currentActivity}>Actual: {currentActivity.title}</p>
               ) : null}
               <div className={styles.mobileTimeline}>
-                {workforceDaySlots.map((slot, index) => {
-                  const rows = activitiesForSlot(personActivities, index);
+                {daySlots.map((slot, index) => {
+                  const rows = activitiesForSlot(personActivities, index, daySlots);
                   return (
                     <section key={slot.key}>
                       <h3>{slot.label}</h3>
