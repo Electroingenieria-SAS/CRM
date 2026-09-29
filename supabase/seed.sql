@@ -368,3 +368,56 @@ on conflict (role_code,module_code) do update set
   can_update=excluded.can_update,
   can_approve=excluded.can_approve,
   can_admin=excluded.can_admin;
+
+-- Analytics permissions are seeded after roles so local/CI reset reproduces runtime RBAC.
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
+select r.code,'dashboard',true,false,false,false,(r.code='super_admin')
+from erp_supply.roles r
+where r.active
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_admin=excluded.can_admin;
+
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
+select r.code,'vsm',true,false,false,false,(r.code='super_admin')
+from erp_supply.roles r
+where r.code in (
+  'auditoria','coordinador_logistico','gerencia','jefe_logistica',
+  'lider_logistica','super_admin'
+)
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_admin=excluded.can_admin;
+
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
+select r.code,'reports',true,false,false,false,(r.code='super_admin')
+from erp_supply.roles r
+where r.code in (
+  'auditoria','cartera','caja','compras','coordinador_logistico','gerencia',
+  'jefe_logistica','lider_logistica','super_admin','ventas'
+)
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_admin=excluded.can_admin;
+
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+)
+select
+  r.code,'imports',true,
+  (r.code='super_admin'),(r.code='super_admin'),(r.code='super_admin'),(r.code='super_admin')
+from erp_supply.roles r
+where r.code in ('auditoria','gerencia','super_admin')
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,
+  can_create=excluded.can_create,
+  can_update=excluded.can_update,
+  can_approve=excluded.can_approve,
+  can_admin=excluded.can_admin;
+
