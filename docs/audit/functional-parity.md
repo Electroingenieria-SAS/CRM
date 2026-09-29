@@ -22,7 +22,7 @@
 | Despachos / entrega / satisfacción |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11        |
-| Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI       |
+| Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #12        |
 | Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero    |
 | VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
