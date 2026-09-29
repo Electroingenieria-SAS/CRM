@@ -1,9 +1,9 @@
 'use client';
 
-import type { ReturnTypeOfPacoWizard } from './paco-activity-wizard';
+import type { PacoWizardData } from './use-paco-activity-wizard';
 import styles from './paco.module.css';
 
-export function PacoWizardClassification({ data }: { data: ReturnTypeOfPacoWizard }) {
+export function PacoWizardClassification({ data }: { data: PacoWizardData }) {
   if (data.step === 0) {
     return (
       <div className={styles.choiceGrid}>
@@ -37,7 +37,7 @@ export function PacoWizardClassification({ data }: { data: ReturnTypeOfPacoWizar
   );
 }
 
-export function PacoWizardContext({ data }: { data: ReturnTypeOfPacoWizard }) {
+export function PacoWizardContext({ data }: { data: PacoWizardData }) {
   if (data.step === 3) {
     return (
       <label>
@@ -68,7 +68,7 @@ export function PacoWizardContext({ data }: { data: ReturnTypeOfPacoWizard }) {
   );
 }
 
-export function PacoWizardSchedule({ data }: { data: ReturnTypeOfPacoWizard }) {
+export function PacoWizardSchedule({ data }: { data: PacoWizardData }) {
   if (data.step === 5) {
     return (
       <div className={styles.timeGrid}>
