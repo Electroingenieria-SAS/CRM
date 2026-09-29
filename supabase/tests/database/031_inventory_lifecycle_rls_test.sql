@@ -99,9 +99,9 @@ select is(
 );
 
 select throws_ok(
-  $select public.erp_x_inventory_availability(
+  $$select public.erp_x_inventory_availability(
     'b7000000-0000-4000-8000-000000000001',null
-  )$,
+  )$$,
   '22023',null,
   'availability contract cannot resolve another organization material'
 );
@@ -214,7 +214,7 @@ select ok(
 );
 
 select lives_ok(
-  $select public.erp_x_inventory_submit_count(
+  $$select public.erp_x_inventory_submit_count(
     (
       select id from erp_supply.inventory_balances
       where material_id='b3000000-0000-4000-8000-000000000001'
