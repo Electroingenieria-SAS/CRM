@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { FreightCatalog } from '@/modules/freight/application/freight-catalog.schemas';
 import type { LogisticsDetail } from '@/modules/logistics/application/logistics.schemas';
 import styles from './logistics-ui.module.css';
@@ -25,20 +25,9 @@ interface DispatchActionsProps {
 }
 
 export function LogisticsDispatchActions(props: DispatchActionsProps) {
-  const [carrierId, setCarrierId] = useState('');
-  const [tracking, setTracking] = useState('');
-  const [actualCost, setActualCost] = useState('');
-
-  useEffect(() => {
-    setCarrierId(props.shipment.carrierId ?? '');
-    setTracking(props.shipment.trackingNumber ?? '');
-    setActualCost(props.shipment.actualFreight?.toString() ?? '');
-  }, [
-    props.shipment.id,
-    props.shipment.carrierId,
-    props.shipment.trackingNumber,
-    props.shipment.actualFreight,
-  ]);
+  const [carrierId, setCarrierId] = useState(props.shipment.carrierId ?? '');
+  const [tracking, setTracking] = useState(props.shipment.trackingNumber ?? '');
+  const [actualCost, setActualCost] = useState(props.shipment.actualFreight?.toString() ?? '');
 
   const dispatchRoute =
     props.shipment.routeCode === 'LOCAL_DISPATCH' ||
