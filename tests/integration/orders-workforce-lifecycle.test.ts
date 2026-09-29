@@ -39,6 +39,7 @@ function integrationEvent(
 }
 
 class InMemoryWorkforce implements WorkforceAutomationPort {
+  async assertOrderCompletionReady() {}
   status = 'NONE';
   assignee: string | null = null;
   history: string[] = [];
