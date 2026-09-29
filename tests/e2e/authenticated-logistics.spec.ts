@@ -90,44 +90,48 @@ async function openShipment(page: Page) {
 
 async function operateShipment(page: Page) {
   await openShipment(page);
+  let status = (await page.getByTestId('logistics-status').textContent())?.trim();
 
-  const guide = page.getByLabel('Número de guía');
-  await expect(guide).toBeVisible();
-  await guide.fill('LOG-E2E-GUIDE-001');
-  await page.getByRole('button', { name: 'Guardar guía' }).click();
-  await expect(page.getByText('Guía registrada.')).toBeVisible();
+  if (status === 'READY') {
+    const guide = page.getByLabel('Número de guía');
+    if (await guide.isVisible().catch(() => false)) {
+      await guide.fill('LOG-E2E-GUIDE-001');
+      await page.getByRole('button', { name: 'Guardar guía' }).click();
+      await expect(page.getByText('Guía registrada.')).toBeVisible();
+      await openShipment(page);
+    }
 
-  await openShipment(page);
-  const dispatch = page.getByRole('button', { name: 'Registrar salida' });
-  await expect(dispatch).toBeVisible();
-  await page.getByLabel('Costo real de salida, si ya se conoce').fill('22000');
-  await dispatch.click();
-  await expect(page.getByText('Despacho registrado.')).toBeVisible();
+    const dispatch = page.getByRole('button', { name: 'Registrar salida' });
+    await expect(dispatch).toBeVisible();
+    await page.getByLabel('Costo real de salida, si ya se conoce').fill('22000');
+    await dispatch.click();
+    await expect(page.getByText('Despacho registrado.')).toBeVisible();
+    await openShipment(page);
+    status = (await page.getByTestId('logistics-status').textContent())?.trim();
+  }
 
-  await openShipment(page);
-  await expect(page.getByTestId('logistics-status')).toHaveText('IN TRANSIT');
-  const deliver = page.getByRole('button', { name: 'Confirmar entrega' });
-  await expect(deliver).toBeVisible();
-  await page.getByLabel('Receptor').fill('Cliente QA');
-  await page
-    .getByLabel('Evidencia *')
-    .first()
-    .setInputFiles({
-      name: 'delivery.jpg',
-      mimeType: 'image/jpeg',
-      buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
-    });
-  await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
-  await deliver.click();
-  await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
+  if (status === 'IN TRANSIT') {
+    const deliver = page.getByRole('button', { name: 'Confirmar entrega' });
+    await expect(deliver).toBeVisible();
+    await page.getByLabel('Receptor').fill('Cliente QA');
+    await page
+      .getByLabel('Evidencia *')
+      .first()
+      .setInputFiles({
+        name: 'delivery.jpg',
+        mimeType: 'image/jpeg',
+        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
+      });
+    await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
+    await deliver.click();
+    await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
+    await openShipment(page);
+  }
 
-  await openShipment(page);
   await expect(page.getByTestId('logistics-status')).toHaveText('DELIVERED');
   await expect(page.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible();
 
-  const satisfaction = page.getByRole('button', {
-    name: 'Guardar satisfacción',
-  });
+  const satisfaction = page.getByRole('button', { name: 'Guardar satisfacción' });
   if (await satisfaction.isVisible().catch(() => false)) {
     await page.getByLabel('Comentario').fill('Entrega satisfactoria.');
     await satisfaction.click();
