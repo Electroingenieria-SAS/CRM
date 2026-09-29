@@ -86,14 +86,26 @@ export class OrderWorkflowService {
     const normalizedDetail = detail.trim();
     const expectedVersion = requireVersion(version);
     const idempotencyKey = requireKey(key);
+
+    return this.completeAfterWorkforceGate(
+      orderId,
+      normalizedResult,
+      normalizedDetail,
+      expectedVersion,
+      idempotencyKey,
+    );
+  }
+
+  private async completeAfterWorkforceGate(
+    orderId: string,
+    resultCode: string,
+    detail: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ) {
+    await this.observer?.beforeComplete?.(orderId);
     return this.mutate(() =>
-      this.repository.complete(
-        orderId,
-        normalizedResult,
-        normalizedDetail,
-        expectedVersion,
-        idempotencyKey,
-      ),
+      this.repository.complete(orderId, resultCode, detail, expectedVersion, idempotencyKey),
     );
   }
 
