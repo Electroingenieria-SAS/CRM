@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { PacoBrowserApplication } from '@/composition/paco-browser-application';
 import type { AssistantAlert } from '@/modules/assistant/application/assistant.schemas';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
@@ -14,7 +14,7 @@ export function usePacoAlerts(
 ) {
   const [alerts, setAlerts] = useState<AssistantAlert[]>([]);
 
-  async function refresh(announce: boolean) {
+  const refresh = useCallback(async (announce: boolean) => {
     if (!application || !context || !hasModuleCapability(context, 'assistant', 'read')) return;
     try {
       const next = await application.paco.alerts(true);
@@ -27,15 +27,13 @@ export function usePacoAlerts(
     } catch {
       // Advisory alerts never block the assistant.
     }
-  }
+  }, [application, context, voiceEnabled]);
 
   useEffect(() => {
     if (!context || !hasModuleCapability(context, 'assistant', 'read')) return;
     const timer = window.setTimeout(() => void refresh(true), 0);
     return () => window.clearTimeout(timer);
-    // refresh is intentionally event-driven; no polling.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [context]);
+  }, [context, refresh]);
 
   async function acknowledge(alertId: string) {
     if (!application) return;
