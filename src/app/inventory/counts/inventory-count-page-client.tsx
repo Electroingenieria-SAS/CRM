@@ -5,8 +5,9 @@ import { useInventoryCountPage } from '@/app/inventory/counts/use-inventory-coun
 
 export function InventoryCountPageClient() {
   const page = useInventoryCountPage();
+  const { context, data } = page;
 
-  if (!page.context || !page.data) {
+  if (!context || !data) {
     return (
       <main id="main-content" className="centered-page">
         <section className="surface" aria-live="polite">
@@ -18,5 +19,5 @@ export function InventoryCountPageClient() {
     );
   }
 
-  return <InventoryCountWorkspace {...page} />;
+  return <InventoryCountWorkspace {...page} context={context} data={data} />;
 }

@@ -5,8 +5,9 @@ import { useInventoryPage } from '@/app/inventory/use-inventory-page';
 
 export function InventoryPageClient() {
   const page = useInventoryPage();
+  const { context, list } = page;
 
-  if (!page.context || !page.list) {
+  if (!context || !list) {
     return (
       <main id="main-content" className="centered-page">
         <section className="surface" aria-live="polite">
@@ -18,5 +19,5 @@ export function InventoryPageClient() {
     );
   }
 
-  return <InventoryWorkspace {...page} />;
+  return <InventoryWorkspace {...page} context={context} list={list} />;
 }
