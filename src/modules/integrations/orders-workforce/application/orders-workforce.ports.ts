@@ -42,4 +42,5 @@ export interface WorkforceAutomationPort {
     keys: WorkforceAutomationKeys,
     existingActivityId: string | null,
   ): Promise<WorkforceAutomationResult>;
+  assertOrderCompletionReady(orderId: string): Promise<void>;
 }
