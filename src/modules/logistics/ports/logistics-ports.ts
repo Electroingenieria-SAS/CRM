@@ -2,6 +2,7 @@ import type {
   LogisticsDetail,
   LogisticsMutation,
   LogisticsQueue,
+  LogisticsCandidates,
 } from '@/modules/logistics/application/logistics.schemas';
 import type {
   RecordFreightActualInput,
@@ -26,6 +27,7 @@ export interface LogisticsReleaseInput {
 }
 
 export interface LogisticsRepository {
+  candidates(search?: string, page?: number, pageSize?: number): Promise<LogisticsCandidates>;
   list(query?: LogisticsQueueQuery): Promise<LogisticsQueue>;
   detail(orderId: string): Promise<LogisticsDetail>;
   release(orderId: string, input: LogisticsReleaseInput, key: string): Promise<LogisticsMutation>;
@@ -88,6 +90,10 @@ export interface LogisticsEvidencePort {
     mimeType: string | undefined,
     key: string,
   ): Promise<string | undefined>;
+}
+
+export interface LogisticsOrdersPort {
+  ensureOperationalStarted(orderId: string, key: string): Promise<void>;
 }
 
 export interface LogisticsInventoryPort {
