@@ -21,6 +21,10 @@ async function setRange(page: Page) {
   await page.getByLabel('Hasta').fill('2026-09-29');
 }
 
+function metricValue(page: Page, label: string) {
+  return page.locator('article').filter({ hasText: label }).locator('strong');
+}
+
 test('dashboard, filters, VSM and report explorer use synthetic analytics data', async ({
   page,
 }, testInfo) => {
@@ -100,21 +104,15 @@ test('historical CSV preview, partial apply and checksum replay are idempotent',
   });
   await page.getByRole('button', { name: 'Validar y previsualizar' }).click();
 
-  await expect(
-    page.locator('article').filter({ hasText: 'Válidas' }).locator('strong'),
-  ).toHaveText('1');
-  await expect(
-    page.locator('article').filter({ hasText: 'Rechazadas' }).locator('strong'),
-  ).toHaveText('1');
+  await expect(metricValue(page, 'Válidas')).toHaveText('1');
+  await expect(metricValue(page, 'Rechazadas')).toHaveText('1');
   await expect(page.getByText(/Etapa no reconocida/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Aplicar filas válidas' }).click();
   await expect(page.getByRole('status')).toContainText('1 aplicadas, 1 rechazadas');
 
   await page.getByRole('button', { name: 'Validar y previsualizar' }).click();
-  await expect(
-    page.locator('article').filter({ hasText: 'Idempotente' }).locator('strong'),
-  ).toHaveText('Sí');
+  await expect(metricValue(page, 'Idempotente')).toHaveText('Sí');
 });
 
 test('analytics routes provide cross-browser semantic smoke', async ({ page }) => {
