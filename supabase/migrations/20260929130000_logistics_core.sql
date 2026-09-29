@@ -194,6 +194,16 @@ grant usage,select on sequence erp_supply.logistics_events_id_seq to authenticat
 grant select,insert on erp_supply.delivery_attempts to authenticated;
 grant select,insert on erp_supply.delivery_satisfaction to authenticated;
 
+insert into erp_supply.roles(code,name,description,system_role,active) values
+  ('auditoria','Auditoría','Lectura integral sin operación',true,true),
+  ('aux_logistica','Auxiliar de logística','Alistamiento y preparación de pedidos',true,true),
+  ('coordinador_logistico','Coordinación logística','Facturación y despachos',true,true),
+  ('jefe_logistica','Jefatura logística','Supervisión y excepciones logísticas',true,true),
+  ('lider_logistica','Líder logístico','Liderazgo operativo',true,true),
+  ('super_admin','Superadministración','Control total del sistema',true,true),
+  ('ventas','Ventas','Registro y seguimiento comercial',true,true)
+on conflict(code) do nothing;
+
 insert into erp_supply.role_module_permissions(
   role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
 ) values
