@@ -71,7 +71,7 @@ async function releaseShipmentIfPending(page: Page) {
   await page.getByRole('button', { name: 'Buscar' }).first().click();
   if (!(await selectOrderIfPresent(page))) return;
 
-  await selectContaining(page, 'Destino Freight', /QA Armenia/i);
+  await selectContaining(page, 'Destino Freight', /QA Logistics City/i);
   await selectContaining(page, 'Transportadora', /Transportadora QA Logística/i);
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   await expect(page.getByText(/Rango:|Histórico insuficiente/)).toBeVisible();
