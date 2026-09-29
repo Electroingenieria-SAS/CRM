@@ -13,19 +13,9 @@ function localInputValue(offsetMinutes = 0) {
   return local.toISOString().slice(0, 16);
 }
 
-export function usePacoActivityWizard(paco: PacoService, onComplete: (message: string) => void) {
+function usePacoActivityOptions(paco: PacoService) {
   const [catalog, setCatalog] = useState<WorkforceCatalogItem[]>([]);
   const [people, setPeople] = useState<WorkforcePerson[]>([]);
-  const [step, setStep] = useState(0);
-  const [kind, setKind] = useState<'ACTIVITY' | 'DELIVERABLE'>('ACTIVITY');
-  const [category, setCategory] = useState('');
-  const [catalogId, setCatalogId] = useState('');
-  const [orderReference, setOrderReference] = useState('');
-  const [orderId, setOrderId] = useState<string | undefined>();
-  const [orderLabel, setOrderLabel] = useState<string | null>(null);
-  const [assignee, setAssignee] = useState('');
-  const [start, setStart] = useState(localInputValue());
-  const [end, setEnd] = useState(localInputValue(60));
   const [message, setMessage] = useState<string | null>('Cargando opciones…');
   const [busy, setBusy] = useState(true);
 
@@ -40,8 +30,9 @@ export function usePacoActivityWizard(paco: PacoService, onComplete: (message: s
         setMessage(null);
       })
       .catch((error) => {
-        if (active)
+        if (active) {
           setMessage(error instanceof Error ? error.message : 'No pude cargar actividades.');
+        }
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -51,6 +42,22 @@ export function usePacoActivityWizard(paco: PacoService, onComplete: (message: s
     };
   }, [paco]);
 
+  return { catalog, people, message, setMessage, busy, setBusy };
+}
+
+export function usePacoActivityWizard(paco: PacoService, onComplete: (message: string) => void) {
+  const options = usePacoActivityOptions(paco);
+  const { catalog, people, message, setMessage, busy, setBusy } = options;
+  const [step, setStep] = useState(0);
+  const [kind, setKind] = useState<'ACTIVITY' | 'DELIVERABLE'>('ACTIVITY');
+  const [category, setCategory] = useState('');
+  const [catalogId, setCatalogId] = useState('');
+  const [orderReference, setOrderReference] = useState('');
+  const [orderId, setOrderId] = useState<string | undefined>();
+  const [orderLabel, setOrderLabel] = useState<string | null>(null);
+  const [assignee, setAssignee] = useState('');
+  const [start, setStart] = useState(localInputValue());
+  const [end, setEnd] = useState(localInputValue(60));
   const categories = useMemo(
     () =>
       [
