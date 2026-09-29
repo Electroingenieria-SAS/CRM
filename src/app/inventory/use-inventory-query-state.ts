@@ -23,20 +23,15 @@ async function initialData(application: InventoryBrowserApplication) {
   return { context, locations, list };
 }
 
-export function useInventoryQueryState(
+function useInventoryBootstrap(
   application: InventoryBrowserApplication | null,
   goLogin: () => void,
 ) {
   const [context, setContext] = useState<SessionContext | null>(null);
   const [locations, setLocations] = useState<InventoryLocation[]>([]);
   const [list, setList] = useState<InventoryList | null>(null);
-  const [detail, setDetail] = useState<InventoryMaterialDetail | null>(null);
-  const [search, setSearch] = useState('');
-  const [locationId, setLocationId] = useState('');
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (!application) return;
@@ -68,13 +63,36 @@ export function useInventoryQueryState(
     };
   }, [application, goLogin]);
 
+  return {
+    context,
+    locations,
+    list,
+    loading,
+    message,
+    setList,
+    setLoading,
+    setMessage,
+  };
+}
+
+export function useInventoryQueryState(
+  application: InventoryBrowserApplication | null,
+  goLogin: () => void,
+) {
+  const bootstrap = useInventoryBootstrap(application, goLogin);
+  const [detail, setDetail] = useState<InventoryMaterialDetail | null>(null);
+  const [search, setSearch] = useState('');
+  const [locationId, setLocationId] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+
   const loadList = useCallback(
     async (page = 1) => {
       if (!application) return;
-      setLoading(true);
-      setMessage(null);
+      bootstrap.setLoading(true);
+      bootstrap.setMessage(null);
       try {
-        setList(
+        bootstrap.setList(
           await application.inventory.list({
             search,
             locationId: locationId || undefined,
@@ -83,21 +101,21 @@ export function useInventoryQueryState(
           }),
         );
       } catch (error) {
-        setMessage(
+        bootstrap.setMessage(
           error instanceof Error ? error.message : 'No fue posible consultar Inventario.',
         );
       } finally {
-        setLoading(false);
+        bootstrap.setLoading(false);
       }
     },
-    [application, locationId, search],
+    [application, bootstrap, locationId, search],
   );
 
   const openDetail = useCallback(
     async (materialId: string, variantId?: string) => {
       if (!application) return;
       setBusy(true);
-      setMessage(null);
+      bootstrap.setMessage(null);
       try {
         setDetail(
           await application.inventory.materialDetail({
@@ -107,14 +125,14 @@ export function useInventoryQueryState(
           }),
         );
       } catch (error) {
-        setMessage(
+        bootstrap.setMessage(
           error instanceof Error ? error.message : 'No fue posible abrir el material.',
         );
       } finally {
         setBusy(false);
       }
     },
-    [application],
+    [application, bootstrap],
   );
 
   const reloadDetail = useCallback(async () => {
@@ -130,21 +148,21 @@ export function useInventoryQueryState(
   }, [application, detail?.material]);
 
   return {
-    context,
-    locations,
-    list,
+    context: bootstrap.context,
+    locations: bootstrap.locations,
+    list: bootstrap.list,
     detail,
     search,
     locationId,
-    loading,
+    loading: bootstrap.loading,
     busy,
-    message,
+    message: bootstrap.message,
     notice,
     setSearch,
     setLocationId,
     setDetail,
     setBusy,
-    setMessage,
+    setMessage: bootstrap.setMessage,
     setNotice,
     loadList,
     openDetail,

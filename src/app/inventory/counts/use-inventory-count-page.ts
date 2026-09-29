@@ -2,41 +2,22 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createInventoryBrowserApplication } from '@/composition/inventory-browser-application';
+import {
+  createInventoryBrowserApplication,
+  type InventoryBrowserApplication,
+} from '@/composition/inventory-browser-application';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type { InventoryCountCandidates } from '@/modules/inventory/application/inventory.schemas';
 
-export function useInventoryCountPage() {
-  const router = useRouter();
-  const application = useMemo(() => createInventoryBrowserApplication(), []);
-  const [context, setContext] = useState<SessionContext | null>(null);
-  const [data, setData] = useState<InventoryCountCandidates | null>(null);
-  const [search, setSearch] = useState('');
-  const [selectedBalanceId, setSelectedBalanceId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  const goLogin = useCallback(() => router.replace('/login'), [router]);
-
-  const load = useCallback(
-    async (page = 1) => {
-      if (!application) return;
-      setLoading(true);
-      setMessage(null);
-      try {
-        setData(await application.inventory.countCandidates(search, page, 25));
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible abrir Conteos.');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [application, search],
-  );
-
+function useInventoryCountBootstrap(
+  application: InventoryBrowserApplication | null,
+  goLogin: () => void,
+  setContext: (value: SessionContext) => void,
+  setData: (value: InventoryCountCandidates) => void,
+  setMessage: (value: string | null) => void,
+  setLoading: (value: boolean) => void,
+) {
   useEffect(() => {
     if (!application) return;
     let active = true;
@@ -66,7 +47,46 @@ export function useInventoryCountPage() {
       active = false;
       unsubscribe();
     };
-  }, [application, goLogin]);
+  }, [application, goLogin, setContext, setData, setLoading, setMessage]);
+}
+
+export function useInventoryCountPage() {
+  const router = useRouter();
+  const application = useMemo(() => createInventoryBrowserApplication(), []);
+  const [context, setContext] = useState<SessionContext | null>(null);
+  const [data, setData] = useState<InventoryCountCandidates | null>(null);
+  const [search, setSearch] = useState('');
+  const [selectedBalanceId, setSelectedBalanceId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const goLogin = useCallback(() => router.replace('/login'), [router]);
+
+  const load = useCallback(
+    async (page = 1) => {
+      if (!application) return;
+      setLoading(true);
+      setMessage(null);
+      try {
+        setData(await application.inventory.countCandidates(search, page, 25));
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'No fue posible abrir Conteos.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [application, search],
+  );
+
+  useInventoryCountBootstrap(
+    application,
+    goLogin,
+    setContext,
+    setData,
+    setMessage,
+    setLoading,
+  );
 
   async function submit(countedQuantity: number, note: string) {
     if (!application || !selectedBalanceId) return;
