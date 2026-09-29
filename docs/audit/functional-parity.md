@@ -21,7 +21,8 @@
 | Facturación                        |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Despachos / entrega / satisfacción |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Workforce / jornada / cronograma   |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11        |
+| Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI       |
 | Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero    |
 | VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
@@ -34,7 +35,7 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 
 > “Base técnica” no equivale a paridad. Auth/sesión/recuperación ya están validados en staging; MFA y administración siguen perteneciendo a un bloque posterior de seguridad/administración.
 
-> Pedidos tiene validado el vertical slice inicial: núcleo SQL/API, integridad, idempotencia, Application/Repository, UI, responsive, RBAC/RLS y E2E autenticado. Claim, asignación, inicio, bloqueo, finalización, aprobaciones y demás workflow operativo siguen fuera de este slice.
+> Pedidos ya incorpora workflow operativo de claim, asignación, inicio, bloqueo, reanudación, finalización y trazabilidad. Hilo 6 conecta las etapas operativas mapeadas con Workforce mediante outbox, lifecycle real, evidencia y ocupación; aprobaciones y otros dominios mantienen sus propios bloques.
 
 > Evidencia: PR #6, commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`, pipeline #105 (`36453408365`) completamente verde, incluido `e2e-authenticated`.
 

@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 const sellerEmail = 'qa-seller@example.test';
 const coordinatorEmail = 'qa-coordinator-a@example.test';
+const auxiliaryEmail = 'qa-aux-logistica@example.test';
 
 function password() {
   const value = process.env.E2E_PASSWORD;
@@ -77,4 +78,45 @@ test('order workflow records claim start block resume and completion', async ({
   await expect(page.getByText('ORDER_BLOCKED')).toBeVisible();
   await expect(page.getByText('ORDER_BLOCK_RESOLVED')).toBeVisible();
   await expect(page.getByText('ORDER_TASK_COMPLETED')).toBeVisible();
+
+  await logout(page);
+  await login(page, auxiliaryEmail);
+  await page.getByLabel('Buscar').fill(orderNumber);
+  await page.getByRole('button', { name: 'Buscar' }).click();
+  await page.getByRole('button', { name: new RegExp(orderNumber) }).click();
+
+  await page.getByRole('button', { name: 'Tomar tarea' }).click();
+  await expect(page.getByRole('status')).toContainText('Tarea tomada correctamente.');
+
+  await page.goto('/operations/orders-workforce');
+  const plannedOrder = page.getByRole('row').filter({ hasText: orderNumber });
+  await expect(plannedOrder).toContainText('QA Auxiliar Logística');
+  await expect(plannedOrder).toContainText('PLANNED');
+
+  await page.goto('/orders');
+  await page.getByLabel('Buscar').fill(orderNumber);
+  await page.getByRole('button', { name: 'Buscar' }).click();
+  await page.getByRole('button', { name: new RegExp(orderNumber) }).click();
+  await page.getByRole('button', { name: 'Iniciar trabajo' }).click();
+  await expect(page.getByRole('status')).toContainText('Trabajo iniciado.');
+
+  await page.goto('/operations/orders-workforce');
+  const activeOrder = page.getByRole('row').filter({ hasText: orderNumber });
+  await expect(activeOrder).toContainText('IN_PROGRESS');
+  const auxiliaryRow = page.getByRole('row', {
+    name: /QA Auxiliar Logística (OCCUPIED|OUT OF SCHEDULE)/,
+  });
+  await expect(auxiliaryRow).toBeVisible();
+
+  await page.goto('/orders');
+  await page.getByLabel('Buscar').fill(orderNumber);
+  await page.getByRole('button', { name: 'Buscar' }).click();
+  await page.getByRole('button', { name: new RegExp(orderNumber) }).click();
+  await page.getByRole('button', { name: 'Completar etapa' }).click();
+  await expect(page.getByRole('status')).toContainText('Etapa completada y workflow actualizado.');
+  await expect(page.getByText('FACTURACION').first()).toBeVisible();
+
+  await page.goto('/operations/orders-workforce');
+  const completedCard = page.getByText('Actividades finalizadas').locator('..');
+  await expect(completedCard.getByText('1', { exact: true })).toBeVisible();
 });

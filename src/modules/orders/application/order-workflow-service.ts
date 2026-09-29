@@ -1,9 +1,11 @@
+import type { OrderWorkflowMutationObserver } from '@/modules/orders/application/order-workflow-observer';
+import type { OrderWorkflowRepository } from '@/modules/orders/application/order-workflow-repository';
 import {
   blockTaskInputSchema,
   evidenceInputSchema,
   issueInputSchema,
+  type WorkflowMutationResponse,
 } from '@/modules/orders/application/order-workflow.schemas';
-import type { OrderWorkflowRepository } from '@/modules/orders/application/order-workflow-repository';
 
 function requireKey(value: string) {
   const key = value.trim();
@@ -19,55 +21,102 @@ function requireVersion(version: number) {
 }
 
 export class OrderWorkflowService {
-  constructor(private readonly repository: OrderWorkflowRepository) {}
+  constructor(
+    private readonly repository: OrderWorkflowRepository,
+    private readonly observer?: OrderWorkflowMutationObserver,
+  ) {}
+
+  private async mutate(operation: () => Promise<WorkflowMutationResponse>) {
+    const result = await operation();
+
+    if (this.observer) {
+      try {
+        await this.observer.onWorkflowMutation(result);
+      } catch {
+        // Orders is already committed and the durable outbox remains visible/retryable.
+      }
+    }
+
+    return result;
+  }
 
   claim(orderId: string, version: number, key: string) {
-    return this.repository.claim(orderId, requireVersion(version), requireKey(key));
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+    return this.mutate(() => this.repository.claim(orderId, expectedVersion, idempotencyKey));
   }
 
   assign(orderId: string, profileId: string, version: number, key: string) {
-    if (!profileId.trim()) throw new Error('Selecciona un responsable.');
-    return this.repository.assign(
-      orderId,
-      profileId.trim(),
-      requireVersion(version),
-      requireKey(key),
+    const assigneeProfileId = profileId.trim();
+    if (!assigneeProfileId) throw new Error('Selecciona un responsable.');
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+    return this.mutate(() =>
+      this.repository.assign(orderId, assigneeProfileId, expectedVersion, idempotencyKey),
     );
   }
 
   start(orderId: string, version: number, key: string) {
-    return this.repository.start(orderId, requireVersion(version), requireKey(key));
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+    return this.mutate(() => this.repository.start(orderId, expectedVersion, idempotencyKey));
   }
 
   block(orderId: string, input: unknown, version: number, key: string) {
-    return this.repository.block(
-      orderId,
-      blockTaskInputSchema.parse(input),
-      requireVersion(version),
-      requireKey(key),
+    const blockInput = blockTaskInputSchema.parse(input);
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+    return this.mutate(() =>
+      this.repository.block(orderId, blockInput, expectedVersion, idempotencyKey),
     );
   }
 
   resume(orderId: string, resolution: string, version: number, key: string) {
     const normalized = resolution.trim();
     if (normalized.length < 3) throw new Error('Describe cómo se resolvió el bloqueo.');
-    return this.repository.resume(orderId, normalized, requireVersion(version), requireKey(key));
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+    return this.mutate(() =>
+      this.repository.resume(orderId, normalized, expectedVersion, idempotencyKey),
+    );
   }
 
   complete(orderId: string, resultCode: string, detail: string, version: number, key: string) {
-    return this.repository.complete(
+    const normalizedResult = resultCode.trim() || 'COMPLETED';
+    const normalizedDetail = detail.trim();
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+
+    return this.completeAfterWorkforceGate(
       orderId,
-      resultCode.trim() || 'COMPLETED',
-      detail.trim(),
-      requireVersion(version),
-      requireKey(key),
+      normalizedResult,
+      normalizedDetail,
+      expectedVersion,
+      idempotencyKey,
+    );
+  }
+
+  private async completeAfterWorkforceGate(
+    orderId: string,
+    resultCode: string,
+    detail: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ) {
+    await this.observer?.beforeComplete?.(orderId);
+    return this.mutate(() =>
+      this.repository.complete(orderId, resultCode, detail, expectedVersion, idempotencyKey),
     );
   }
 
   cancel(orderId: string, reason: string, version: number, key: string) {
     const normalized = reason.trim();
     if (normalized.length < 3) throw new Error('Indica la razón de cancelación.');
-    return this.repository.cancel(orderId, normalized, requireVersion(version), requireKey(key));
+    const expectedVersion = requireVersion(version);
+    const idempotencyKey = requireKey(key);
+    return this.mutate(() =>
+      this.repository.cancel(orderId, normalized, expectedVersion, idempotencyKey),
+    );
   }
 
   reopen(orderId: string, targetStep: string, reason: string, version: number, key: string) {

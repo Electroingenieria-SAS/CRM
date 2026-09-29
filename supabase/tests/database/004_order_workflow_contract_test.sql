@@ -21,8 +21,8 @@ select ok(
 select is(
   (select prosecdef from pg_proc p join pg_namespace n on n.oid=p.pronamespace
    where n.nspname='public' and p.proname='erp_x_claim_order_task'),
-  false,
-  'claim RPC is SECURITY INVOKER'
+  true,
+  'claim RPC uses the audited narrow SECURITY DEFINER boundary'
 );
 
 select ok(
