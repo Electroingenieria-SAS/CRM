@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const plannerEmail = 'qa-coordinator-a@example.test';
-const alternatePlannerEmail = 'qa-coordinator-b@example.test';
+const alternatePlannerEmail = 'qa-superadmin@example.test';
 
 function password() {
   const value = process.env.E2E_PASSWORD;
