@@ -149,3 +149,29 @@
     padding: var(--space-3);
   }
 }
+
+.tableWrap {
+  width: 100%;
+  margin-top: var(--space-4);
+  overflow-x: auto;
+}
+
+.tableWrap table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tableWrap th {
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
