@@ -22,6 +22,7 @@ const users = [
   'qa-superadmin@example.test',
   'qa-coordinator-a@example.test',
   'qa-coordinator-b@example.test',
+  'qa-aux-logistica@example.test',
 ];
 
 for (const email of users) {
