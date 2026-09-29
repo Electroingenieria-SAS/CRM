@@ -1,0 +1,271 @@
+.workspace {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.pageHeader,
+.detailHeader,
+.card header,
+.movementList header,
+.movementList footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pageHeader h1,
+.detailHeader h2 {
+  margin: 0.2rem 0;
+}
+
+.filters,
+.actionForm {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid #d9dee8;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.filters {
+  grid-template-columns: minmax(12rem, 2fr) minmax(12rem, 1fr) auto;
+  align-items: end;
+}
+
+.filters label,
+.actionForm label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.filters input,
+.filters select,
+.actionForm input,
+.actionForm select,
+.actionForm textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd3df;
+  border-radius: 0.65rem;
+  font: inherit;
+  background: #fff;
+}
+
+.filters button,
+.actionForm button,
+.table button,
+.card button,
+.detailHeader button,
+.pagination button {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.95rem;
+  border-radius: 0.65rem;
+  border: 1px solid #aeb8c6;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid #d9dee8;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+.table th,
+.table td {
+  padding: 0.9rem;
+  border-bottom: 1px solid #e6e9ef;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table td:first-child {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.cards {
+  display: none;
+}
+
+.card,
+.locationCard,
+.metric,
+.reservationList article,
+.movementList article {
+  border: 1px solid #d9dee8;
+  border-radius: 0.9rem;
+  padding: 0.9rem;
+  background: #fff;
+}
+
+.card p {
+  margin: 0.2rem 0;
+}
+
+.stockGrid,
+.summaryGrid,
+.locationGrid,
+.actionGrid,
+.controlForms {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.stockGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0.8rem 0;
+}
+
+.stockGrid span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.summaryGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.metric {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.metric strong {
+  font-size: 1.6rem;
+}
+
+.locationGrid {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.locationCard {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.actionGrid,
+.controlForms {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detail {
+  display: grid;
+  gap: 1.2rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid #d9dee8;
+}
+
+.reservationList,
+.movementList {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.reservationList article {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) auto auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.movementList article {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.movementList header time,
+.movementList small,
+.movementList footer {
+  font-size: 0.85rem;
+}
+
+.movementList footer {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.confirm {
+  grid-template-columns: auto 1fr !important;
+  align-items: center;
+}
+
+.confirm input {
+  width: 1.2rem;
+  min-height: 1.2rem;
+}
+
+.notice,
+.error,
+.empty {
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+  background: #f4f6f9;
+}
+
+.error {
+  border: 1px solid #b42318;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+@media (max-width: 767px) {
+  .filters,
+  .actionGrid,
+  .controlForms,
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tableWrap {
+    display: none;
+  }
+
+  .cards {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .pageHeader,
+  .detailHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reservationList article {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .actionGrid,
+  .controlForms {
+    grid-template-columns: 1fr;
+  }
+}

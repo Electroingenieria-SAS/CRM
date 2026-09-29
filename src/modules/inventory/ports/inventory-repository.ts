@@ -37,7 +37,8 @@ export interface InventoryReceiveInput {
 }
 
 export interface InventoryReserveInput {
-  orderId: string;
+  orderId?: string;
+  orderNumber?: string;
   materialId: string;
   variantId?: string;
   locationId?: string;
@@ -83,8 +84,17 @@ export interface InventoryRepository {
     reason: string,
     key: string,
   ): Promise<InventoryReservationResult>;
-  adjust(balanceId: string, delta: number, reason: string, key: string): Promise<InventoryAdjustmentResult>;
-  reverseMovement(movementId: string, reason: string, key: string): Promise<InventoryAdjustmentResult>;
+  adjust(
+    balanceId: string,
+    delta: number,
+    reason: string,
+    key: string,
+  ): Promise<InventoryAdjustmentResult>;
+  reverseMovement(
+    movementId: string,
+    reason: string,
+    key: string,
+  ): Promise<InventoryAdjustmentResult>;
   submitCount(
     balanceId: string,
     countedQuantity: number,

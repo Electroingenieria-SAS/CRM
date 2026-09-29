@@ -53,7 +53,11 @@ export class InventoryService {
   }
 
   orderTrace(orderId: string, page = 1, pageSize = 50) {
-    return this.repository.orderTrace(orderId, Math.max(page, 1), Math.min(Math.max(pageSize, 1), 100));
+    return this.repository.orderTrace(
+      orderId,
+      Math.max(page, 1),
+      Math.min(Math.max(pageSize, 1), 100),
+    );
   }
 
   receive(input: InventoryReceiveInput, key: string) {
@@ -68,9 +72,13 @@ export class InventoryService {
   }
 
   reserve(input: InventoryReserveInput, key: string) {
+    if (!input.orderId && !input.orderNumber?.trim()) {
+      throw new Error('La reserva requiere un pedido.');
+    }
     return this.repository.reserve(
       {
         ...input,
+        orderNumber: input.orderNumber?.trim() || undefined,
         quantity: assertPositiveInventoryQuantity(input.quantity),
         unit: normalizeInventoryUnit(input.unit),
       },
