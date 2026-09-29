@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { createClient } from '@supabase/supabase-js';
 
 const plannerEmail = 'qa-coordinator-a@example.test';
 const alternatePlannerEmail = 'qa-superadmin@example.test';
@@ -10,10 +11,30 @@ function password() {
 }
 
 async function login(page: Page, email = plannerEmail) {
-  await page.goto('/login');
-  await page.getByLabel('Correo').fill(email);
-  await page.getByLabel('Contraseña').fill(password());
-  await page.getByRole('button', { name: 'Ingresar' }).click();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) throw new Error('Local Supabase E2E configuration is required.');
+
+  const client = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password: password(),
+  });
+  if (error || !data.session) {
+    throw new Error(`Unable to create Workforce E2E session: ${error?.message ?? 'no session'}`);
+  }
+
+  const storageKey = `sb-${new URL(url).hostname.split('.')[0]}-auth-token`;
+  await page.addInitScript(
+    ({ keyName, session }) => {
+      window.localStorage.setItem(keyName, JSON.stringify(session));
+    },
+    { keyName: storageKey, session: data.session },
+  );
+
+  await page.goto('/orders');
   await expect(page).toHaveURL(/\/orders\/?$/, { timeout: 15_000 });
 }
 
