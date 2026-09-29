@@ -121,8 +121,9 @@ async function operateShipment(page: Page) {
   }
 
   await openShipment(page);
-  await expect(page.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible();
-  await expect(page.getByText('DELIVERED', { exact: true }).first()).toBeVisible();
+  const traceHeading = page.getByRole('heading', { name: 'Trazabilidad' });
+  await expect(traceHeading).toBeVisible();
+  await expect(traceHeading.locator('..').getByText('DELIVERED', { exact: true })).toBeVisible();
 
   const satisfaction = page.getByRole('button', {
     name: 'Guardar satisfacción',
