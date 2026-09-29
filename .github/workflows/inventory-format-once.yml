@@ -1,0 +1,59 @@
+name: Inventory format once
+
+on:
+  push:
+    branches:
+      - reconstruction/p1-inventory-traceability
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: reconstruction/p1-inventory-traceability
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Format Inventory files
+        run: >
+          npx prettier --write
+          docs/audit/functional-parity.md
+          docs/audit/master-matrix.md
+          src/app/inventory/counts/inventory-count-components.tsx
+          src/app/inventory/counts/inventory-count-workspace.tsx
+          src/app/inventory/counts/use-inventory-count-page.ts
+          src/app/inventory/inventory-page-actions.ts
+          src/app/inventory/inventory-workspace-controls.tsx
+          src/app/inventory/inventory-workspace.tsx
+          src/app/inventory/use-inventory-query-state.ts
+          src/infrastructure/inventory/supabase-inventory-repository.ts
+          src/modules/inventory/application/inventory-service.ts
+          src/modules/inventory/domain/inventory-balance.ts
+          src/modules/inventory/ports/inventory-integration-ports.ts
+          src/modules/inventory/ports/inventory-repository.ts
+          src/modules/inventory/ui/inventory-detail-sections.tsx
+          src/modules/inventory/ui/inventory-detail.tsx
+          src/modules/inventory/ui/inventory-forms.tsx
+          src/modules/inventory/ui/inventory-list.tsx
+          src/modules/inventory/ui/inventory-reservation-actions.tsx
+          tests/e2e/inventory.spec.ts
+          tests/integration/inventory-concurrency.mjs
+          tests/unit/inventory-service.test.ts
+      - name: Commit formatting
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/audit src/app/inventory src/infrastructure/inventory src/modules/inventory tests/e2e/inventory.spec.ts tests/integration/inventory-concurrency.mjs tests/unit/inventory-service.test.ts
+          git commit -m "style(inventory): apply prettier formatting"
+          git push origin HEAD:reconstruction/p1-inventory-traceability
