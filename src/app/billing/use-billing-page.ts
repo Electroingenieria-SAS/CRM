@@ -130,7 +130,7 @@ export function useBillingPage() {
         () =>
           application!.billing.complete(
             item.orderId,
-            item.orderVersion ?? 1,
+            item.orderVersion,
             crypto.randomUUID(),
           ),
         'Pedido liberado hacia logística.',
