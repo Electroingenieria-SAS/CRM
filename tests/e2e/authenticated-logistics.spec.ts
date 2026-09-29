@@ -60,7 +60,14 @@ async function releaseShipmentIfPending(page: Page) {
   await page.goto('/logistics');
   await page.getByLabel('Buscar candidatos').fill(orderNumber);
   await page.getByRole('button', { name: 'Buscar' }).first().click();
-  if (!(await selectOrderIfPresent(page))) return;
+
+  const releaseSection = page
+    .getByRole('heading', { name: 'Por liberar' })
+    .locator('xpath=ancestor::section[1]');
+  const candidate = releaseSection.getByRole('button').filter({ hasText: orderNumber }).first();
+  if ((await candidate.count()) === 0) return;
+  await candidate.click();
+  await expect(page.getByRole('heading', { name: orderNumber, exact: true })).toBeVisible();
 
   await page
     .getByLabel('Destino Freight', { exact: true })
