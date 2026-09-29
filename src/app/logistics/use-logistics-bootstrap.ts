@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type { LogisticsBrowserApplication } from '@/composition/logistics-browser-application';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import type { FreightCatalog } from '@/modules/freight/application/freight-catalog.schemas';
@@ -9,6 +8,10 @@ import type {
   LogisticsCandidates,
   LogisticsQueue,
 } from '@/modules/logistics/application/logistics.schemas';
+
+interface RouterPort {
+  replace(href: string): void;
+}
 
 interface BootstrapSetters {
   setContext(value: SessionContext): void;
@@ -32,9 +35,18 @@ async function loadInitial(application: LogisticsBrowserApplication) {
 
 export function useLogisticsBootstrap(
   application: LogisticsBrowserApplication | null,
-  router: AppRouterInstance,
+  router: RouterPort,
   setters: BootstrapSetters,
 ) {
+  const {
+    setContext,
+    setCandidates,
+    setQueue,
+    setCatalog,
+    setBusy,
+    setMessage,
+  } = setters;
+
   useEffect(() => {
     if (!application) return;
     let active = true;
@@ -46,25 +58,25 @@ export function useLogisticsBootstrap(
       .then((workspace) => {
         if (!active) return;
         if (!workspace) return router.replace('/login');
-        setters.setContext(workspace.context);
-        setters.setCandidates(workspace.candidates);
-        setters.setQueue(workspace.queue);
-        setters.setCatalog(workspace.catalog);
+        setContext(workspace.context);
+        setCandidates(workspace.candidates);
+        setQueue(workspace.queue);
+        setCatalog(workspace.catalog);
       })
       .catch((error) => {
         if (active) {
-          setters.setMessage(
+          setMessage(
             error instanceof Error ? error.message : 'No fue posible abrir Logística.',
           );
         }
       })
       .finally(() => {
-        if (active) setters.setBusy(false);
+        if (active) setBusy(false);
       });
 
     return () => {
       active = false;
       unsubscribe();
     };
-  }, [application, router, setters]);
+  }, [application, router, setBusy, setCandidates, setCatalog, setContext, setMessage, setQueue]);
 }
