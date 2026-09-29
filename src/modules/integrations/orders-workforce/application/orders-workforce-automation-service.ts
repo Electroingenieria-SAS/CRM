@@ -26,6 +26,10 @@ export class OrdersWorkforceAutomationService {
     private readonly workforce: WorkforceAutomationPort,
   ) {}
 
+  assertOrderCompletionReady(orderId: string) {
+    return this.workforce.assertOrderCompletionReady(orderId);
+  }
+
   async processOutboxItem(outboxId: string) {
     const claimed = await this.outbox.claim(outboxId);
 
