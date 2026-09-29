@@ -206,7 +206,9 @@ insert into erp_supply.role_module_permissions(
   ('coordinador_logistico','billing',true,false,false,false,false),
   ('lider_logistica','billing',true,false,false,false,false),
   ('jefe_logistica','billing',true,false,false,true,false),
-  ('auditoria','billing',true,false,false,false,false)
+  ('auditoria','billing',true,false,false,false,false),
+  ('super_admin','shipping',true,true,true,true,true),
+  ('super_admin','billing',true,true,true,true,true)
 on conflict(role_code,module_code) do update set
   can_read=excluded.can_read,
   can_create=excluded.can_create,
