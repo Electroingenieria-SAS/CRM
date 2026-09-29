@@ -27,7 +27,7 @@ function metricValue(page: Page, label: string) {
 
 function vsmStage(page: Page, label: string) {
   const region = page.getByRole('region', { name: 'Espera por etapa' });
-  return region.getByRole('article').filter({ hasText: label });
+  return region.getByRole('article').filter({ hasText: label }).first();
 }
 
 test('dashboard, filters, VSM and report explorer use synthetic analytics data', async ({
