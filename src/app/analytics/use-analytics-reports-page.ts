@@ -53,7 +53,9 @@ export function useAnalyticsReportsPage() {
       })
       .catch((error) => {
         if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible cargar los reportes.');
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible cargar los reportes.',
+          );
         }
       });
     return () => {

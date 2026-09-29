@@ -55,12 +55,7 @@ export class AnalyticsService {
     return this.repository.reportCatalog();
   }
 
-  report(
-    report: string,
-    filters: AnalyticsFilters & { search?: string },
-    page = 1,
-    pageSize = 25,
-  ) {
+  report(report: string, filters: AnalyticsFilters & { search?: string }, page = 1, pageSize = 25) {
     if (!report.trim()) throw new Error('Selecciona un reporte.');
     return this.repository.report(report, cleanFilters(filters), page, Math.min(pageSize, 100));
   }
@@ -71,9 +66,10 @@ export class AnalyticsService {
     response: ReportResponse,
   ) {
     const csv = recordsToCsv(response.columns, response.rows);
-    const exportFilters = Object.fromEntries(
-      Object.entries(cleanFilters(filters)),
-    ) as Record<string, unknown>;
+    const exportFilters = Object.fromEntries(Object.entries(cleanFilters(filters))) as Record<
+      string,
+      unknown
+    >;
     await this.repository.recordExport(report, exportFilters, 'CSV', response.rows.length);
     return csv;
   }

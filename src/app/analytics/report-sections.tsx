@@ -1,6 +1,9 @@
 'use client';
 
-import type { ReportCatalog, ReportResponse } from '@/modules/analytics/application/analytics.schemas';
+import type {
+  ReportCatalog,
+  ReportResponse,
+} from '@/modules/analytics/application/analytics.schemas';
 import type { ReportFilters } from './use-analytics-reports-page';
 import styles from './analytics.module.css';
 

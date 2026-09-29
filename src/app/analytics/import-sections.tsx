@@ -1,6 +1,10 @@
 'use client';
 
-import type { ImportApply, ImportList, ImportPreview } from '@/modules/analytics/application/analytics.schemas';
+import type {
+  ImportApply,
+  ImportList,
+  ImportPreview,
+} from '@/modules/analytics/application/analytics.schemas';
 import styles from './analytics.module.css';
 
 function errorMessage(item: Record<string, unknown>) {

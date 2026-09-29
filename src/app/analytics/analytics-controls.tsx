@@ -50,7 +50,10 @@ export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
       </label>
       <label>
         Etapa
-        <select value={props.value.step ?? ''} onChange={(event) => set('step', event.target.value)}>
+        <select
+          value={props.value.step ?? ''}
+          onChange={(event) => set('step', event.target.value)}
+        >
           <option value="">Todas</option>
           {props.steps.map((step) => (
             <option key={step.code} value={step.code}>
@@ -66,16 +69,25 @@ export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
           onChange={(event) => set('status', event.target.value)}
         >
           <option value="">Todos</option>
-          {['QUEUED', 'ASSIGNED', 'IN_PROGRESS', 'WAITING', 'BLOCKED', 'PENDING_APPROVAL', 'CLOSED'].map(
-            (status) => (
-              <option key={status}>{status}</option>
-            ),
-          )}
+          {[
+            'QUEUED',
+            'ASSIGNED',
+            'IN_PROGRESS',
+            'WAITING',
+            'BLOCKED',
+            'PENDING_APPROVAL',
+            'CLOSED',
+          ].map((status) => (
+            <option key={status}>{status}</option>
+          ))}
         </select>
       </label>
       <label>
         Modalidad
-        <select value={props.value.route ?? ''} onChange={(event) => set('route', event.target.value)}>
+        <select
+          value={props.value.route ?? ''}
+          onChange={(event) => set('route', event.target.value)}
+        >
           <option value="">Todas</option>
           {['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].map((route) => (
             <option key={route}>{route}</option>

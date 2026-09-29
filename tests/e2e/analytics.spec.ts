@@ -43,9 +43,7 @@ test('dashboard, filters, VSM and report explorer use synthetic analytics data',
   await page.getByRole('button', { name: 'Aplicar' }).click();
   await expect(page.getByText('Alistamiento').first()).toBeVisible();
 
-  await page
-    .getByLabel('Pedido o clave histórica')
-    .fill('aa100000-0000-4000-8000-000000000001');
+  await page.getByLabel('Pedido o clave histórica').fill('aa100000-0000-4000-8000-000000000001');
   await page.getByRole('button', { name: 'Consultar' }).click();
   await expect(page.getByText('AN-E2E-FAST')).toBeVisible();
   await expect(page.getByText('Lead time laboral')).toBeVisible();

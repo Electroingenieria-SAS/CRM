@@ -37,7 +37,9 @@ export function useAnalyticsSession() {
       })
       .catch((error) => {
         if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible restaurar la sesión.');
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible restaurar la sesión.',
+          );
         }
       })
       .finally(() => {

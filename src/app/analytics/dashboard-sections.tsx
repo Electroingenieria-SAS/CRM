@@ -94,11 +94,7 @@ export function DashboardAlerts({ dashboard }: { dashboard: AnalyticsDashboard }
       <div className={styles.alerts}>
         {dashboard.alerts.length ? (
           dashboard.alerts.map((alert) => (
-            <article
-              className={styles.alert}
-              data-severity={alert.severity}
-              key={alert.orderId}
-            >
+            <article className={styles.alert} data-severity={alert.severity} key={alert.orderId}>
               <div className={styles.rowHeader}>
                 <strong>{alert.orderNumber}</strong>
                 <span>{alert.stepName}</span>

@@ -4,12 +4,7 @@ import { AnalyticsFiltersBar, catalogSteps } from '../analytics-controls';
 import { AnalyticsShell } from '../analytics-shell';
 import styles from '../analytics.module.css';
 import { useAnalyticsVsmPage } from '../use-analytics-vsm-page';
-import {
-  BottlenecksPanel,
-  OrderVsmPanel,
-  StageWaitPanel,
-  VsmSummaryCards,
-} from '../vsm-sections';
+import { BottlenecksPanel, OrderVsmPanel, StageWaitPanel, VsmSummaryCards } from '../vsm-sections';
 
 export default function AnalyticsVsmPage() {
   const page = useAnalyticsVsmPage();

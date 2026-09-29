@@ -23,20 +23,20 @@ Dashboard, VSM y Reportes no escriben tablas internas de otros dominios.
 
 La fuente documental y ejecutable es `erp_supply.analytics_kpi_catalog`.
 
-| KPI | Definición | Fuente | Filtro temporal |
-| --- | --- | --- | --- |
-| ORDERS_TOTAL | Pedidos creados dentro del rango. | orders | created_at |
-| ORDERS_ACTIVE | Pedidos activos que intersectan el rango. | orders | ciclo activo |
-| ORDERS_CLOSED | Pedidos cerrados dentro del rango. | orders | closed_at |
-| ORDERS_BLOCKED | Pedidos bloqueados o con bloqueo abierto. | orders + order_blocks | snapshot/rango |
-| FINANCIAL_PENDING | Pedidos actualmente en Cartera/Caja/Facturación Caja. | orders.current_step_code | snapshot/rango |
-| DELIVERIES_PENDING | Pedidos activos en etapas de entrega/cierre. | orders.current_step_code | snapshot/rango |
-| WORKFORCE_OCCUPIED | Personas ocupadas/bloqueadas. | erp_x_order_workforce_indicators | rango Workforce |
-| WORKFORCE_AVAILABLE | Personas disponibles. | erp_x_order_workforce_indicators | rango Workforce |
-| VSM_LEAD_TIME | Tiempo laboral creación -> cierre/corte. | Orders + calendario Workforce | por pedido |
-| VSM_WAITING_TIME | Creación de etapa -> inicio efectivo. | order_tasks | por etapa |
-| VSM_PROCESSING_TIME | Tiempo laboral iniciado menos bloqueo explícito. | order_tasks + order_blocks | por etapa |
-| VSM_BLOCKED_TIME | Intervalos de bloqueo explícito. | order_blocks | por etapa |
+| KPI                 | Definición                                            | Fuente                           | Filtro temporal |
+| ------------------- | ----------------------------------------------------- | -------------------------------- | --------------- |
+| ORDERS_TOTAL        | Pedidos creados dentro del rango.                     | orders                           | created_at      |
+| ORDERS_ACTIVE       | Pedidos activos que intersectan el rango.             | orders                           | ciclo activo    |
+| ORDERS_CLOSED       | Pedidos cerrados dentro del rango.                    | orders                           | closed_at       |
+| ORDERS_BLOCKED      | Pedidos bloqueados o con bloqueo abierto.             | orders + order_blocks            | snapshot/rango  |
+| FINANCIAL_PENDING   | Pedidos actualmente en Cartera/Caja/Facturación Caja. | orders.current_step_code         | snapshot/rango  |
+| DELIVERIES_PENDING  | Pedidos activos en etapas de entrega/cierre.          | orders.current_step_code         | snapshot/rango  |
+| WORKFORCE_OCCUPIED  | Personas ocupadas/bloqueadas.                         | erp_x_order_workforce_indicators | rango Workforce |
+| WORKFORCE_AVAILABLE | Personas disponibles.                                 | erp_x_order_workforce_indicators | rango Workforce |
+| VSM_LEAD_TIME       | Tiempo laboral creación -> cierre/corte.              | Orders + calendario Workforce    | por pedido      |
+| VSM_WAITING_TIME    | Creación de etapa -> inicio efectivo.                 | order_tasks                      | por etapa       |
+| VSM_PROCESSING_TIME | Tiempo laboral iniciado menos bloqueo explícito.      | order_tasks + order_blocks       | por etapa       |
+| VSM_BLOCKED_TIME    | Intervalos de bloqueo explícito.                      | order_blocks                     | por etapa       |
 
 No se publica "inventario crítico" porque Inventory no dispone todavía de un umbral de criticidad
 confiable. El dashboard sí puede mostrar físico, reservado, comprometido, disponible y saldos

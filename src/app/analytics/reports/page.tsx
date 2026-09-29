@@ -29,7 +29,9 @@ export default function AnalyticsReportsPage() {
         <div>
           <p className="eyebrow">Explorador analítico</p>
           <h1>Reportes reutilizables</h1>
-          <p>Una sola superficie paginada; cada reporte conserva permisos y filtros de su fuente.</p>
+          <p>
+            Una sola superficie paginada; cada reporte conserva permisos y filtros de su fuente.
+          </p>
         </div>
       </header>
 

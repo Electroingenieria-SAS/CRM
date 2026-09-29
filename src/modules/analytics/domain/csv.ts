@@ -46,11 +46,14 @@ export function parseCsv(text: string): Array<Record<string, string>> {
   if (!headerRow) throw new Error('El CSV no contiene encabezados.');
   const headers = headerRow.map((value) => value.trim());
   if (headers.some((header) => !header)) throw new Error('El CSV contiene encabezados vacíos.');
-  if (new Set(headers).size !== headers.length) throw new Error('El CSV contiene encabezados duplicados.');
+  if (new Set(headers).size !== headers.length)
+    throw new Error('El CSV contiene encabezados duplicados.');
 
-  return rows.slice(1).map((values) =>
-    Object.fromEntries(headers.map((header, index) => [header, values[index]?.trim() ?? ''])),
-  );
+  return rows
+    .slice(1)
+    .map((values) =>
+      Object.fromEntries(headers.map((header, index) => [header, values[index]?.trim() ?? ''])),
+    );
 }
 
 function csvCell(value: unknown): string {

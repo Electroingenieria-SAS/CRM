@@ -61,8 +61,7 @@ export function StageWaitPanel({ summary }: { summary: AnalyticsVsmSummary }) {
               <div
                 className={styles.bar}
                 style={{
-                  width:
-                    Math.max(2, ((stage.averageWaitingMinutes ?? 0) / maxWaiting) * 100) + '%',
+                  width: Math.max(2, ((stage.averageWaitingMinutes ?? 0) / maxWaiting) * 100) + '%',
                 }}
               />
             </div>
@@ -165,7 +164,9 @@ function OrderVsmDetail({ detail }: { detail: AnalyticsOrderVsm }) {
               <span>espera {stage.waitingMinutes} min</span>
               <span>proceso {stage.processingMinutes} min</span>
               <span>bloqueo {stage.blockedMinutes} min</span>
-              {stage.transitMinutes !== null ? <span>tránsito {stage.transitMinutes} min</span> : null}
+              {stage.transitMinutes !== null ? (
+                <span>tránsito {stage.transitMinutes} min</span>
+              ) : null}
               <span>total {stage.totalMinutes} min</span>
             </div>
           </article>
