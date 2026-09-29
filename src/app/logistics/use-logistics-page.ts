@@ -158,10 +158,20 @@ export function useLogisticsPage() {
     setQuery,
     setCandidateSearch,
     clearDetail: () => setDetail(null),
-    searchCandidates: () =>
-      execute(async () => {
-        setCandidates(await application!.logistics.candidates(candidateSearch, 1, 25));
-      }, 'Candidatos actualizados.'),
+    searchCandidates: async () => {
+      if (!application) return;
+      setBusy(true);
+      setMessage(null);
+      try {
+        setCandidates(await application.logistics.candidates(candidateSearch, 1, 25));
+      } catch (error) {
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible buscar candidatos.',
+        );
+      } finally {
+        setBusy(false);
+      }
+    },
     searchQueue: () => loadQueue(query),
     openDetail,
     estimate: async (
