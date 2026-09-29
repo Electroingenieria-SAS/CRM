@@ -14,10 +14,8 @@ import type {
   LogisticsDetail,
   LogisticsQueue,
 } from '@/modules/logistics/application/logistics.schemas';
-import type {
-  LogisticsQueueQuery,
-  LogisticsReleaseInput,
-} from '@/modules/logistics/ports/logistics-ports';
+import type { LogisticsQueueQuery } from '@/modules/logistics/ports/logistics-ports';
+import { createLogisticsPageActions } from './logistics-page-actions';
 
 const initialQuery: LogisticsQueueQuery = { page: 1, pageSize: 25 };
 
@@ -78,37 +76,6 @@ export function useLogisticsPage() {
     [refresh],
   );
 
-  useEffect(() => {
-    if (!application) return;
-    let active = true;
-    const unsubscribe = application.auth.onSessionChange((event) => {
-      if (event.type === 'signed_out') router.replace('/login');
-    });
-
-    void bootstrap(application)
-      .then((workspace) => {
-        if (!active) return;
-        if (!workspace) return router.replace('/login');
-        setContext(workspace.context);
-        setCandidates(workspace.candidates);
-        setQueue(workspace.queue);
-        setCatalog(workspace.catalog);
-      })
-      .catch((error) => {
-        if (active) {
-          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Logística.');
-        }
-      })
-      .finally(() => {
-        if (active) setBusy(false);
-      });
-
-    return () => {
-      active = false;
-      unsubscribe();
-    };
-  }, [application, router]);
-
   const loadQueue = useCallback(
     async (next: LogisticsQueueQuery) => {
       if (!application) return;
@@ -143,6 +110,51 @@ export function useLogisticsPage() {
     [application],
   );
 
+  useEffect(() => {
+    if (!application) return;
+    let active = true;
+    const unsubscribe = application.auth.onSessionChange((event) => {
+      if (event.type === 'signed_out') router.replace('/login');
+    });
+
+    void bootstrap(application)
+      .then((workspace) => {
+        if (!active) return;
+        if (!workspace) return router.replace('/login');
+        setContext(workspace.context);
+        setCandidates(workspace.candidates);
+        setQueue(workspace.queue);
+        setCatalog(workspace.catalog);
+      })
+      .catch((error) => {
+        if (active) {
+          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Logística.');
+        }
+      })
+      .finally(() => {
+        if (active) setBusy(false);
+      });
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [application, router]);
+
+  const actions = createLogisticsPageActions({
+    application,
+    context,
+    candidateSearch,
+    query,
+    execute,
+    loadQueue,
+    setCandidates,
+    setPrediction,
+    setBusy,
+    setMessage,
+    goToLogin: () => router.replace('/login'),
+  });
+
   return {
     context,
     candidates,
@@ -158,182 +170,7 @@ export function useLogisticsPage() {
     setQuery,
     setCandidateSearch,
     clearDetail: () => setDetail(null),
-    searchCandidates: async () => {
-      if (!application) return;
-      setBusy(true);
-      setMessage(null);
-      try {
-        setCandidates(await application.logistics.candidates(candidateSearch, 1, 25));
-      } catch (error) {
-        setMessage(
-          error instanceof Error ? error.message : 'No fue posible buscar candidatos.',
-        );
-      } finally {
-        setBusy(false);
-      }
-    },
-    searchQueue: () => loadQueue(query),
     openDetail,
-    estimate: async (
-      orderId: string,
-      routeCode: 'LOCAL_DISPATCH' | 'NATIONAL_DISPATCH',
-      destinationId: string,
-      carrierId?: string,
-    ) => {
-      if (!application) return;
-      setBusy(true);
-      setMessage(null);
-      try {
-        const response = await application.freight.predict({
-          orderId,
-          routeCode,
-          destinationId,
-          carrierId: carrierId || undefined,
-        });
-        setPrediction(response.results[0] ?? null);
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible estimar el flete.');
-      } finally {
-        setBusy(false);
-      }
-    },
-    release: (orderId: string, input: LogisticsReleaseInput) =>
-      execute(
-        () => application!.logistics.release(orderId, input, crypto.randomUUID()),
-        'Pedido liberado a logística.',
-      ),
-    saveGuide: (shipmentId: string, carrierId: string, tracking: string) =>
-      execute(
-        () => application!.logistics.saveGuide(shipmentId, carrierId, tracking, crypto.randomUUID()),
-        'Guía registrada.',
-      ),
-    dispatch: (
-      shipmentId: string,
-      orderId: string,
-      version: number,
-      actualFreight?: number,
-    ) =>
-      execute(
-        () =>
-          application!.logistics.dispatch(
-            shipmentId,
-            orderId,
-            version,
-            actualFreight,
-            crypto.randomUUID(),
-          ),
-        'Despacho registrado.',
-      ),
-    setActualCost: (shipmentId: string, version: number, cost: number) =>
-      execute(
-        () =>
-          application!.logistics.setActualCost(
-            shipmentId,
-            cost,
-            version,
-            crypto.randomUUID(),
-          ),
-        'Costo real actualizado.',
-      ),
-    deliverWithFile: (
-      shipmentId: string,
-      orderId: string,
-      version: number,
-      file: File,
-      receivedBy?: string,
-      observation?: string,
-    ) =>
-      execute(async () => {
-        const evidenceId = await application!.logistics.uploadEvidence(
-          context!.organization.id,
-          orderId,
-          'DELIVERY_PHOTO',
-          file,
-          crypto.randomUUID(),
-        );
-        if (!evidenceId) throw new Error('No se pudo registrar la evidencia de entrega.');
-        await application!.logistics.deliver(
-          shipmentId,
-          orderId,
-          receivedBy,
-          observation,
-          evidenceId,
-          version,
-          crypto.randomUUID(),
-        );
-      }, 'Entrega confirmada y enviada a cierre de Orders.'),
-    failDelivery: (
-      shipmentId: string,
-      orderId: string,
-      version: number,
-      reason: string,
-      observation?: string,
-      file?: File,
-    ) =>
-      execute(async () => {
-        const evidenceId = file
-          ? await application!.logistics.uploadEvidence(
-              context!.organization.id,
-              orderId,
-              'DELIVERY_FAILED',
-              file,
-              crypto.randomUUID(),
-            )
-          : undefined;
-        await application!.logistics.failDelivery(
-          shipmentId,
-          orderId,
-          reason,
-          observation,
-          evidenceId,
-          version,
-          crypto.randomUUID(),
-        );
-      }, 'Intento de entrega fallido registrado.'),
-    reprogram: (shipmentId: string, version: number) =>
-      execute(
-        () => application!.logistics.reprogram(shipmentId, version, crypto.randomUUID()),
-        'Entrega reprogramada.',
-      ),
-    returnWithFile: (
-      shipmentId: string,
-      orderId: string,
-      version: number,
-      reason: string,
-      file: File,
-    ) =>
-      execute(async () => {
-        const evidenceId = await application!.logistics.uploadEvidence(
-          context!.organization.id,
-          orderId,
-          'RETURN',
-          file,
-          crypto.randomUUID(),
-        );
-        if (!evidenceId) throw new Error('No se pudo registrar la evidencia de devolución.');
-        await application!.logistics.returnShipment(
-          shipmentId,
-          orderId,
-          reason,
-          evidenceId,
-          version,
-          crypto.randomUUID(),
-        );
-      }, 'Devolución registrada.'),
-    satisfaction: (shipmentId: string, rating: number, comment?: string) =>
-      execute(
-        () =>
-          application!.logistics.satisfaction(
-            shipmentId,
-            rating,
-            comment,
-            crypto.randomUUID(),
-          ),
-        'Satisfacción registrada.',
-      ),
-    signOut: async () => {
-      await application?.auth.signOut();
-      router.replace('/login');
-    },
+    ...actions,
   };
 }
