@@ -20,7 +20,7 @@ const event = {
   occurredAt: '2026-09-28T15:00:00-05:00',
 };
 
-describe('OrdersWorkforceAutomationService', () => {
+describe('OrdersWorkforceAutomationService idempotency', () => {
   it('separates stable activity identity from event mutation idempotency', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       health: vi.fn(),
@@ -94,6 +94,9 @@ describe('OrdersWorkforceAutomationService', () => {
     expect(workforce.applyOrderEvent).not.toHaveBeenCalled();
   });
 
+});
+
+describe('OrdersWorkforceAutomationService failure recovery', () => {
   it('marks the durable event failed when Workforce rejects the mutation', async () => {
     const outbox: OrderWorkforceOutboxPort = {
       health: vi.fn(),
