@@ -25,6 +25,11 @@ function metricValue(page: Page, label: string) {
   return page.locator('article').filter({ hasText: label }).locator('strong');
 }
 
+function vsmStage(page: Page, label: string) {
+  const region = page.getByRole('region', { name: 'Espera por etapa' });
+  return region.getByRole('article').filter({ hasText: label });
+}
+
 test('dashboard, filters, VSM and report explorer use synthetic analytics data', async ({
   page,
 }, testInfo) => {
@@ -45,10 +50,7 @@ test('dashboard, filters, VSM and report explorer use synthetic analytics data',
   await expect(page.getByRole('heading', { name: 'Tiempos y cuellos de botella' })).toBeVisible();
   await setRange(page);
   await page.getByRole('button', { name: 'Aplicar' }).click();
-  const stageRegion = page.getByRole('region', { name: 'Espera por etapa' });
-  await expect(
-    stageRegion.getByRole('article').filter({ hasText: 'Alistamiento' }),
-  ).toBeVisible();
+  await expect(vsmStage(page, 'Alistamiento')).toBeVisible();
 
   await page.getByLabel('Pedido o clave histórica').fill('aa100000-0000-4000-8000-000000000001');
   await page.getByRole('button', { name: 'Consultar' }).click();
