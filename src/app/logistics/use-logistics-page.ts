@@ -1,90 +1,72 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { createLogisticsBrowserApplication } from '@/composition/logistics-browser-application';
-import type { SessionContext } from '@/modules/auth/application/session.schemas';
-import type { FreightCatalog } from '@/modules/freight/application/freight-catalog.schemas';
-import type { FreightPredictionResult } from '@/modules/freight/application/freight-prediction.schemas';
-import type {
-  LogisticsCandidates,
-  LogisticsDetail,
-  LogisticsQueue,
-} from '@/modules/logistics/application/logistics.schemas';
-import type { LogisticsQueueQuery } from '@/modules/logistics/ports/logistics-ports';
 import { createLogisticsPageActions } from './logistics-page-actions';
 import { useLogisticsBootstrap } from './use-logistics-bootstrap';
 import { useLogisticsLoaders } from './use-logistics-loaders';
-
-const initialQuery: LogisticsQueueQuery = { page: 1, pageSize: 25 };
+import { useLogisticsPageState } from './use-logistics-page-state';
 
 export function useLogisticsPage() {
   const router = useRouter();
   const application = useMemo(() => createLogisticsBrowserApplication(), []);
-  const [context, setContext] = useState<SessionContext | null>(null);
-  const [candidates, setCandidates] = useState<LogisticsCandidates | null>(null);
-  const [queue, setQueue] = useState<LogisticsQueue | null>(null);
-  const [catalog, setCatalog] = useState<FreightCatalog | null>(null);
-  const [detail, setDetail] = useState<LogisticsDetail | null>(null);
-  const [prediction, setPrediction] = useState<FreightPredictionResult | null>(null);
-  const [query, setQuery] = useState(initialQuery);
-  const [candidateSearch, setCandidateSearch] = useState('');
-  const [busy, setBusy] = useState(true);
-  const [message, setMessage] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const state = useLogisticsPageState();
 
   useLogisticsBootstrap(application, router, {
-    setContext,
-    setCandidates,
-    setQueue,
-    setCatalog,
-    setBusy,
-    setMessage,
+    setContext: state.setContext,
+    setCandidates: state.setCandidates,
+    setQueue: state.setQueue,
+    setCatalog: state.setCatalog,
+    setBusy: state.setBusy,
+    setMessage: state.setMessage,
   });
 
   const loaders = useLogisticsLoaders({
     application,
-    candidateSearch,
-    query,
-    detail,
-    setCandidates,
-    setQueue,
-    setDetail,
-    setQuery,
-    setBusy,
-    setMessage,
-    setNotice,
+    candidateSearch: state.candidateSearch,
+    query: state.query,
+    detail: state.detail,
+    setCandidates: state.setCandidates,
+    setQueue: state.setQueue,
+    setDetail: state.setDetail,
+    setQuery: state.setQuery,
+    setBusy: state.setBusy,
+    setMessage: state.setMessage,
+    setNotice: state.setNotice,
   });
 
   const actions = createLogisticsPageActions({
     application,
-    context,
-    candidateSearch,
-    query,
+    context: state.context,
+    candidateSearch: state.candidateSearch,
+    query: state.query,
     execute: loaders.execute,
     loadQueue: loaders.loadQueue,
-    setCandidates,
-    setPrediction,
-    setBusy,
-    setMessage,
+    setCandidates: state.setCandidates,
+    setPrediction: state.setPrediction,
+    setBusy: state.setBusy,
+    setMessage: state.setMessage,
     goToLogin: () => router.replace('/login'),
   });
 
   return {
-    context,
-    candidates,
-    queue,
-    catalog,
-    detail,
-    prediction,
-    query,
-    candidateSearch,
-    busy: application ? busy : false,
-    message: application ? message : 'Este entorno no tiene un backend de staging configurado.',
-    notice,
-    setQuery,
-    setCandidateSearch,
-    clearDetail: () => setDetail(null),
+    context: state.context,
+    candidates: state.candidates,
+    queue: state.queue,
+    catalog: state.catalog,
+    detail: state.detail,
+    prediction: state.prediction,
+    query: state.query,
+    candidateSearch: state.candidateSearch,
+    busy: application ? state.busy : false,
+    message: application
+      ? state.message
+      : 'Este entorno no tiene un backend de staging configurado.',
+    notice: state.notice,
+    setQuery: state.setQuery,
+    setCandidateSearch: state.setCandidateSearch,
+    clearDetail: () => state.setDetail(null),
     openDetail: loaders.openDetail,
     ...actions,
   };
