@@ -71,7 +71,7 @@ export class AnalyticsService {
     response: ReportResponse,
   ) {
     const csv = recordsToCsv(response.columns, response.rows);
-    await this.repository.recordExport(report, cleanFilters(filters), 'CSV', response.rows.length);
+    const exportFilters = Object.fromEntries(\n      Object.entries(cleanFilters(filters)),\n    ) as Record<string, unknown>;\n    await this.repository.recordExport(report, exportFilters, 'CSV', response.rows.length);
     return csv;
   }
 
@@ -82,7 +82,7 @@ export class AnalyticsService {
     const rows = parseCsv(text);
     if (rows.length > 2000) throw new Error('El archivo supera el límite de 2.000 filas.');
 
-    const missing = historicalHeaders.filter((header) => !(header in rows[0]));
+    const firstRow = rows[0];\n    if (!firstRow) throw new Error('El CSV no contiene filas de datos.');\n    const missing = historicalHeaders.filter((header) => !(header in firstRow));
     if (missing.length) {
       throw new Error('Faltan columnas: ' + missing.join(', ') + '.');
     }
