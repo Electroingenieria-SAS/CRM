@@ -83,3 +83,5 @@ export function usePacoActivityWizard(paco: PacoService, onComplete: (message: s
     message, busy, categories, activities, resolveOrder, create,
   };
 }
+
+export type PacoWizardData = ReturnType<typeof usePacoActivityWizard>;
