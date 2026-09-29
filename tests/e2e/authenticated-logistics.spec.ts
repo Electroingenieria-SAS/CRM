@@ -132,7 +132,6 @@ async function operateShipment(page: Page) {
     await satisfaction.click();
     await expect(page.getByText('Satisfacción registrada.')).toBeVisible();
   }
-
 }
 
 test('billing and logistics private routes redirect anonymous users', async ({ page }) => {
