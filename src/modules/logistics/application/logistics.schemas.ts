@@ -121,6 +121,7 @@ export const logisticsDetailSchema = z.object({
 
 export type LogisticsMutation = z.infer<typeof logisticsMutationSchema>;
 export type LogisticsQueue = z.infer<typeof logisticsQueueSchema>;
+export type LogisticsQueueItem = z.infer<typeof logisticsQueueItemSchema>;
 export type LogisticsDetail = z.infer<typeof logisticsDetailSchema>;
 export type LogisticsRoute = z.infer<typeof logisticsRouteSchema>;
 
@@ -152,3 +153,4 @@ export const logisticsCandidatesSchema = z.object({
 });
 
 export type LogisticsCandidates = z.infer<typeof logisticsCandidatesSchema>;
+export type LogisticsCandidate = z.infer<typeof logisticsCandidateSchema>;
