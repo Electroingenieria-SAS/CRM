@@ -82,10 +82,24 @@ export function LogisticsOperationPanel(props: OperationPanelProps) {
       </div>
 
       <dl className={styles.definitionGrid}>
-        <div><dt>Modalidad</dt><dd>{shipment.routeCode.replaceAll('_', ' ')}</dd></div>
-        <div><dt>Destino</dt><dd>{order.city || '—'} · {order.address || '—'}</dd></div>
-        <div><dt>Estimado</dt><dd>{money(shipment.estimatedFreight)}</dd></div>
-        <div><dt>Real</dt><dd>{money(shipment.actualFreight)}</dd></div>
+        <div>
+          <dt>Modalidad</dt>
+          <dd>{shipment.routeCode.replaceAll('_', ' ')}</dd>
+        </div>
+        <div>
+          <dt>Destino</dt>
+          <dd>
+            {order.city || '—'} · {order.address || '—'}
+          </dd>
+        </div>
+        <div>
+          <dt>Estimado</dt>
+          <dd>{money(shipment.estimatedFreight)}</dd>
+        </div>
+        <div>
+          <dt>Real</dt>
+          <dd>{money(shipment.actualFreight)}</dd>
+        </div>
       </dl>
 
       <LogisticsDispatchActions

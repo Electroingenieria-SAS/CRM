@@ -132,12 +132,7 @@ export class LogisticsService {
   async setActualCost(shipmentId: string, cost: number, version: number, key: string) {
     if (!(cost >= 0)) throw new Error('El costo real no puede ser negativo.');
     const idempotencyKey = requiredKey(key);
-    const result = await this.repository.setActualCost(
-      shipmentId,
-      cost,
-      version,
-      idempotencyKey,
-    );
+    const result = await this.repository.setActualCost(shipmentId, cost, version, idempotencyKey);
     await this.syncFreight(result, `${idempotencyKey}:freight`);
     return result;
   }

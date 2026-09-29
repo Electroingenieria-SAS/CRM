@@ -52,7 +52,9 @@ const { data: release, error: releaseError } = await coordinatorA.rpc('erp_x_log
 });
 
 if (releaseError || !release?.shipmentId) {
-  throw new Error('Could not release concurrency shipment: ' + (releaseError?.message ?? 'missing id'));
+  throw new Error(
+    'Could not release concurrency shipment: ' + (releaseError?.message ?? 'missing id'),
+  );
 }
 
 const shipmentId = release.shipmentId;
@@ -78,7 +80,8 @@ const { data: afterGuide, error: guideDetailError } = await coordinatorA.rpc(
   'erp_x_logistics_detail',
   { p_order_id: orderId },
 );
-if (guideDetailError || !afterGuide?.shipment?.version) throw guideDetailError ?? new Error('Missing guide detail');
+if (guideDetailError || !afterGuide?.shipment?.version)
+  throw guideDetailError ?? new Error('Missing guide detail');
 
 const dispatchResults = await Promise.all([
   coordinatorA.rpc('erp_x_logistics_dispatch', {
@@ -96,7 +99,8 @@ const dispatchResults = await Promise.all([
 ]);
 
 const dispatchWinner = oneWinner('dispatch', dispatchResults);
-const dispatchWinnerKey = dispatchResults[0] === dispatchWinner ? 'conc-dispatch-a' : 'conc-dispatch-b';
+const dispatchWinnerKey =
+  dispatchResults[0] === dispatchWinner ? 'conc-dispatch-a' : 'conc-dispatch-b';
 
 const retryDispatch = await coordinatorA.rpc('erp_x_logistics_dispatch', {
   p_shipment_id: shipmentId,
@@ -137,7 +141,8 @@ const deliveryResults = await Promise.all([
 ]);
 
 const deliveryWinner = oneWinner('delivery', deliveryResults);
-const deliveryWinnerKey = deliveryResults[0] === deliveryWinner ? 'conc-deliver-a' : 'conc-deliver-b';
+const deliveryWinnerKey =
+  deliveryResults[0] === deliveryWinner ? 'conc-deliver-a' : 'conc-deliver-b';
 
 const retryDelivery = await coordinatorA.rpc('erp_x_logistics_deliver', {
   p_shipment_id: shipmentId,
@@ -151,10 +156,9 @@ if (retryDelivery.error || retryDelivery.data?.idempotent !== true) {
   throw new Error('Delivery retry was not idempotent.');
 }
 
-const { data: finalDetail, error: finalError } = await coordinatorA.rpc(
-  'erp_x_logistics_detail',
-  { p_order_id: orderId },
-);
+const { data: finalDetail, error: finalError } = await coordinatorA.rpc('erp_x_logistics_detail', {
+  p_order_id: orderId,
+});
 if (finalError) throw finalError;
 if (finalDetail.shipment?.status !== 'DELIVERED') {
   throw new Error('Concurrent delivery did not produce one DELIVERED shipment.');
@@ -166,7 +170,9 @@ for (const type of ['GUIDE_RECORDED', 'DISPATCHED', 'DELIVERED']) {
   if (count !== 1) throw new Error(`Expected one ${type} event, found ${count}`);
 }
 
-if ((finalDetail.attempts ?? []).filter((attempt) => attempt.outcome === 'DELIVERED').length !== 1) {
+if (
+  (finalDetail.attempts ?? []).filter((attempt) => attempt.outcome === 'DELIVERED').length !== 1
+) {
   throw new Error('Expected exactly one delivered attempt.');
 }
 

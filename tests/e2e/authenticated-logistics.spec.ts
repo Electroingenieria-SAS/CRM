@@ -55,7 +55,9 @@ test('logistics workspace is usable on Android without horizontal page overflow'
   await expect(page.getByRole('heading', { name: 'Despachos y entregas' })).toBeVisible();
 });
 
-test('invoice to national delivery lifecycle is traceable end to end', async ({ page }, testInfo) => {
+test('invoice to national delivery lifecycle is traceable end to end', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Full logistics journey runs once.');
 
   await login(page, cajaEmail);
@@ -105,11 +107,14 @@ test('invoice to national delivery lifecycle is traceable end to end', async ({ 
   await expect(page.getByText('Despacho registrado.')).toBeVisible();
 
   await page.getByLabel('Receptor').fill('Cliente QA');
-  await page.getByLabel('Evidencia *').first().setInputFiles({
-    name: 'delivery.jpg',
-    mimeType: 'image/jpeg',
-    buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
-  });
+  await page
+    .getByLabel('Evidencia *')
+    .first()
+    .setInputFiles({
+      name: 'delivery.jpg',
+      mimeType: 'image/jpeg',
+      buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
+    });
   await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
   await page.getByRole('button', { name: 'Confirmar entrega' }).click();
   await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();

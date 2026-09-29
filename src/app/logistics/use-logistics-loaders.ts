@@ -37,50 +37,63 @@ export function useLogisticsLoaders(deps: LoaderDependencies) {
     }
   }, [deps]);
 
-  const execute = useCallback(async (operation: () => Promise<unknown>, success: string) => {
-    deps.setBusy(true);
-    deps.setMessage(null);
-    deps.setNotice(null);
-    try {
-      await operation();
-      deps.setNotice(success);
-      await refresh();
-    } catch (error) {
-      deps.setMessage(
-        error instanceof Error ? error.message : 'No fue posible completar la operación.',
-      );
-    } finally {
-      deps.setBusy(false);
-    }
-  }, [deps, refresh]);
+  const execute = useCallback(
+    async (operation: () => Promise<unknown>, success: string) => {
+      deps.setBusy(true);
+      deps.setMessage(null);
+      deps.setNotice(null);
+      try {
+        await operation();
+        deps.setNotice(success);
+        await refresh();
+      } catch (error) {
+        deps.setMessage(
+          error instanceof Error ? error.message : 'No fue posible completar la operación.',
+        );
+      } finally {
+        deps.setBusy(false);
+      }
+    },
+    [deps, refresh],
+  );
 
-  const loadQueue = useCallback(async (query: LogisticsQueueQuery) => {
-    if (!deps.application) return;
-    deps.setBusy(true);
-    deps.setMessage(null);
-    try {
-      const normalized = { ...query, page: 1, pageSize: 25 };
-      deps.setQuery(normalized);
-      deps.setQueue(await deps.application.logistics.list(normalized));
-    } catch (error) {
-      deps.setMessage(error instanceof Error ? error.message : 'No fue posible filtrar logística.');
-    } finally {
-      deps.setBusy(false);
-    }
-  }, [deps]);
+  const loadQueue = useCallback(
+    async (query: LogisticsQueueQuery) => {
+      if (!deps.application) return;
+      deps.setBusy(true);
+      deps.setMessage(null);
+      try {
+        const normalized = { ...query, page: 1, pageSize: 25 };
+        deps.setQuery(normalized);
+        deps.setQueue(await deps.application.logistics.list(normalized));
+      } catch (error) {
+        deps.setMessage(
+          error instanceof Error ? error.message : 'No fue posible filtrar logística.',
+        );
+      } finally {
+        deps.setBusy(false);
+      }
+    },
+    [deps],
+  );
 
-  const openDetail = useCallback(async (orderId: string) => {
-    if (!deps.application) return;
-    deps.setBusy(true);
-    deps.setMessage(null);
-    try {
-      deps.setDetail(await deps.application.logistics.detail(orderId));
-    } catch (error) {
-      deps.setMessage(error instanceof Error ? error.message : 'No fue posible abrir el despacho.');
-    } finally {
-      deps.setBusy(false);
-    }
-  }, [deps]);
+  const openDetail = useCallback(
+    async (orderId: string) => {
+      if (!deps.application) return;
+      deps.setBusy(true);
+      deps.setMessage(null);
+      try {
+        deps.setDetail(await deps.application.logistics.detail(orderId));
+      } catch (error) {
+        deps.setMessage(
+          error instanceof Error ? error.message : 'No fue posible abrir el despacho.',
+        );
+      } finally {
+        deps.setBusy(false);
+      }
+    },
+    [deps],
+  );
 
   return { execute, loadQueue, openDetail };
 }

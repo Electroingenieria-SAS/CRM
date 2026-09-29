@@ -81,8 +81,7 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
   const canCorrectCost =
     hasModuleCapability(props.context, 'shipping', 'approve') ||
     hasModuleCapability(props.context, 'freight', 'update');
-  const canSatisfaction =
-    canUpdate || hasModuleCapability(props.context, 'sales', 'create');
+  const canSatisfaction = canUpdate || hasModuleCapability(props.context, 'sales', 'create');
 
   return (
     <AppShell
@@ -100,8 +99,16 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
           </div>
         </header>
 
-        {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
-        {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
+        {props.message ? (
+          <p className={styles.error} role="alert">
+            {props.message}
+          </p>
+        ) : null}
+        {props.notice ? (
+          <p className={styles.notice} role="status">
+            {props.notice}
+          </p>
+        ) : null}
 
         <LogisticsReleaseSection
           candidates={props.candidates}

@@ -52,10 +52,9 @@ interface ShippingSectionProps {
   onSatisfaction(shipmentId: string, rating: number, comment?: string): Promise<void>;
 }
 
-function ShippingFilters(props: Pick<
-  ShippingSectionProps,
-  'query' | 'busy' | 'onQuery' | 'onSearchQueue'
->) {
+function ShippingFilters(
+  props: Pick<ShippingSectionProps, 'query' | 'busy' | 'onQuery' | 'onSearchQueue'>,
+) {
   return (
     <div className={styles.filters}>
       <input
@@ -73,7 +72,9 @@ function ShippingFilters(props: Pick<
       >
         <option value="">Todos los estados</option>
         {['READY', 'IN_TRANSIT', 'DELIVERED', 'DELIVERY_FAILED', 'RETURNED'].map((status) => (
-          <option key={status} value={status}>{status.replaceAll('_', ' ')}</option>
+          <option key={status} value={status}>
+            {status.replaceAll('_', ' ')}
+          </option>
         ))}
       </select>
       <select
@@ -85,10 +86,14 @@ function ShippingFilters(props: Pick<
       >
         <option value="">Todas las modalidades</option>
         {['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].map((route) => (
-          <option key={route} value={route}>{route.replaceAll('_', ' ')}</option>
+          <option key={route} value={route}>
+            {route.replaceAll('_', ' ')}
+          </option>
         ))}
       </select>
-      <button type="button" disabled={props.busy} onClick={props.onSearchQueue}>Filtrar</button>
+      <button type="button" disabled={props.busy} onClick={props.onSearchQueue}>
+        Filtrar
+      </button>
     </div>
   );
 }
@@ -110,7 +115,11 @@ export function LogisticsShippingSection(props: ShippingSectionProps) {
           onSelect={(orderId) => void props.onOpenDetail(orderId)}
         />
         <LogisticsOperationPanel
-          key={props.detail?.shipment ? `${props.detail.shipment.id}:${props.detail.shipment.version}` : 'none'}
+          key={
+            props.detail?.shipment
+              ? `${props.detail.shipment.id}:${props.detail.shipment.version}`
+              : 'none'
+          }
           detail={props.detail}
           catalog={props.catalog}
           busy={props.busy}

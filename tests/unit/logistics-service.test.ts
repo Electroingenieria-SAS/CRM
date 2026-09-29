@@ -82,14 +82,7 @@ function fixture() {
     orders,
     storage,
     inventory,
-    service: new LogisticsService(
-      repository,
-      freight,
-      evidence,
-      orders,
-      storage,
-      inventory,
-    ),
+    service: new LogisticsService(repository, freight, evidence, orders, storage, inventory),
   };
 }
 
@@ -99,20 +92,9 @@ describe('logistics service', () => {
 
     await test.service.dispatch(shipmentId, orderId, 1, 22000, 'dispatch-1');
 
-    expect(test.orders.ensureOperationalStarted).toHaveBeenCalledWith(
-      orderId,
-      'dispatch-1:orders',
-    );
-    expect(test.repository.dispatch).toHaveBeenCalledWith(
-      shipmentId,
-      1,
-      22000,
-      'dispatch-1',
-    );
-    expect(test.inventory.onDispatched).toHaveBeenCalledWith(
-      orderId,
-      'dispatch-1:inventory',
-    );
+    expect(test.orders.ensureOperationalStarted).toHaveBeenCalledWith(orderId, 'dispatch-1:orders');
+    expect(test.repository.dispatch).toHaveBeenCalledWith(shipmentId, 1, 22000, 'dispatch-1');
+    expect(test.inventory.onDispatched).toHaveBeenCalledWith(orderId, 'dispatch-1:inventory');
     expect(test.freight.recordActual).toHaveBeenCalledWith(
       expect.objectContaining({
         orderId,
@@ -159,15 +141,9 @@ describe('logistics service', () => {
       'deliver-1',
     );
 
-    expect(test.orders.ensureOperationalStarted).toHaveBeenCalledWith(
-      orderId,
-      'deliver-1:orders',
-    );
+    expect(test.orders.ensureOperationalStarted).toHaveBeenCalledWith(orderId, 'deliver-1:orders');
     expect(test.repository.deliver).toHaveBeenCalled();
-    expect(test.orders.completeDelivery).toHaveBeenCalledWith(
-      orderId,
-      'deliver-1:orders-complete',
-    );
+    expect(test.orders.completeDelivery).toHaveBeenCalledWith(orderId, 'deliver-1:orders-complete');
   });
 
   it('requires evidence before confirming delivery', async () => {

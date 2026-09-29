@@ -47,8 +47,12 @@ export function LogisticsCandidateList(props: {
         >
           <strong>{item.orderNumber}</strong>
           <span>{item.customerName}</span>
-          <small>{item.routeCode.replaceAll('_', ' ')} · {item.city || 'Sin ciudad'}</small>
-          <small>{item.readiness.readyForLogistics ? 'Listo para liberar' : 'Con restricción'}</small>
+          <small>
+            {item.routeCode.replaceAll('_', ' ')} · {item.city || 'Sin ciudad'}
+          </small>
+          <small>
+            {item.readiness.readyForLogistics ? 'Listo para liberar' : 'Con restricción'}
+          </small>
         </button>
       ))}
     </div>

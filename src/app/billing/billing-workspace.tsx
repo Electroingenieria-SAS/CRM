@@ -3,10 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
-import type {
-  BillingQueue,
-  BillingQueueItem,
-} from '@/modules/billing/application/billing.schemas';
+import type { BillingQueue, BillingQueueItem } from '@/modules/billing/application/billing.schemas';
 import type { InvoiceInput } from '@/modules/finance/ports/finance-repository';
 import { AppShell, type AppShellNavigationItem } from '@/shared/ui/app-shell';
 import styles from './billing-page.module.css';
@@ -66,7 +63,9 @@ function BillingQueueCards(props: {
             <span>{item.currentStep.replaceAll('_', ' ')}</span>
           </span>
           <span>{item.customerName}</span>
-          <small>{item.orderType} · {item.routeCode.replaceAll('_', ' ')}</small>
+          <small>
+            {item.orderType} · {item.routeCode.replaceAll('_', ' ')}
+          </small>
           <small>
             {item.billingReady ? 'Documento listo' : 'Documento pendiente'} ·{' '}
             {item.financial.decision}
@@ -98,7 +97,9 @@ function InvoiceForm(props: {
     });
   };
 
-  const supports = props.item.supports.filter((support) => support.validationStatus === 'VALIDATED');
+  const supports = props.item.supports.filter(
+    (support) => support.validationStatus === 'VALIDATED',
+  );
 
   return (
     <form className={styles.form} onSubmit={submit}>
@@ -148,7 +149,11 @@ function BillingDetail(
 ) {
   const item = props.selected;
   if (!item) {
-    return <section className={styles.detail}><p>Selecciona un pedido para gestionar su documento.</p></section>;
+    return (
+      <section className={styles.detail}>
+        <p>Selecciona un pedido para gestionar su documento.</p>
+      </section>
+    );
   }
 
   const isPvp = item.orderType === 'PVP';
@@ -191,9 +196,18 @@ function BillingDetail(
       )}
 
       <div className={styles.summary}>
-        <div><span>Factura(s)</span><strong>{item.invoices.length}</strong></div>
-        <div><span>Finance</span><strong>{item.financial.decision}</strong></div>
-        <div><span>Ruta</span><strong>{item.routeCode.replaceAll('_', ' ')}</strong></div>
+        <div>
+          <span>Factura(s)</span>
+          <strong>{item.invoices.length}</strong>
+        </div>
+        <div>
+          <span>Finance</span>
+          <strong>{item.financial.decision}</strong>
+        </div>
+        <div>
+          <span>Ruta</span>
+          <strong>{item.routeCode.replaceAll('_', ' ')}</strong>
+        </div>
       </div>
 
       <button
@@ -229,12 +243,22 @@ export function BillingWorkspace(props: BillingWorkspaceProps) {
           <div>
             <p className="eyebrow">Tramo final del pedido</p>
             <h1>Facturación</h1>
-            <p>Documenta la factura o Anexo PVP y libera solo cuando Finance y Orders estén listos.</p>
+            <p>
+              Documenta la factura o Anexo PVP y libera solo cuando Finance y Orders estén listos.
+            </p>
           </div>
         </header>
 
-        {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
-        {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
+        {props.message ? (
+          <p className={styles.error} role="alert">
+            {props.message}
+          </p>
+        ) : null}
+        {props.notice ? (
+          <p className={styles.notice} role="status">
+            {props.notice}
+          </p>
+        ) : null}
 
         <section className={styles.toolbar} aria-label="Filtros de facturación">
           <input
@@ -243,7 +267,9 @@ export function BillingWorkspace(props: BillingWorkspaceProps) {
             value={props.search}
             onChange={(event) => props.onSearchChange(event.target.value)}
           />
-          <button type="button" onClick={props.onSearch} disabled={props.busy}>Buscar</button>
+          <button type="button" onClick={props.onSearch} disabled={props.busy}>
+            Buscar
+          </button>
         </section>
 
         <div className={styles.layout}>

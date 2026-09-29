@@ -9,10 +9,12 @@ import { AppError } from '@/shared/errors/app-error';
 const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
 
 function safeFileName(value: string) {
-  return value
-    .normalize('NFKD')
-    .replace(/[^a-zA-Z0-9._-]+/g, '-')
-    .slice(-120) || 'evidence';
+  return (
+    value
+      .normalize('NFKD')
+      .replace(/[^a-zA-Z0-9._-]+/g, '-')
+      .slice(-120) || 'evidence'
+  );
 }
 
 function startsWith(bytes: Uint8Array, expected: readonly number[]) {
@@ -32,8 +34,7 @@ async function validateSignature(file: File) {
     (file.type === 'image/webp' &&
       startsWith(bytes, [0x52, 0x49, 0x46, 0x46]) &&
       startsWith(bytes.slice(8), [0x57, 0x45, 0x42, 0x50])) ||
-    (file.type === 'application/pdf' &&
-      startsWith(bytes, [0x25, 0x50, 0x44, 0x46, 0x2d]));
+    (file.type === 'application/pdf' && startsWith(bytes, [0x25, 0x50, 0x44, 0x46, 0x2d]));
 
   if (!valid) {
     throw new AppError(

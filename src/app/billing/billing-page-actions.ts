@@ -27,7 +27,9 @@ async function runBillingAction(
     deps.setNotice(success);
     await deps.load(deps.search);
   } catch (error) {
-    deps.setMessage(error instanceof Error ? error.message : 'No fue posible completar la operación.');
+    deps.setMessage(
+      error instanceof Error ? error.message : 'No fue posible completar la operación.',
+    );
   } finally {
     deps.setBusy(false);
   }
@@ -60,11 +62,7 @@ export function createBillingPageActions(deps: BillingPageActionDependencies) {
       runBillingAction(
         deps,
         () =>
-          deps.application!.billing.complete(
-            item.orderId,
-            item.orderVersion,
-            crypto.randomUUID(),
-          ),
+          deps.application!.billing.complete(item.orderId, item.orderVersion, crypto.randomUUID()),
         'Pedido liberado hacia logística.',
       ),
     signOut: async () => {

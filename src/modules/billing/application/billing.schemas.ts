@@ -33,19 +33,23 @@ export const billingQueueItemSchema = z.object({
   routeCode: z.string(),
   orderVersion: z.number().int().positive(),
   billingReady: z.boolean(),
-  financial: z.object({
-    decision: z.string(),
-    reason: z.string(),
-  }).passthrough(),
+  financial: z
+    .object({
+      decision: z.string(),
+      reason: z.string(),
+    })
+    .passthrough(),
   invoices: z.array(billingInvoiceSchema),
-  supports: z.array(z.object({
-    id: z.string().uuid(),
-    supportType: z.string(),
-    storageProvider: z.string(),
-    storageReference: z.string(),
-    validationStatus: z.string(),
-    createdAt: z.string(),
-  })),
+  supports: z.array(
+    z.object({
+      id: z.string().uuid(),
+      supportType: z.string(),
+      storageProvider: z.string(),
+      storageReference: z.string(),
+      validationStatus: z.string(),
+      createdAt: z.string(),
+    }),
+  ),
   pvpAnnexCount: z.number().int().nonnegative(),
 });
 

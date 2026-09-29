@@ -42,7 +42,9 @@ function GuideForm(props: {
         <select value={props.carrierId} onChange={(e) => props.setCarrierId(e.target.value)}>
           <option value="">Seleccionar</option>
           {props.catalog.carriers.map((carrier) => (
-            <option key={carrier.id} value={carrier.id}>{carrier.name}</option>
+            <option key={carrier.id} value={carrier.id}>
+              {carrier.name}
+            </option>
           ))}
         </select>
       </label>

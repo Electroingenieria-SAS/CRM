@@ -32,8 +32,13 @@ export function createLogisticsDeliveryActions(deps: LogisticsPageActionDependen
         const evidenceId = await uploadEvidence(deps, orderId, 'DELIVERY_PHOTO', file);
         if (!evidenceId) throw new Error('No se pudo registrar la evidencia de entrega.');
         await deps.application!.logistics.deliver(
-          shipmentId, orderId, receivedBy, observation,
-          evidenceId, version, crypto.randomUUID(),
+          shipmentId,
+          orderId,
+          receivedBy,
+          observation,
+          evidenceId,
+          version,
+          crypto.randomUUID(),
         );
       }, 'Entrega confirmada y enviada a cierre de Orders.'),
     failDelivery: (
@@ -49,15 +54,18 @@ export function createLogisticsDeliveryActions(deps: LogisticsPageActionDependen
           ? await uploadEvidence(deps, orderId, 'DELIVERY_FAILED', file)
           : undefined;
         await deps.application!.logistics.failDelivery(
-          shipmentId, orderId, reason, observation,
-          evidenceId, version, crypto.randomUUID(),
+          shipmentId,
+          orderId,
+          reason,
+          observation,
+          evidenceId,
+          version,
+          crypto.randomUUID(),
         );
       }, 'Intento de entrega fallido registrado.'),
     reprogram: (shipmentId: string, version: number) =>
       deps.execute(
-        () => deps.application!.logistics.reprogram(
-          shipmentId, version, crypto.randomUUID(),
-        ),
+        () => deps.application!.logistics.reprogram(shipmentId, version, crypto.randomUUID()),
         'Entrega reprogramada.',
       ),
     returnWithFile: (
@@ -71,14 +79,23 @@ export function createLogisticsDeliveryActions(deps: LogisticsPageActionDependen
         const evidenceId = await uploadEvidence(deps, orderId, 'RETURN', file);
         if (!evidenceId) throw new Error('No se pudo registrar la evidencia de devolución.');
         await deps.application!.logistics.returnShipment(
-          shipmentId, orderId, reason, evidenceId, version, crypto.randomUUID(),
+          shipmentId,
+          orderId,
+          reason,
+          evidenceId,
+          version,
+          crypto.randomUUID(),
         );
       }, 'Devolución registrada.'),
     satisfaction: (shipmentId: string, rating: number, comment?: string) =>
       deps.execute(
-        () => deps.application!.logistics.satisfaction(
-          shipmentId, rating, comment, crypto.randomUUID(),
-        ),
+        () =>
+          deps.application!.logistics.satisfaction(
+            shipmentId,
+            rating,
+            comment,
+            crypto.randomUUID(),
+          ),
         'Satisfacción registrada.',
       ),
     signOut: async () => {

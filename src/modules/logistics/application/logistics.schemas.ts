@@ -46,11 +46,13 @@ export const logisticsQueueItemSchema = z.object({
   }),
   routeCode: logisticsRouteSchema,
   status: logisticsStatusSchema,
-  carrier: z.object({
-    id: z.string().uuid(),
-    code: z.string(),
-    name: z.string(),
-  }).nullable(),
+  carrier: z
+    .object({
+      id: z.string().uuid(),
+      code: z.string(),
+      name: z.string(),
+    })
+    .nullable(),
   trackingNumber: z.string().nullable(),
   estimatedFreight: z.coerce.number().nonnegative().nullable(),
   actualFreight: z.coerce.number().nonnegative().nullable(),
@@ -89,28 +91,30 @@ export const logisticsDetailSchema = z.object({
     version: z.number().int().positive(),
   }),
   billing: z.record(z.string(), z.unknown()),
-  shipment: z.object({
-    id: z.string().uuid(),
-    routeCode: logisticsRouteSchema,
-    status: logisticsStatusSchema,
-    carrierId: z.string().uuid().nullable(),
-    carrierName: z.string().nullable(),
-    destinationId: z.string().uuid().nullable(),
-    predictionId: z.string().uuid().nullable(),
-    trackingNumber: z.string().nullable(),
-    estimatedFreight: z.coerce.number().nonnegative().nullable(),
-    estimatedFreightLow: z.coerce.number().nonnegative().nullable(),
-    estimatedFreightHigh: z.coerce.number().nonnegative().nullable(),
-    actualFreight: z.coerce.number().nonnegative().nullable(),
-    freightError: z.coerce.number().nullable(),
-    freightSyncStatus: z.string(),
-    releasedAt: z.string(),
-    dispatchedAt: z.string().nullable(),
-    deliveredAt: z.string().nullable(),
-    receivedBy: z.string().nullable(),
-    returnReason: z.string().nullable(),
-    version: z.number().int().positive(),
-  }).nullable(),
+  shipment: z
+    .object({
+      id: z.string().uuid(),
+      routeCode: logisticsRouteSchema,
+      status: logisticsStatusSchema,
+      carrierId: z.string().uuid().nullable(),
+      carrierName: z.string().nullable(),
+      destinationId: z.string().uuid().nullable(),
+      predictionId: z.string().uuid().nullable(),
+      trackingNumber: z.string().nullable(),
+      estimatedFreight: z.coerce.number().nonnegative().nullable(),
+      estimatedFreightLow: z.coerce.number().nonnegative().nullable(),
+      estimatedFreightHigh: z.coerce.number().nonnegative().nullable(),
+      actualFreight: z.coerce.number().nonnegative().nullable(),
+      freightError: z.coerce.number().nullable(),
+      freightSyncStatus: z.string(),
+      releasedAt: z.string(),
+      dispatchedAt: z.string().nullable(),
+      deliveredAt: z.string().nullable(),
+      receivedBy: z.string().nullable(),
+      returnReason: z.string().nullable(),
+      version: z.number().int().positive(),
+    })
+    .nullable(),
   events: z.array(z.record(z.string(), z.unknown())),
   attempts: z.array(z.record(z.string(), z.unknown())),
   satisfaction: z.record(z.string(), z.unknown()).nullable(),
@@ -133,12 +137,14 @@ export const logisticsCandidateSchema = z.object({
   address: z.string().nullable(),
   routeCode: logisticsRouteSchema,
   orderVersion: z.number().int().positive(),
-  readiness: z.object({
-    readyForLogistics: z.boolean(),
-    billingReady: z.boolean(),
-    financialDecision: z.string(),
-    blockingIssueOpen: z.boolean(),
-  }).passthrough(),
+  readiness: z
+    .object({
+      readyForLogistics: z.boolean(),
+      billingReady: z.boolean(),
+      financialDecision: z.string(),
+      blockingIssueOpen: z.boolean(),
+    })
+    .passthrough(),
 });
 
 export const logisticsCandidatesSchema = z.object({

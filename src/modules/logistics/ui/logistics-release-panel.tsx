@@ -41,9 +41,20 @@ function ReleaseSummary({ candidate }: { candidate: LogisticsCandidate }) {
         <span className={styles.badge}>{candidate.routeCode.replaceAll('_', ' ')}</span>
       </div>
       <dl className={styles.definitionGrid}>
-        <div><dt>Destino</dt><dd>{candidate.city || 'Sin ciudad'} · {candidate.address || 'Sin dirección'}</dd></div>
-        <div><dt>Facturación</dt><dd>{candidate.readiness.billingReady ? 'Lista' : 'Pendiente'}</dd></div>
-        <div><dt>Finance</dt><dd>{candidate.readiness.financialDecision}</dd></div>
+        <div>
+          <dt>Destino</dt>
+          <dd>
+            {candidate.city || 'Sin ciudad'} · {candidate.address || 'Sin dirección'}
+          </dd>
+        </div>
+        <div>
+          <dt>Facturación</dt>
+          <dd>{candidate.readiness.billingReady ? 'Lista' : 'Pendiente'}</dd>
+        </div>
+        <div>
+          <dt>Finance</dt>
+          <dd>{candidate.readiness.financialDecision}</dd>
+        </div>
       </dl>
     </>
   );
@@ -62,7 +73,9 @@ function PredictionCard({ prediction }: { prediction: FreightPredictionResult })
   return (
     <div className={styles.prediction}>
       <strong>{amount}</strong>
-      <span>{prediction.carrierName || 'Sin transportadora sugerida'} · {prediction.evidenceLevel}</span>
+      <span>
+        {prediction.carrierName || 'Sin transportadora sugerida'} · {prediction.evidenceLevel}
+      </span>
       {prediction.estimateLow !== undefined && prediction.estimateHigh !== undefined ? (
         <small>
           Rango: {prediction.estimateLow.toLocaleString('es-CO')} –{' '}
@@ -87,7 +100,11 @@ function FreightControls(props: {
     <div className={styles.formGrid}>
       <label>
         Destino Freight
-        <select required value={props.destinationId} onChange={(e) => props.setDestinationId(e.target.value)}>
+        <select
+          required
+          value={props.destinationId}
+          onChange={(e) => props.setDestinationId(e.target.value)}
+        >
           <option value="">Seleccionar destino</option>
           {props.catalog.destinations.map((destination) => (
             <option key={destination.id} value={destination.id}>
@@ -101,19 +118,23 @@ function FreightControls(props: {
         <select value={props.carrierId} onChange={(e) => props.setCarrierId(e.target.value)}>
           <option value="">Sugerir con histórico</option>
           {props.catalog.carriers.map((carrier) => (
-            <option key={carrier.id} value={carrier.id}>{carrier.name}</option>
+            <option key={carrier.id} value={carrier.id}>
+              {carrier.name}
+            </option>
           ))}
         </select>
       </label>
       <button
         type="button"
         disabled={props.busy || !props.destinationId}
-        onClick={() => void props.onEstimate(
-          props.candidate.orderId,
-          props.candidate.routeCode as 'LOCAL_DISPATCH' | 'NATIONAL_DISPATCH',
-          props.destinationId,
-          props.carrierId || undefined,
-        )}
+        onClick={() =>
+          void props.onEstimate(
+            props.candidate.orderId,
+            props.candidate.routeCode as 'LOCAL_DISPATCH' | 'NATIONAL_DISPATCH',
+            props.destinationId,
+            props.carrierId || undefined,
+          )
+        }
       >
         Estimar flete
       </button>
@@ -136,8 +157,7 @@ export function LogisticsReleasePanel(props: ReleasePanelProps) {
   }
 
   const freightRequired = needsFreight(candidate.routeCode);
-  const prediction =
-    props.prediction?.destinationId === destinationId ? props.prediction : null;
+  const prediction = props.prediction?.destinationId === destinationId ? props.prediction : null;
 
   const release = () => {
     const input: LogisticsReleaseInput = {};

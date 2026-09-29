@@ -34,12 +34,7 @@ export class BillingService {
     return this.finance.registerInvoice(orderId, input, requiredKey(key));
   }
 
-  async uploadPvpAnnex(
-    organizationId: string,
-    orderId: string,
-    file: File,
-    key: string,
-  ) {
+  async uploadPvpAnnex(organizationId: string, orderId: string, file: File, key: string) {
     const stored = await this.storage.upload({
       organizationId,
       orderId,

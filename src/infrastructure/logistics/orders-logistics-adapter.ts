@@ -50,9 +50,11 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
 
   async completeDelivery(orderId: string, key: string) {
     const detail = await this.orders.get(orderId);
-    if (!['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].includes(
-      detail.order.current_step_code,
-    )) {
+    if (
+      !['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].includes(
+        detail.order.current_step_code,
+      )
+    ) {
       return;
     }
 

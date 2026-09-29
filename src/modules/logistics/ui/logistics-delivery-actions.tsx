@@ -41,10 +41,9 @@ interface DeliveryActionsProps {
   onSatisfaction(shipmentId: string, rating: number, comment?: string): Promise<void>;
 }
 
-function DeliveryForm(props: Pick<
-  DeliveryActionsProps,
-  'shipment' | 'order' | 'busy' | 'canUpdate' | 'onDeliver'
->) {
+function DeliveryForm(
+  props: Pick<DeliveryActionsProps, 'shipment' | 'order' | 'busy' | 'canUpdate' | 'onDeliver'>,
+) {
   const [receivedBy, setReceivedBy] = useState(props.shipment.receivedBy ?? '');
   const [observation, setObservation] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -92,10 +91,9 @@ function DeliveryForm(props: Pick<
   );
 }
 
-function FailureForm(props: Pick<
-  DeliveryActionsProps,
-  'shipment' | 'order' | 'busy' | 'canUpdate' | 'onFail'
->) {
+function FailureForm(
+  props: Pick<DeliveryActionsProps, 'shipment' | 'order' | 'busy' | 'canUpdate' | 'onFail'>,
+) {
   const [reason, setReason] = useState('');
   const [observation, setObservation] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -140,10 +138,9 @@ function FailureForm(props: Pick<
   );
 }
 
-function ReturnForm(props: Pick<
-  DeliveryActionsProps,
-  'shipment' | 'order' | 'busy' | 'canUpdate' | 'onReturn'
->) {
+function ReturnForm(
+  props: Pick<DeliveryActionsProps, 'shipment' | 'order' | 'busy' | 'canUpdate' | 'onReturn'>,
+) {
   const [reason, setReason] = useState('');
   const [file, setFile] = useState<File | null>(null);
 
@@ -183,10 +180,9 @@ function ReturnForm(props: Pick<
   );
 }
 
-function SatisfactionForm(props: Pick<
-  DeliveryActionsProps,
-  'shipment' | 'busy' | 'onSatisfaction'
->) {
+function SatisfactionForm(
+  props: Pick<DeliveryActionsProps, 'shipment' | 'busy' | 'onSatisfaction'>,
+) {
   const [rating, setRating] = useState('5');
   const [comment, setComment] = useState('');
 
@@ -197,7 +193,9 @@ function SatisfactionForm(props: Pick<
         Calificación
         <select value={rating} onChange={(e) => setRating(e.target.value)}>
           {[5, 4, 3, 2, 1].map((value) => (
-            <option key={value} value={value}>{value} / 5</option>
+            <option key={value} value={value}>
+              {value} / 5
+            </option>
           ))}
         </select>
       </label>
@@ -208,9 +206,7 @@ function SatisfactionForm(props: Pick<
       <button
         type="button"
         disabled={props.busy}
-        onClick={() =>
-          void props.onSatisfaction(props.shipment.id, Number(rating), comment)
-        }
+        onClick={() => void props.onSatisfaction(props.shipment.id, Number(rating), comment)}
       >
         Guardar satisfacción
       </button>
@@ -226,12 +222,9 @@ export function LogisticsDeliveryActions(props: DeliveryActionsProps) {
     (dispatchRoute && props.shipment.status === 'IN_TRANSIT') ||
     (!dispatchRoute && props.shipment.status === 'READY');
   const canReturn =
-    props.shipment.status === 'IN_TRANSIT' ||
-    props.shipment.status === 'DELIVERY_FAILED';
+    props.shipment.status === 'IN_TRANSIT' || props.shipment.status === 'DELIVERY_FAILED';
   const showSatisfaction =
-    props.shipment.status === 'DELIVERED' &&
-    !props.satisfaction &&
-    props.canSatisfaction;
+    props.shipment.status === 'DELIVERED' && !props.satisfaction && props.canSatisfaction;
 
   return (
     <>

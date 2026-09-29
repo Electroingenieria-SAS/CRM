@@ -6,9 +6,7 @@ async function searchCandidates(deps: LogisticsPageActionDependencies) {
   deps.setBusy(true);
   deps.setMessage(null);
   try {
-    deps.setCandidates(
-      await deps.application.logistics.candidates(deps.candidateSearch, 1, 25),
-    );
+    deps.setCandidates(await deps.application.logistics.candidates(deps.candidateSearch, 1, 25));
   } catch (error) {
     deps.setMessage(error instanceof Error ? error.message : 'No fue posible buscar candidatos.');
   } finally {
@@ -28,7 +26,10 @@ async function estimateFreight(
   deps.setMessage(null);
   try {
     const response = await deps.application.freight.predict({
-      orderId, routeCode, destinationId, carrierId: carrierId || undefined,
+      orderId,
+      routeCode,
+      destinationId,
+      carrierId: carrierId || undefined,
     });
     deps.setPrediction(response.results[0] ?? null);
   } catch (error) {
@@ -55,23 +56,31 @@ export function createLogisticsReleaseActions(deps: LogisticsPageActionDependenc
       ),
     saveGuide: (shipmentId: string, carrierId: string, tracking: string) =>
       deps.execute(
-        () => deps.application!.logistics.saveGuide(
-          shipmentId, carrierId, tracking, crypto.randomUUID(),
-        ),
+        () =>
+          deps.application!.logistics.saveGuide(
+            shipmentId,
+            carrierId,
+            tracking,
+            crypto.randomUUID(),
+          ),
         'Guía registrada.',
       ),
     dispatch: (shipmentId: string, orderId: string, version: number, actualFreight?: number) =>
       deps.execute(
-        () => deps.application!.logistics.dispatch(
-          shipmentId, orderId, version, actualFreight, crypto.randomUUID(),
-        ),
+        () =>
+          deps.application!.logistics.dispatch(
+            shipmentId,
+            orderId,
+            version,
+            actualFreight,
+            crypto.randomUUID(),
+          ),
         'Despacho registrado.',
       ),
     setActualCost: (shipmentId: string, version: number, cost: number) =>
       deps.execute(
-        () => deps.application!.logistics.setActualCost(
-          shipmentId, cost, version, crypto.randomUUID(),
-        ),
+        () =>
+          deps.application!.logistics.setActualCost(shipmentId, cost, version, crypto.randomUUID()),
         'Costo real actualizado.',
       ),
   };

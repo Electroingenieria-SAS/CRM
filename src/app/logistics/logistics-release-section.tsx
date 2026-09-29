@@ -29,8 +29,7 @@ interface ReleaseSectionProps {
 
 export function LogisticsReleaseSection(props: ReleaseSectionProps) {
   const [candidateId, setCandidateId] = useState<string | null>(null);
-  const candidate =
-    props.candidates.items.find((item) => item.orderId === candidateId) ?? null;
+  const candidate = props.candidates.items.find((item) => item.orderId === candidateId) ?? null;
 
   return (
     <section className={styles.section} aria-labelledby="release-queue-title">

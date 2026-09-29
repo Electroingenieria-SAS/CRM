@@ -12,9 +12,7 @@ export function LogisticsTraceSection({ detail }: { detail: LogisticsDetail | nu
           <li key={String(event.id ?? index)}>
             <strong>{String(event.eventType ?? 'EVENTO').replaceAll('_', ' ')}</strong>
             <span>
-              {event.createdAt
-                ? new Date(String(event.createdAt)).toLocaleString('es-CO')
-                : ''}
+              {event.createdAt ? new Date(String(event.createdAt)).toLocaleString('es-CO') : ''}
             </span>
           </li>
         ))}

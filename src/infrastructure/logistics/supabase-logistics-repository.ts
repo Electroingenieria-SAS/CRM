@@ -93,11 +93,7 @@ export class SupabaseLogisticsRepository implements LogisticsRepository {
     return logisticsMutationSchema.parse(data);
   }
 
-  async markFreightSync(
-    shipmentId: string,
-    success: boolean,
-    payload: Record<string, unknown>,
-  ) {
+  async markFreightSync(shipmentId: string, success: boolean, payload: Record<string, unknown>) {
     const { error } = await this.client.rpc('erp_x_logistics_mark_freight_sync', {
       p_shipment_id: shipmentId,
       p_success: success,

@@ -43,5 +43,4 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 
 > Finanzas reconstruye Crédito, Cartera y Caja con fuente monetaria basada en facturas registradas netas de reversos. No se inventa cupo reutilizable ni días de mora sin fuente auditable. Orders consume únicamente un gate financiero mínimo y Customer Intelligence una proyección `totalPaid`.
 
-
 > Hilo 10 conserva Finance como fuente de facturas/pagos, separa costo estimado de costo real, usa evidencia privada referenciada y controla estados logísticos. Inventory ya está en `main`; su contrato actual termina en Receiving/Picking/Cutting y no expone una mutación de despacho por `orderId`, por lo que Logistics no escribe sus tablas ni inventa una adaptación incompatible.

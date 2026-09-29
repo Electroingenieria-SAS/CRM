@@ -38,14 +38,7 @@ export function useLogisticsBootstrap(
   router: RouterPort,
   setters: BootstrapSetters,
 ) {
-  const {
-    setContext,
-    setCandidates,
-    setQueue,
-    setCatalog,
-    setBusy,
-    setMessage,
-  } = setters;
+  const { setContext, setCandidates, setQueue, setCatalog, setBusy, setMessage } = setters;
 
   useEffect(() => {
     if (!application) return;
@@ -65,9 +58,7 @@ export function useLogisticsBootstrap(
       })
       .catch((error) => {
         if (active) {
-          setMessage(
-            error instanceof Error ? error.message : 'No fue posible abrir Logística.',
-          );
+          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Logística.');
         }
       })
       .finally(() => {

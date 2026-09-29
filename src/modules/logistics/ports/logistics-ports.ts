@@ -31,7 +31,12 @@ export interface LogisticsRepository {
   list(query?: LogisticsQueueQuery): Promise<LogisticsQueue>;
   detail(orderId: string): Promise<LogisticsDetail>;
   release(orderId: string, input: LogisticsReleaseInput, key: string): Promise<LogisticsMutation>;
-  saveGuide(shipmentId: string, carrierId: string, tracking: string, key: string): Promise<LogisticsMutation>;
+  saveGuide(
+    shipmentId: string,
+    carrierId: string,
+    tracking: string,
+    key: string,
+  ): Promise<LogisticsMutation>;
   dispatch(
     shipmentId: string,
     version: number,
@@ -73,7 +78,12 @@ export interface LogisticsRepository {
     version: number,
     key: string,
   ): Promise<LogisticsMutation>;
-  satisfaction(shipmentId: string, rating: number, comment: string | undefined, key: string): Promise<void>;
+  satisfaction(
+    shipmentId: string,
+    rating: number,
+    comment: string | undefined,
+    key: string,
+  ): Promise<void>;
 }
 
 export interface LogisticsFreightPort {
