@@ -93,7 +93,6 @@ describe('OrdersWorkforceAutomationService idempotency', () => {
     expect(result.idempotent).toBe(true);
     expect(workforce.applyOrderEvent).not.toHaveBeenCalled();
   });
-
 });
 
 describe('OrdersWorkforceAutomationService failure recovery', () => {
