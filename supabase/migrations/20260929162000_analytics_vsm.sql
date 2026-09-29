@@ -226,10 +226,10 @@ begin
       round(avg(f.processing_seconds)/60.0,2) avg_processing_minutes,
       round(avg(f.blocked_seconds)/60.0,2) avg_blocked_minutes,
       round(avg(f.total_seconds)/60.0,2) avg_total_minutes,
-      round(percentile_cont(0.5) within group(order by f.total_seconds)/60.0,2) median_minutes,
-      round(percentile_cont(0.75) within group(order by f.total_seconds)/60.0,2) p75_minutes,
-      round(percentile_cont(0.90) within group(order by f.total_seconds)/60.0,2) p90_minutes,
-      round(percentile_cont(0.95) within group(order by f.total_seconds)/60.0,2) p95_minutes
+      round((percentile_cont(0.5) within group(order by f.total_seconds)/60.0)::numeric,2) median_minutes,
+      round((percentile_cont(0.75) within group(order by f.total_seconds)/60.0)::numeric,2) p75_minutes,
+      round((percentile_cont(0.90) within group(order by f.total_seconds)/60.0)::numeric,2) p90_minutes,
+      round((percentile_cont(0.95) within group(order by f.total_seconds)/60.0)::numeric,2) p95_minutes
     from filtered f
     group by f.step_code
   ),
@@ -314,10 +314,10 @@ begin
       'orders',count(*)::integer,
       'averageStageCycleMinutes',coalesce(round(avg(stage_seconds)/60.0,2),0),
       'medianStageCycleMinutes',coalesce(round(
-        percentile_cont(0.5) within group(order by stage_seconds)/60.0,2
+        (percentile_cont(0.5) within group(order by stage_seconds)/60.0)::numeric,2
       ),0),
       'p90StageCycleMinutes',coalesce(round(
-        percentile_cont(0.90) within group(order by stage_seconds)/60.0,2
+        (percentile_cont(0.90) within group(order by stage_seconds)/60.0)::numeric,2
       ),0),
       'averageWaitingMinutes',coalesce(round(avg(waiting_seconds)/60.0,2),0),
       'averageProcessingMinutes',coalesce(round(avg(processing_seconds)/60.0,2),0),
