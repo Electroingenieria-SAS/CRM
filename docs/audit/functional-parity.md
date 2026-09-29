@@ -11,9 +11,9 @@
 | Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado |
 | Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
-| Crédito                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado |
-| Cartera                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado |
-| Caja                               |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado |
+| Crédito                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
+| Cartera                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
+| Caja                               |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
 | Compras                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
@@ -22,7 +22,7 @@
 | Despachos / entrega / satisfacción |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Workforce / jornada / cronograma   |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero   |
+| Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero    |
 | VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Histórico/importaciones            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
