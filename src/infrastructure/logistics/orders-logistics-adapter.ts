@@ -13,19 +13,12 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
 
   async ensureOperationalStarted(orderId: string, key: string) {
     const detail = await this.orders.get(orderId);
-
-    if (detail.order.status === 'IN_PROGRESS') return;
-    if (detail.order.status === 'BLOCKED' || detail.workflow.blockingIssueOpen) {
+    if (detail.workflow.blockingIssueOpen) {
       throw new Error('La tarea logística está bloqueada y no puede continuar.');
     }
 
     const actions = new Map(detail.workflow.actions.map((action) => [action.code, action]));
     let version = detail.order.version;
-
-    if (actions.get('CLAIM')?.enabled) {
-      const claimed = await this.workflow.claim(orderId, version, `${key}:claim`);
-      version = claimed.version ?? version;
-    }
 
     if (actions.get('RESUME')?.enabled) {
       await this.workflow.resume(
@@ -37,13 +30,22 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
       return;
     }
 
-    if (actions.get('START')?.enabled || actions.get('CLAIM')?.enabled) {
+    if (actions.get('CLAIM')?.enabled) {
+      const claimed = await this.workflow.claim(orderId, version, `${key}:claim`);
+      version = claimed.version ?? version;
       await this.workflow.start(orderId, version, `${key}:start`);
       return;
     }
 
+    if (actions.get('START')?.enabled) {
+      await this.workflow.start(orderId, version, `${key}:start`);
+      return;
+    }
+
+    if (actions.get('COMPLETE')?.enabled) return;
+
     const refreshed = await this.orders.get(orderId);
-    if (refreshed.order.status !== 'IN_PROGRESS') {
+    if (!refreshed.workflow.actions.some((action) => action.code === 'COMPLETE' && action.enabled)) {
       throw new Error('La tarea logística debe estar iniciada antes de continuar.');
     }
   }
@@ -51,10 +53,7 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
   async completeDelivery(orderId: string, key: string) {
     const detail = await this.orders.get(orderId);
     const routeSteps = ['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'];
-
-    if (!routeSteps.includes(detail.order.current_step_code)) {
-      return;
-    }
+    if (!routeSteps.includes(detail.order.current_step_code)) return;
 
     await this.workflow.complete(
       orderId,
