@@ -1,68 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
-import type {
-  AdminRoleCatalog,
-  AdminUsersResponse,
-} from '@/modules/admin/application/admin.schemas';
 import { AdminInviteForm } from './admin-invite-form';
 import { AdminShell } from './admin-shell';
-import { AdminUserCard } from './admin-user-card';
+import { AdminUsersPanel } from './admin-users-panel';
 import styles from './admin.module.css';
 import { useAdminSession } from './use-admin-session';
+import { useAdminUsersData } from './use-admin-users-data';
 
 export default function AdminUsersPage() {
   const session = useAdminSession();
-  const [users, setUsers] = useState<AdminUsersResponse | null>(null);
-  const [roles, setRoles] = useState<AdminRoleCatalog | null>(null);
-  const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [busy, setBusy] = useState(false);
-
-  const load = useCallback(async () => {
-    if (!session.application || !session.context) return;
-    if (!hasModuleCapability(session.context, 'admin', 'read')) {
-      session.setMessage('Tu perfil no tiene acceso a Administración.');
-      return;
-    }
-
-    setBusy(true);
-    try {
-      const [nextUsers, nextRoles] = await Promise.all([
-        session.application.admin.users({
-          search: search || undefined,
-          active: activeFilter === 'all' ? undefined : activeFilter === 'active',
-        }),
-        session.application.admin.roles(),
-      ]);
-      setUsers(nextUsers);
-      setRoles(nextRoles);
-    } catch (error) {
-      session.setMessage(
-        error instanceof Error ? error.message : 'No fue posible cargar Administración.',
-      );
-    } finally {
-      setBusy(false);
-    }
-  }, [activeFilter, search, session.application, session.context, session.setMessage]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  async function mutation(action: () => Promise<void>, success: string) {
-    session.setMessage(null);
-    try {
-      await action();
-      session.setMessage(success);
-      await load();
-    } catch (error) {
-      session.setMessage(
-        error instanceof Error ? error.message : 'La operación administrativa falló.',
-      );
-    }
-  }
+  const data = useAdminUsersData(session);
 
   if (!session.context) {
     return (
@@ -77,6 +25,7 @@ export default function AdminUsersPage() {
   }
 
   const canAdmin = hasModuleCapability(session.context, 'admin', 'admin');
+  const app = session.application;
 
   return (
     <AdminShell context={session.context} current="users" onSignOut={session.signOut}>
@@ -87,78 +36,27 @@ export default function AdminUsersPage() {
           <p>Gestión de identidad operativa sin almacenar ni recuperar contraseñas.</p>
         </div>
       </header>
-
-      {session.message ? (
-        <p className={styles.message} role="status">
-          {session.message}
-        </p>
-      ) : null}
-
-      <section className={styles.panel}>
-        <div className={styles.toolbar}>
-          <input
-            aria-label="Buscar usuarios"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Nombre, correo o código"
-          />
-          <select
-            aria-label="Estado de usuarios"
-            value={activeFilter}
-            onChange={(event) => setActiveFilter(event.target.value as typeof activeFilter)}
-          >
-            <option value="all">Todos</option>
-            <option value="active">Activos</option>
-            <option value="inactive">Inactivos</option>
-          </select>
-          <button className="primary-button" disabled={busy} onClick={() => void load()} type="button">
-            Aplicar
-          </button>
-        </div>
-
-        <div className={styles.grid}>
-          {(users?.items ?? []).map((user) => (
-            <AdminUserCard
-              key={user.id}
-              user={user}
-              roles={roles?.roles ?? []}
-              canAdmin={canAdmin}
-              onProfile={(name, code) =>
-                mutation(
-                  () => session.application!.admin.updateProfile(user.id, name, code),
-                  'Perfil actualizado.',
-                )
-              }
-              onActive={(active, reason) =>
-                mutation(
-                  () => session.application!.admin.setActive(user.id, active, reason),
-                  active ? 'Usuario activado.' : 'Usuario desactivado.',
-                )
-              }
-              onRoles={(nextRoles, primary, reason) =>
-                mutation(
-                  () => session.application!.admin.setRoles(user.id, nextRoles, primary, reason),
-                  'Roles actualizados.',
-                )
-              }
-              onReset={() =>
-                mutation(
-                  () => session.application!.admin.startPasswordReset(user.id),
-                  'Correo de restablecimiento solicitado.',
-                )
-              }
-            />
-          ))}
-        </div>
-        {!users?.items.length && !busy ? <p className={styles.muted}>No hay usuarios para estos filtros.</p> : null}
-      </section>
-
-      {canAdmin && roles ? (
+      {session.message ? <p className={styles.message} role="status">{session.message}</p> : null}
+      <AdminUsersPanel
+        {...data}
+        canAdmin={canAdmin}
+        onProfile={(id, name, code) => data.mutation(() => app!.admin.updateProfile(id, name, code), 'Perfil actualizado.')}
+        onActive={(id, active, reason) =>
+          data.mutation(() => app!.admin.setActive(id, active, reason), active ? 'Usuario activado.' : 'Usuario desactivado.')
+        }
+        onRoles={(id, roles, primary, reason) =>
+          data.mutation(() => app!.admin.setRoles(id, roles, primary, reason), 'Roles actualizados.')
+        }
+        onReset={(id) =>
+          data.mutation(() => app!.admin.startPasswordReset(id), 'Correo de restablecimiento solicitado.')
+        }
+      />
+      {canAdmin && data.roles ? (
         <AdminInviteForm
-          roles={roles.roles}
-          disabled={busy}
+          roles={data.roles.roles}
+          disabled={data.busy}
           onInvite={(input) =>
-            mutation(() => session.application!.admin.invite(input), 'Invitación enviada y perfil creado.')
+            data.mutation(() => app!.admin.invite(input), 'Invitación enviada y perfil creado.')
           }
         />
       ) : null}
