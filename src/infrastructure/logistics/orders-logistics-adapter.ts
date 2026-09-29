@@ -50,19 +50,10 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
 
   async completeDelivery(orderId: string, key: string) {
     const detail = await this.orders.get(orderId);
-    if (
-      !['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].includes(
-        detail.order.current_step_code,
-      )
-    ) {
-      return;
-    }
+    const routeSteps = ['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'];
 
-    const complete = detail.workflow.actions.find(
-      (action) => action.code === 'COMPLETE' && action.enabled,
-    );
-    if (!complete) {
-      throw new Error('Orders no habilita el cierre de la etapa logística.');
+    if (!routeSteps.includes(detail.order.current_step_code)) {
+      return;
     }
 
     await this.workflow.complete(
