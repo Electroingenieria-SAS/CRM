@@ -6,52 +6,74 @@ Fecha: 2026-09-28.
 
 Orders es dueño de workflow, tareas, estados e historial del pedido. Workforce es dueño de actividades, jornada, calendario, ocupación, evidencias y políticas especiales.
 
-El bridge vive en `modules/integrations/orders-workforce` y no importa infraestructura de ninguno de los dos dominios.
-
 ```text
-Orders RPC / order_events
+OrderWorkflowService
+        ↓ commit Orders
+order_events
         ↓ misma transacción
 order_workforce_outbox
-        ↓ Application port
+        ↓ observer / Application
 OrdersWorkforceAutomationService
+        ↓ port
+SupabaseWorkforceAutomationAdapter
         ↓
-WorkforceAutomationPort
+WorkforceService + RPC de integración
         ↓
-Workforce Application (cuando su rama se fusione)
+workforce_activities / events / evidence
 ```
 
-## No polling
+No existe importación infraestructura→infraestructura entre dominios. La composición se realiza en `src/composition/browser-application.ts`.
 
-El outbox no se consulta por intervalo. La aplicación lo procesa después de una mutación de Orders o mediante una reconciliación explícita. Los fallos quedan persistidos para reparación posterior.
+## Ciclo de vida
 
-## Idempotencia
+- CLAIM: crea una actividad `ORDER_EVENT` y vincula `order_id + order_task_id`.
+- ASSIGN: reasigna PLANNED o divide el tramo activo A→B conservando historia.
+- START: inicia la misma actividad vinculada.
+- BLOCK: inicia primero si fuera necesario y registra bloqueo en Workforce.
+- RESUME: reanuda sin perder el tramo bloqueado.
+- COMPLETE: valida readiness/evidencia antes de cerrar Orders y después completa Workforce.
+- CANCEL: cancela la actividad no finalizada.
+- RECONCILE: alinea una tarea activa faltante sin ejecutarse en cada render.
+
+## Idempotencia y concurrencia
 
 - captura: `order_event_id` único;
-- deduplicación: `organization_id + dedupe_key`;
-- actividad: clave estable `orders-workforce:<order_task_id>`;
-- claim: cambio condicional `PENDING/FAILED → PROCESSING`;
-- ACK duplicado de una fila ya procesada retorna resultado idempotente.
+- outbox: `organization_id + dedupe_key` único;
+- actividad: `orders-workforce:<order_task_id>:activity`;
+- mutación: `orders-workforce:event:<order_event_id>`;
+- claim atómico `PENDING/FAILED → PROCESSING`;
+- locks obsoletos recuperables;
+- eventos Workforce con idempotency key única;
+- pruebas concurrentes verifican un único ganador.
 
-## Concurrencia
+## Jornada y ocupación
 
-Dos consumidores no pueden reclamar simultáneamente el mismo outbox. El primero actualiza la fila; el segundo recibe conflicto. Locks `PROCESSING` de más de cinco minutos son recuperables.
+El bridge no implementa su propio calendario. Consume las reglas Workforce:
 
-## Reasignación
+- 07:00–12:00;
+- 13:40–17:30;
+- sábados y domingos excluidos;
+- festivos persistidos;
+- políticas de exclusión por `profile_id`.
 
-`OrderTaskAssigned` conserva el evento anterior y entrega el nuevo `assigneeProfileId`. Workforce debe cerrar/trazar la responsabilidad anterior y continuar con la nueva; nunca se sustituye historia.
+El indicador integrado distingue AVAILABLE, OCCUPIED, BLOCKED y OUT_OF_SCHEDULE. La inactividad se expresa en minutos laborales cuando existe un último fin de actividad.
 
-## Bloqueo y reanudación
+## Indicadores
 
-`OrderBlocked` y `OrderTaskResumed` se conservan como eventos distintos. El bridge no calcula duración laboral: Workforce usa su calendario, festivos y segmentos 07:00–12:00 / 13:40–17:30.
+Una RPC agregada entrega:
 
-## Vendedor
+- actividades activas/finalizadas/bloqueadas;
+- personas ocupadas/disponibles;
+- pedidos en operación y por etapa;
+- promedio por actividad y por etapa;
+- tiempo productivo y bloqueado;
+- actividad por responsable;
+- pedido, etapa, responsable y vendedor;
+- inactividad disponible para PACO;
+- datos de tiempo preparados para VSM.
 
-`sellerProfileId` viaja como referencia de contexto. No se convierte en responsable de la actividad.
+No se generan rankings de “mejor” o “peor” persona.
 
-## Producción
+## Vendedor y responsable
 
-La auditoría del CRM fuente no encontró `PRODUCCION` como paso separado del workflow vigente. No se inventa un mapping. Si un hilo futuro introduce un paso canónico, se agrega al catálogo de mappings.
-
-## Consistencia y evidencia
-
-El outbox hace durable la intención de sincronización, pero la evidencia de cierre pertenece a Workforce. Mientras Workforce no esté fusionado, este hilo no afirma consistencia punta a punta para `COMPLETE`; el fallo queda visible y reconciliable.
+El vendedor se conserva como referencia del pedido. El responsable Workforce es quien tomó o recibió la tarea operativa; nunca se sustituye uno por el otro.
