@@ -18,8 +18,8 @@
 | Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Corte                              |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Facturación                        |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Despachos / entrega / satisfacción |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Facturación                        |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; pendiente CI |
+| Despachos / entrega / satisfacción |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; pendiente CI |
 | Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11        |
 | Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI       |
@@ -42,3 +42,6 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 | Customer Intelligence / Pareto | CRM viejo V11.39.x | CRM nuevo 1.0.0 | Unit + pgTAP + E2E | Responsive | RLS/RBAC | Implementado; pendiente CI final del PR |
 
 > Finanzas reconstruye Crédito, Cartera y Caja con fuente monetaria basada en facturas registradas netas de reversos. No se inventa cupo reutilizable ni días de mora sin fuente auditable. Orders consume únicamente un gate financiero mínimo y Customer Intelligence una proyección `totalPaid`.
+
+
+> Hilo 10 conserva Finance como fuente de facturas/pagos, separa costo estimado de costo real, usa evidencia privada referenciada, controla estados logísticos e integra Orders/Freight mediante ports. Inventory permanece desacoplado hasta que PR #16 llegue a `main`.
