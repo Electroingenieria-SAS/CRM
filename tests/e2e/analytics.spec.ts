@@ -33,7 +33,7 @@ test('dashboard, filters, VSM and report explorer use synthetic analytics data',
   await page.getByRole('button', { name: 'Aplicar' }).click();
   await expect(page.getByText('AN-E2E-BLOCKED')).toBeVisible();
 
-  await page.getByLabel('Etapa').selectOption('ALISTAMIENTO');
+  await page.getByRole('combobox', { name: 'Etapa' }).selectOption('ALISTAMIENTO');
   await page.getByRole('button', { name: 'Aplicar' }).click();
   await expect(page.getByText('AN-E2E-BLOCKED')).toBeVisible();
 
@@ -100,15 +100,15 @@ test('historical CSV preview, partial apply and checksum replay are idempotent',
   });
   await page.getByRole('button', { name: 'Validar y previsualizar' }).click();
 
-  await expect(page.getByText('Válidas').locator('..').getByText('1')).toBeVisible();
-  await expect(page.getByText('Rechazadas').locator('..').getByText('1')).toBeVisible();
+  await expect(page.locator('article').filter({ hasText: 'Válidas' }).locator('strong')).toHaveText('1');
+  await expect(page.locator('article').filter({ hasText: 'Rechazadas' }).locator('strong')).toHaveText('1');
   await expect(page.getByText(/Etapa no reconocida/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Aplicar filas válidas' }).click();
   await expect(page.getByRole('status')).toContainText('1 aplicadas, 1 rechazadas');
 
   await page.getByRole('button', { name: 'Validar y previsualizar' }).click();
-  await expect(page.getByText('Idempotente').locator('..').getByText('Sí')).toBeVisible();
+  await expect(page.locator('article').filter({ hasText: 'Idempotente' }).locator('strong')).toHaveText('Sí');
 });
 
 test('analytics routes provide cross-browser semantic smoke', async ({ page }) => {
