@@ -28,6 +28,25 @@ const routeOptions = [
   'NATIONAL_DISPATCH',
 ] as const;
 
+function SourceFilter({
+  value,
+  onChange,
+}: {
+  value: string | undefined;
+  onChange(value: string): void;
+}) {
+  return (
+    <label>
+      Fuente
+      <select value={value ?? ''} onChange={(event) => onChange(event.target.value)}>
+        <option value="">Todas</option>
+        <option value="OPERATIONAL">Operacional</option>
+        <option value="HISTORICAL">Histórico</option>
+      </select>
+    </label>
+  );
+}
+
 export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
   function set<K extends keyof AnalyticsFilters>(key: K, value: AnalyticsFilters[K]) {
     props.onChange({ ...props.value, [key]: value });
@@ -104,17 +123,7 @@ export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
         </select>
       </label>
       {props.includeSource ? (
-        <label>
-          Fuente
-          <select
-            value={props.value.source ?? ''}
-            onChange={(event) => set('source', event.target.value)}
-          >
-            <option value="">Todas</option>
-            <option value="OPERATIONAL">Operacional</option>
-            <option value="HISTORICAL">Histórico</option>
-          </select>
-        </label>
+        <SourceFilter value={props.value.source} onChange={(value) => set('source', value)} />
       ) : null}
       <button type="submit" className="primary-button">
         Aplicar
