@@ -11,6 +11,23 @@ interface AnalyticsFiltersProps {
   includeSource?: boolean;
 }
 
+const statusOptions = [
+  'QUEUED',
+  'ASSIGNED',
+  'IN_PROGRESS',
+  'WAITING',
+  'BLOCKED',
+  'PENDING_APPROVAL',
+  'CLOSED',
+] as const;
+
+const routeOptions = [
+  'CLIENT_POINT',
+  'CLIENT_PICKUP',
+  'LOCAL_DISPATCH',
+  'NATIONAL_DISPATCH',
+] as const;
+
 export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
   function set<K extends keyof AnalyticsFilters>(key: K, value: AnalyticsFilters[K]) {
     props.onChange({ ...props.value, [key]: value });
@@ -69,15 +86,7 @@ export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
           onChange={(event) => set('status', event.target.value)}
         >
           <option value="">Todos</option>
-          {[
-            'QUEUED',
-            'ASSIGNED',
-            'IN_PROGRESS',
-            'WAITING',
-            'BLOCKED',
-            'PENDING_APPROVAL',
-            'CLOSED',
-          ].map((status) => (
+          {statusOptions.map((status) => (
             <option key={status}>{status}</option>
           ))}
         </select>
@@ -89,7 +98,7 @@ export function AnalyticsFiltersBar(props: AnalyticsFiltersProps) {
           onChange={(event) => set('route', event.target.value)}
         >
           <option value="">Todas</option>
-          {['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].map((route) => (
+          {routeOptions.map((route) => (
             <option key={route}>{route}</option>
           ))}
         </select>
