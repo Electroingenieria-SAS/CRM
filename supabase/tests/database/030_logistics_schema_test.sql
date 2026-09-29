@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(26);
+select plan(29);
 
 select has_table('erp_supply','logistics_shipments','shipment ledger exists');
 select has_table('erp_supply','logistics_events','append-only logistics events exist');
@@ -132,6 +132,31 @@ select ok(
       and policyname='order_finalization_storage_insert'
   ),
   'evidence upload has an organization-aware storage policy'
+);
+
+
+select is(
+  (select prosecdef
+   from pg_proc p
+   join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='erp_private' and p.proname='billing_is_ready'),
+  true,
+  'billing readiness uses a narrow SECURITY DEFINER boundary'
+);
+
+select ok(
+  (
+    select coalesce(p.proconfig,'{}'::text[]) @> array['search_path=pg_catalog, erp_supply, erp_private']
+    from pg_proc p
+    join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='erp_private' and p.proname='billing_is_ready'
+  ),
+  'billing readiness has an explicit trusted search_path'
+);
+
+select ok(
+  not has_function_privilege('anon','erp_private.billing_is_ready(uuid)','EXECUTE'),
+  'anonymous users cannot execute billing readiness'
 );
 
 select * from finish();
