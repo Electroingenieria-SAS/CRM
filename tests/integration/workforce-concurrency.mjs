@@ -33,8 +33,8 @@ const key = 'wf-concurrency-' + Date.now();
 const { data: created, error: createError } = await first.rpc('erp_x_workforce_create_activity', {
   p_payload: {
     catalogId: meeting.id,
-    plannedStart: '2026-09-30T07:00:00-05:00',
-    plannedEnd: '2026-09-30T08:00:00-05:00',
+    plannedStart: '2026-09-30T07:30:00-05:00',
+    plannedEnd: '2026-09-30T08:30:00-05:00',
     title: 'Concurrency ' + key,
   },
   p_idempotency_key: 'create-' + key,

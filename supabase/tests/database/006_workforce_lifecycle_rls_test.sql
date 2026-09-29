@@ -39,7 +39,7 @@ select lives_ok(
     jsonb_build_object(
       'catalogId',(select id from erp_supply.workforce_activity_catalog where code='LOG_LOADING' limit 1),
       'assigneeProfileId','74000000-0000-4000-8000-000000000002',
-      'plannedStart','2026-09-29T07:00:00-05:00',
+      'plannedStart','2026-09-29T07:30:00-05:00',
       'plannedEnd','2026-09-29T09:00:00-05:00',
       'description','Actividad sintética'
     ),
@@ -53,7 +53,7 @@ select is(
     jsonb_build_object(
       'catalogId',(select id from erp_supply.workforce_activity_catalog where code='LOG_LOADING' limit 1),
       'assigneeProfileId','74000000-0000-4000-8000-000000000002',
-      'plannedStart','2026-09-29T07:00:00-05:00',
+      'plannedStart','2026-09-29T07:30:00-05:00',
       'plannedEnd','2026-09-29T09:00:00-05:00'
     ),
     'wf-create-1'
@@ -83,7 +83,7 @@ select throws_ok(
       'catalogId',(select id from erp_supply.workforce_activity_catalog where code='LOG_LOADING' limit 1),
       'assigneeProfileId','74000000-0000-4000-8000-000000000002',
       'plannedStart','2026-09-29T12:00:00-05:00',
-      'plannedEnd','2026-09-29T13:40:00-05:00'
+      'plannedEnd','2026-09-29T13:30:00-05:00'
     ),
     'wf-lunch'
   )$$,

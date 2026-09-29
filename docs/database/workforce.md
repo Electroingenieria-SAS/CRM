@@ -37,7 +37,7 @@ Ledger append-only de creación, asignación, inicio, bloqueo, reanudación, evi
 
 ### workforce_schedule_segments
 
-Jornada por día ISO. Baseline: lunes a viernes, 07:00–12:00 y 13:40–17:30.
+Jornada por día ISO. Baseline: lunes 07:30–12:00 y 13:30–17:00; martes a viernes 07:30–12:00 y 13:30–17:30.
 
 ### workforce_holidays
 
