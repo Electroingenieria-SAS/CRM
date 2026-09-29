@@ -97,7 +97,13 @@ test('mobile Workforce uses timeline cards without page overflow', async ({ page
   );
   await openWorkforce(page);
 
-  for (const label of ['07:30–09:00', '09:00–10:30', '10:30–12:00', '13:30–15:30', '15:30–17:30']) {
+  for (const label of [
+    '07:30–09:00',
+    '09:00–10:30',
+    '10:30–12:00',
+    '13:30–15:30',
+    '15:30–17:30',
+  ]) {
     await expect(page.getByRole('heading', { name: label }).first()).toBeVisible();
   }
 
