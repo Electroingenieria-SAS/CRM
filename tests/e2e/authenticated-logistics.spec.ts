@@ -24,15 +24,6 @@ async function logout(page: Page) {
   await expect(page).toHaveURL(/\/login\/?$/);
 }
 
-async function selectContaining(page: Page, label: string, text: RegExp) {
-  const select = page.getByLabel(label, { exact: true });
-  const option = select.locator('option').filter({ hasText: text }).first();
-  await expect(option).toHaveCount(1);
-  const value = await option.getAttribute('value');
-  if (!value) throw new Error(`No option matching ${text.source} for ${label}`);
-  await select.selectOption(value);
-}
-
 async function selectOrderIfPresent(page: Page) {
   const order = page.getByRole('button').filter({ hasText: orderNumber }).first();
   if ((await order.count()) === 0) return false;
@@ -71,8 +62,8 @@ async function releaseShipmentIfPending(page: Page) {
   await page.getByRole('button', { name: 'Buscar' }).first().click();
   if (!(await selectOrderIfPresent(page))) return;
 
-  await selectContaining(page, 'Destino Freight', /^Armenia,/i);
-  await selectContaining(page, 'Transportadora', /Colvanes/i);
+  await page.getByLabel('Destino Freight', { exact: true }).selectOption('99100000-0000-4000-8000-000000000002');
+  await page.getByLabel('Transportadora', { exact: true }).selectOption('99100000-0000-4000-8000-000000000001');
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   await expect(page.getByText(/Rango:|Histórico insuficiente/)).toBeVisible();
   await page.getByRole('button', { name: 'Liberar pedido' }).click();
