@@ -1,6 +1,7 @@
 import { SupabaseAuthGateway } from '@/infrastructure/auth/supabase-auth-gateway';
 import { SupabaseSessionRepository } from '@/infrastructure/auth/supabase-session-repository';
 import { SupabaseCustomerIntelligenceRepository } from '@/infrastructure/customers/supabase-customer-intelligence-repository';
+import { SupabaseFinanceRepository } from '@/infrastructure/finance/supabase-finance-repository';
 import { SupabaseFreightRepository } from '@/infrastructure/freight/supabase-freight-repository';
 import { SupabaseOrderWorkforceOutboxRepository } from '@/infrastructure/integrations/supabase-order-workforce-outbox-repository';
 import { SupabaseWorkforceAutomationAdapter } from '@/infrastructure/integrations/supabase-workforce-automation-adapter';
@@ -11,6 +12,7 @@ import { SupabaseWorkforceEvidenceStorage } from '@/infrastructure/workforce/sup
 import { SupabaseWorkforceRepository } from '@/infrastructure/workforce/supabase-workforce-repository';
 import { AuthService } from '@/modules/auth/application/auth-service';
 import { CustomerIntelligenceService } from '@/modules/customers/application/customer-intelligence-service';
+import { FinanceService } from '@/modules/finance/application/finance-service';
 import { FreightService } from '@/modules/freight/application/freight-service';
 import { OrdersWorkforceAutomationService } from '@/modules/integrations/orders-workforce/application/orders-workforce-automation-service';
 import { OrdersWorkforceMutationObserver } from '@/modules/integrations/orders-workforce/application/orders-workforce-mutation-observer';
@@ -23,6 +25,7 @@ export interface BrowserApplication {
   readonly orders: OrdersService;
   readonly customerIntelligence: CustomerIntelligenceService;
   readonly freight: FreightService;
+  readonly finance: FinanceService;
   readonly orderWorkflow: OrderWorkflowService;
 }
 
@@ -52,5 +55,6 @@ export function createBrowserApplication(): BrowserApplication | null {
       new OrdersWorkforceMutationObserver(automation),
     ),
     freight: new FreightService(new SupabaseFreightRepository(client)),
+    finance: new FinanceService(new SupabaseFinanceRepository(client)),
   };
 }

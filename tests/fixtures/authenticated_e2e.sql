@@ -79,8 +79,37 @@ where o.code='EI';
 insert into erp_supply.profiles(
   id,organization_id,auth_user_id,email,display_name,employee_code
 )
+select '93000000-0000-4000-8000-000000000007',o.id,u.id,u.email,'QA Cartera','QA-CARTERA'
+from erp_supply.organizations o join auth.users u on u.email='qa-cartera@example.test'
+where o.code='EI';
+
+insert into erp_supply.profiles(
+  id,organization_id,auth_user_id,email,display_name,employee_code
+)
+select '93000000-0000-4000-8000-000000000008',o.id,u.id,u.email,'QA Caja A','QA-CAJA-A'
+from erp_supply.organizations o join auth.users u on u.email='qa-caja-a@example.test'
+where o.code='EI';
+
+insert into erp_supply.profiles(
+  id,organization_id,auth_user_id,email,display_name,employee_code
+)
+select '93000000-0000-4000-8000-000000000009',o.id,u.id,u.email,'QA Caja B','QA-CAJA-B'
+from erp_supply.organizations o join auth.users u on u.email='qa-caja-b@example.test'
+where o.code='EI';
+
+insert into erp_supply.profiles(
+  id,organization_id,auth_user_id,email,display_name,employee_code
+)
+select '93000000-0000-4000-8000-000000000010',o.id,u.id,u.email,'QA Gerencia','QA-GERENCIA'
+from erp_supply.organizations o join auth.users u on u.email='qa-gerencia@example.test'
+where o.code='EI';
+
+
+insert into erp_supply.profiles(
+  id,organization_id,auth_user_id,email,display_name,employee_code
+)
 select
-  '93000000-0000-4000-8000-000000000007',
+  '93000000-0000-4000-8000-000000000011',
   o.id,u.id,u.email,'QA Auxiliar Logística','QA-AUX-LOG'
 from erp_supply.organizations o
 join auth.users u on u.email='qa-aux-logistica@example.test'
@@ -88,7 +117,7 @@ where o.code='EI';
 
 do $e2e$
 begin
-  if (select count(*) from erp_supply.profiles where employee_code like 'QA-%') <> 7 then
+  if (select count(*) from erp_supply.profiles where employee_code like 'QA-%') <> 11 then
     raise exception 'Synthetic Auth users were not linked to all CRM profiles';
   end if;
 end
@@ -101,4 +130,42 @@ insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
 ('93000000-0000-4000-8000-000000000004','super_admin',true),
 ('93000000-0000-4000-8000-000000000005','coordinador_logistico',true),
 ('93000000-0000-4000-8000-000000000006','coordinador_logistico',true),
-('93000000-0000-4000-8000-000000000007','aux_logistica',true);
+('93000000-0000-4000-8000-000000000007','cartera',true),
+('93000000-0000-4000-8000-000000000008','caja',true),
+('93000000-0000-4000-8000-000000000009','caja',true),
+('93000000-0000-4000-8000-000000000010','gerencia',true),
+('93000000-0000-4000-8000-000000000011','aux_logistica',true);
+
+
+-- Synthetic Finance orders used only by authenticated E2E.
+insert into erp_supply.orders(
+  id,organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
+  client_name,client_document,client_city,client_address,seller_profile_id,current_step_code,
+  status,priority,source,is_test
+)
+select
+  v.id,
+  o.id,
+  v.order_number,
+  v.order_type,
+  v.payment_condition,
+  'LOCAL_DISPATCH',
+  v.client_name,
+  v.client_document,
+  'Cali',
+  'Calle QA Finanzas',
+  '93000000-0000-4000-8000-000000000001',
+  v.step_code,
+  'QUEUED',
+  'MEDIUM',
+  'QA_BOT',
+  false
+from erp_supply.organizations o
+cross join (
+  values
+    ('94000000-0000-4000-8000-000000000001'::uuid,'FIN-E2E-CREDIT','PVC','CREDIT','Cliente Crédito E2E','QA-FIN-CREDIT','CARTERA'),
+    ('94000000-0000-4000-8000-000000000002'::uuid,'FIN-E2E-CARTERA','PVP','CREDIT','Cliente Cartera E2E','QA-FIN-CARTERA','CARTERA'),
+    ('94000000-0000-4000-8000-000000000003'::uuid,'FIN-E2E-CAJA','PVN','CASH','Cliente Caja E2E','QA-FIN-CAJA','CAJA')
+) v(id,order_number,order_type,payment_condition,client_name,client_document,step_code)
+where o.code='EI'
+on conflict (organization_id,order_number) do nothing;

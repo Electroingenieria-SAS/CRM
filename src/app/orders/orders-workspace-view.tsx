@@ -2,6 +2,7 @@
 
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
+import type { FinancialGate } from '@/modules/finance/application/finance.schemas';
 import type {
   CreateOrderInput,
   OrderDetailResponse,
@@ -23,6 +24,7 @@ interface OrdersWorkspaceViewProps {
   message: string | null;
   notice: string | null;
   detail: OrderDetailResponse | null;
+  financialGate: FinancialGate | null;
   workflowBusy: boolean;
   onFiltersChange(filters: OrdersFilterValues): void;
   onSearch(): void;
@@ -69,6 +71,18 @@ function navigationFor(context: SessionContext): AppShellNavigationItem[] {
   }
   if (hasModuleCapability(context, 'workforce', 'read')) {
     items.push({ href: '/workforce', label: 'Jornada' });
+  }
+  if (hasModuleCapability(context, 'credit', 'read')) {
+    items.push({ href: '/finance/credit', label: 'Crédito' });
+  }
+  if (hasModuleCapability(context, 'cartera', 'read')) {
+    items.push({ href: '/finance/receivables', label: 'Cartera' });
+  }
+  if (hasModuleCapability(context, 'caja', 'read')) {
+    items.push({ href: '/finance/cash', label: 'Caja' });
+  }
+  if (hasModuleCapability(context, 'approvals', 'read')) {
+    items.push({ href: '/finance/approvals', label: 'Aprobaciones' });
   }
 
   return items;
@@ -146,6 +160,7 @@ export function OrdersWorkspaceView(props: OrdersWorkspaceViewProps) {
       {props.detail ? (
         <OrderDetail
           detail={props.detail}
+          financialGate={props.financialGate}
           busy={props.workflowBusy}
           onClose={props.onCloseDetail}
           onSimpleAction={props.onWorkflowSimpleAction}

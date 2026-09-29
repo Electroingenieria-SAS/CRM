@@ -11,9 +11,9 @@
 | Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado |
 | Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
-| Crédito                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Cartera                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
-| Caja                               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Crédito                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
+| Cartera                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
+| Caja                               |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado               |
 | Compras                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
@@ -23,7 +23,7 @@
 | Inventario                         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Workforce / jornada / cronograma   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado PR #11        |
 | Orders ↔ Workforce automation      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | En validación CI       |
-| Excepciones / aprobaciones         |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
+| Excepciones / aprobaciones         |       ✓        | Finance parcial | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado financiero    |
 | VSM / tiempos                      |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Reportes / analítica               |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
 | Histórico/importaciones            |       ✓        |        —        |          —          |   —    |     —     | Pendiente              |
@@ -40,3 +40,5 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 > Evidencia: PR #6, commit `e1c4b9ca092d15f904379dc26be7851c00abf90c`, pipeline #105 (`36453408365`) completamente verde, incluido `e2e-authenticated`.
 
 | Customer Intelligence / Pareto | CRM viejo V11.39.x | CRM nuevo 1.0.0 | Unit + pgTAP + E2E | Responsive | RLS/RBAC | Implementado; pendiente CI final del PR |
+
+> Finanzas reconstruye Crédito, Cartera y Caja con fuente monetaria basada en facturas registradas netas de reversos. No se inventa cupo reutilizable ni días de mora sin fuente auditable. Orders consume únicamente un gate financiero mínimo y Customer Intelligence una proyección `totalPaid`.

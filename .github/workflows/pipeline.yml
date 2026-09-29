@@ -149,6 +149,8 @@ jobs:
         run: node tests/integration/order-claim-concurrency.mjs
       - name: Prove Orders-Workforce outbox concurrency
         run: node tests/integration/orders-workforce-outbox-concurrency.mjs
+      - name: Prove financial concurrency and idempotency
+        run: node tests/integration/finance-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Authenticated domain journeys
@@ -157,6 +159,7 @@ jobs:
           tests/e2e/authenticated-orders.spec.ts
           tests/e2e/operational-order-workflow.spec.ts
           tests/e2e/authenticated-freight.spec.ts
+          tests/e2e/authenticated-finance.spec.ts
           tests/e2e/customer-intelligence.spec.ts
           tests/e2e/orders-workforce-integration.spec.ts
       - name: Upload authenticated Playwright report on failure

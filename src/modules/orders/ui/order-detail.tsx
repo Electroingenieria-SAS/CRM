@@ -1,9 +1,12 @@
+import type { FinancialGate } from '@/modules/finance/application/finance.schemas';
+import { OrderFinancialGate } from '@/modules/finance/ui/order-financial-gate';
 import type { OrderDetailResponse } from '@/modules/orders/application/order.schemas';
 import { OrderWorkflowPanel } from '@/modules/orders/ui/order-workflow-panel';
 import styles from './order-detail.module.css';
 
 interface OrderDetailProps {
   detail: OrderDetailResponse;
+  financialGate: FinancialGate | null;
   busy: boolean;
   onClose(): void;
   onSimpleAction(action: 'CLAIM' | 'START' | 'COMPLETE'): Promise<void>;
@@ -80,6 +83,8 @@ export function OrderDetail(props: OrderDetailProps) {
           <dd>{order.priority}</dd>
         </div>
       </dl>
+
+      {props.financialGate ? <OrderFinancialGate gate={props.financialGate} /> : null}
 
       <OrderWorkflowPanel
         detail={props.detail}
