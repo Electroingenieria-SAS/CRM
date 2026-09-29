@@ -64,7 +64,9 @@ begin
       'contractVersion','1.0.0'
     )
   )
-  on conflict(organization_id,idempotency_key) do nothing;
+  on conflict(organization_id,idempotency_key)
+  where idempotency_key is not null
+  do nothing;
 
   return v_id;
 end;
