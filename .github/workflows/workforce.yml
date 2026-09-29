@@ -3,8 +3,26 @@ name: Workforce quality and local integration
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'src/modules/workforce/**'
+      - 'src/infrastructure/workforce/**'
+      - 'src/app/workforce/**'
+      - 'src/modules/integrations/orders-workforce/**'
+      - 'src/infrastructure/integrations/**workforce**'
+      - 'supabase/migrations/**workforce**'
+      - 'tests/**workforce**'
+      - '.github/workflows/workforce.yml'
   push:
     branches: [main]
+    paths:
+      - 'src/modules/workforce/**'
+      - 'src/infrastructure/workforce/**'
+      - 'src/app/workforce/**'
+      - 'src/modules/integrations/orders-workforce/**'
+      - 'src/infrastructure/integrations/**workforce**'
+      - 'supabase/migrations/**workforce**'
+      - 'tests/**workforce**'
+      - '.github/workflows/workforce.yml'
   workflow_dispatch:
 
 concurrency:
