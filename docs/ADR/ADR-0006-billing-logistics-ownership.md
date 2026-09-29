@@ -15,7 +15,7 @@ Facturación, fletes, despacho y cierre del pedido cruzan varios dominios. Copia
 - Freight conserva predicción, histórico y aprendizaje; recibe `actual_freight` como observación.
 - Orders conserva workflow y cierre global; Logistics solo consume sus ports.
 - Evidencias finales se almacenan fuera de las tablas de dominio y se referencian desde `order_evidence`.
-- Inventory se integra por port y nunca mediante escritura directa desde Logistics.
+- Inventory se integra por port y nunca mediante escritura directa desde Logistics. El contrato actualmente fusionado no publica una operación de despacho/devolución logística, por lo que el adapter queda intencionalmente pendiente de ese contrato.
 
 ## Consistencia
 
