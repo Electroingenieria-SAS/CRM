@@ -80,41 +80,41 @@ export function createInventoryPageActions(context: ActionContext) {
   };
 
   const action = (
-    operation: () => Promise<unknown>,
+    operation: (app: InventoryBrowserApplication) => Promise<unknown>,
     success: string,
-  ) => application ? mutate(operation, success) : Promise.resolve();
+  ) => application ? mutate(() => operation(application), success) : Promise.resolve();
 
   return {
     receive,
     reserve,
     release: (reservationId: string, reason: string) =>
       action(
-        () => application!.inventory.release(reservationId, undefined, reason, crypto.randomUUID()),
+        (app) => app.inventory.release(reservationId, undefined, reason, crypto.randomUUID()),
         'Reserva liberada.',
       ),
     pick: (reservationId: string) =>
       action(
-        () => application!.inventory.pick(reservationId, undefined, crypto.randomUUID()),
+        (app) => app.inventory.pick(reservationId, undefined, crypto.randomUUID()),
         'Material comprometido para picking.',
       ),
     consume: (reservationId: string, reason: string) =>
       action(
-        () => application!.inventory.consume(reservationId, undefined, reason, crypto.randomUUID()),
+        (app) => app.inventory.consume(reservationId, undefined, reason, crypto.randomUUID()),
         'Consumo registrado.',
       ),
     returnReusable: (reservationId: string, reason: string) =>
       action(
-        () => application!.inventory.returnReusable(reservationId, undefined, reason, crypto.randomUUID()),
+        (app) => app.inventory.returnReusable(reservationId, undefined, reason, crypto.randomUUID()),
         'Sobrante reutilizable devuelto.',
       ),
     waste: (reservationId: string, reason: string) =>
       action(
-        () => application!.inventory.waste(reservationId, undefined, reason, crypto.randomUUID()),
+        (app) => app.inventory.waste(reservationId, undefined, reason, crypto.randomUUID()),
         'Desperdicio registrado.',
       ),
     adjust: (balanceId: string, delta: number, reason: string) =>
       action(
-        () => application!.inventory.adjust(balanceId, delta, reason, crypto.randomUUID()),
+        (app) => app.inventory.adjust(balanceId, delta, reason, crypto.randomUUID()),
         'Ajuste aplicado y auditado.',
       ),
   };
