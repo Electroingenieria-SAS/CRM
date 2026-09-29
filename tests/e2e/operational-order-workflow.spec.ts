@@ -103,8 +103,10 @@ test('order workflow records claim start block resume and completion', async ({
   await page.goto('/operations/orders-workforce');
   const activeOrder = page.getByRole('row').filter({ hasText: orderNumber });
   await expect(activeOrder).toContainText('IN_PROGRESS');
-  const auxiliaryRow = page.getByRole('row').filter({ hasText: 'QA Auxiliar Logística' });
-  await expect(auxiliaryRow).toContainText(/OCCUPIED|OUT OF SCHEDULE/);
+  const auxiliaryRow = page.getByRole('row', {
+    name: /QA Auxiliar Logística (OCCUPIED|OUT OF SCHEDULE)/,
+  });
+  await expect(auxiliaryRow).toBeVisible();
 
   await page.goto('/orders');
   await page.getByLabel('Buscar').fill(orderNumber);
