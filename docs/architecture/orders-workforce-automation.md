@@ -50,8 +50,8 @@ No existe importación infraestructura→infraestructura entre dominios. La comp
 
 El bridge no implementa su propio calendario. Consume las reglas Workforce:
 
-- 07:00–12:00;
-- 13:40–17:30;
+- lunes: 07:30–12:00 y 13:30–17:00;
+- martes a viernes: 07:30–12:00 y 13:30–17:30;
 - sábados y domingos excluidos;
 - festivos persistidos;
 - políticas de exclusión por `profile_id`.
