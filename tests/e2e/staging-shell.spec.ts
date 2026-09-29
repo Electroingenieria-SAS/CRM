@@ -21,6 +21,8 @@ test('semantic landmarks and language are present', async ({ page }) => {
 
 test('keyboard navigation exposes a visible focus target', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
+
   await page.keyboard.press('Tab');
 
   const focused = page.locator(':focus');
