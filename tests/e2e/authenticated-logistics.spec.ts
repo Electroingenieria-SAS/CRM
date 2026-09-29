@@ -106,11 +106,14 @@ async function operateShipment(page: Page) {
   const deliver = page.getByRole('button', { name: 'Confirmar entrega' });
   if (await deliver.isVisible().catch(() => false)) {
     await page.getByLabel('Receptor').fill('Cliente QA');
-    await page.getByLabel('Evidencia *').first().setInputFiles({
-      name: 'delivery.jpg',
-      mimeType: 'image/jpeg',
-      buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
-    });
+    await page
+      .getByLabel('Evidencia *')
+      .first()
+      .setInputFiles({
+        name: 'delivery.jpg',
+        mimeType: 'image/jpeg',
+        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
+      });
     await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
     await deliver.click();
     await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
@@ -143,12 +146,16 @@ test('logistics workspace is usable on Android without horizontal page overflow'
   await login(page, coordinatorEmail);
   await page.goto('/logistics');
   await expect(page.getByRole('heading', { level: 1, name: 'Logística y entrega' })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(
+    false,
+  );
   await expect(page.getByRole('heading', { name: 'Por liberar' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Despachos y entregas' })).toBeVisible();
 });
 
-test('invoice to national delivery lifecycle is traceable end to end', async ({ page }, testInfo) => {
+test('invoice to national delivery lifecycle is traceable end to end', async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Full logistics journey runs once.');
 
   await login(page, cajaEmail);
