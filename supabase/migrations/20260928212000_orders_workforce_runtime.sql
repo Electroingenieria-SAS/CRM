@@ -231,7 +231,18 @@ as $$
 declare
   v_activity erp_supply.workforce_activities%rowtype;
   v_evidence_complete boolean;
+  v_requires_workforce boolean:=false;
 begin
+  select exists(
+    select 1
+    from erp_supply.orders o
+    join erp_supply.order_workforce_step_mappings m
+      on m.step_code=o.current_step_code
+     and m.active
+    where o.id=p_order_id
+      and o.organization_id=erp_private.current_org_id()
+  ) into v_requires_workforce;
+
   select a.* into v_activity
   from erp_supply.order_workforce_outbox x
   join erp_supply.workforce_activities a on a.id=x.workforce_activity_id
@@ -244,7 +255,10 @@ begin
 
   if not found then
     return jsonb_build_object(
-      'ready',true,'mapped',false,'contractVersion','1.0.0'
+      'ready',not v_requires_workforce,
+      'mapped',v_requires_workforce,
+      'reason',case when v_requires_workforce then 'MISSING_WORKFORCE_ACTIVITY' else null end,
+      'contractVersion','1.0.0'
     );
   end if;
 
