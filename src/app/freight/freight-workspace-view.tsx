@@ -41,6 +41,9 @@ function navigationFor(context: SessionContext): AppShellNavigationItem[] {
     items.push({ href: '/orders', label: 'Pedidos' });
   }
   items.push({ href: '/freight', label: 'Fletes', current: true });
+  if (hasModuleCapability(context, 'workforce', 'read')) {
+    items.push({ href: '/workforce', label: 'Jornada' });
+  }
   return items;
 }
 
