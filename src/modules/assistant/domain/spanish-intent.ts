@@ -136,9 +136,7 @@ export function extractOrderReference(message: string) {
 
 function routeFor(message: string) {
   const words = normalizeSpanish(message).split(' ');
-  const exact = moduleRoutes.find((module) =>
-    module.tokens.some((token) => words.includes(token)),
-  );
+  const exact = moduleRoutes.find((module) => module.tokens.some((token) => words.includes(token)));
   if (exact) return exact.path;
 
   return moduleRoutes.find((module) =>
