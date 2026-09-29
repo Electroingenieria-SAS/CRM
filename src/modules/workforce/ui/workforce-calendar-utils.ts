@@ -18,8 +18,9 @@ export function activitiesForDay(
 export function activitiesForSlot(
   activities: readonly WorkforceActivitySummary[],
   slotIndex: number,
+  slots = workforceDaySlots,
 ) {
-  const slot = workforceDaySlots[slotIndex];
+  const slot = slots[slotIndex];
   if (!slot) return [];
 
   return activities.filter((activity) => {
