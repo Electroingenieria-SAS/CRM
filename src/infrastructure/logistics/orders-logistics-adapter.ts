@@ -27,6 +27,16 @@ export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvi
       version = claimed.version ?? version;
     }
 
+    if (actions.get('RESUME')?.enabled) {
+      await this.workflow.resume(
+        orderId,
+        'Gestión logística retomada para continuar el despacho o la entrega.',
+        version,
+        `${key}:resume`,
+      );
+      return;
+    }
+
     if (actions.get('START')?.enabled || actions.get('CLAIM')?.enabled) {
       await this.workflow.start(orderId, version, `${key}:start`);
       return;
