@@ -1,0 +1,288 @@
+.workspace {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.header h1,
+.section h2,
+.panel h2,
+.actionBlock h3 {
+  margin: 0.2rem 0;
+}
+
+.header p,
+.sectionHeader p,
+.panel p {
+  max-width: 72ch;
+  color: var(--text-muted);
+}
+
+.section,
+.panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.sectionHeader,
+.panelHeader,
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.cards {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  max-height: 68vh;
+  overflow: auto;
+}
+
+.card,
+.selectedCard {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 94px;
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.selectedCard {
+  border-width: 2px;
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.card small,
+.selectedCard small,
+.cardTop span {
+  color: var(--text-muted);
+}
+
+.badge {
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.filters,
+.inlineSearch,
+.formGrid,
+.actionBlock {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.filters {
+  grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(150px, 0.45fr)) auto;
+}
+
+.inlineSearch {
+  grid-template-columns: minmax(180px, 1fr) auto;
+}
+
+.formGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.formGrid > button {
+  grid-column: 1 / -1;
+}
+
+.formGrid label,
+.actionBlock label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 700;
+}
+
+.filters input,
+.filters select,
+.filters button,
+.inlineSearch input,
+.inlineSearch button,
+.formGrid input,
+.formGrid select,
+.formGrid button,
+.actionBlock input,
+.actionBlock select,
+.actionBlock textarea,
+.actionBlock button,
+.primary {
+  min-height: 44px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.85rem;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.actionBlock textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.filters button,
+.inlineSearch button,
+.formGrid button,
+.actionBlock button,
+.primary {
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.primary {
+  width: 100%;
+  background: var(--brand);
+  color: white;
+}
+
+.primary:disabled,
+.filters button:disabled,
+.inlineSearch button:disabled,
+.formGrid button:disabled,
+.actionBlock button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.definitionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.definitionGrid div,
+.prediction {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.definitionGrid dt,
+.prediction span,
+.prediction small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.definitionGrid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.prediction strong {
+  font-size: 1.25rem;
+}
+
+.actionBlock {
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.actionBlock summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.timeline {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.timeline li {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.timeline span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.error,
+.notice,
+.empty {
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.error {
+  color: var(--danger);
+}
+
+.notice {
+  color: var(--brand-strong);
+}
+
+@media (max-width: 980px) {
+  .twoColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cards {
+    max-height: none;
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .sectionHeader,
+  .panelHeader,
+  .cardTop {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters,
+  .inlineSearch,
+  .formGrid,
+  .definitionGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formGrid > button {
+    grid-column: auto;
+  }
+
+  .section,
+  .panel {
+    padding: 0.85rem;
+  }
+}

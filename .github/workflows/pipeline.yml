@@ -148,6 +148,11 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/orders_workforce_e2e.sql
+      - name: Seed synthetic Billing-Logistics delivery dataset
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/logistics_e2e.sql
       - name: Verify Auth and operational session contract
         run: node tests/fixtures/verify-authenticated-e2e-session.mjs
       - name: Prove atomic task claim concurrency
@@ -158,6 +163,8 @@ jobs:
         run: node tests/integration/finance-concurrency.mjs
       - name: Prove inventory concurrency and idempotency
         run: node tests/integration/inventory-concurrency.mjs
+      - name: Prove logistics concurrency and idempotency
+        run: node tests/integration/logistics-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Authenticated domain journeys
@@ -167,6 +174,7 @@ jobs:
           tests/e2e/operational-order-workflow.spec.ts
           tests/e2e/authenticated-freight.spec.ts
           tests/e2e/authenticated-finance.spec.ts
+          tests/e2e/authenticated-logistics.spec.ts
           tests/e2e/customer-intelligence.spec.ts
           tests/e2e/orders-workforce-integration.spec.ts
           tests/e2e/inventory.spec.ts
