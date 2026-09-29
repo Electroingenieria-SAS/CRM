@@ -10,7 +10,6 @@ import type {
   LogisticsCandidates,
   LogisticsDetail,
   LogisticsQueue,
-  LogisticsQueueItem,
 } from '@/modules/logistics/application/logistics.schemas';
 import type {
   LogisticsQueueQuery,
@@ -18,7 +17,12 @@ import type {
 } from '@/modules/logistics/ports/logistics-ports';
 import { LogisticsOperationPanel } from '@/modules/logistics/ui/logistics-operation-panel';
 import { LogisticsReleasePanel } from '@/modules/logistics/ui/logistics-release-panel';
-import { AppShell, type AppShellNavigationItem } from '@/shared/ui/app-shell';
+import { AppShell } from '@/shared/ui/app-shell';
+import {
+  LogisticsCandidateList,
+  LogisticsShipmentList,
+  logisticsNavigation,
+} from './logistics-workspace-sections';
 import styles from '@/modules/logistics/ui/logistics-ui.module.css';
 
 interface LogisticsWorkspaceProps {
@@ -76,81 +80,6 @@ interface LogisticsWorkspaceProps {
   onSignOut(): Promise<void>;
 }
 
-function navigation(context: SessionContext): AppShellNavigationItem[] {
-  const items: AppShellNavigationItem[] = [];
-  if (hasModuleCapability(context, 'orders', 'read')) {
-    items.push({ href: '/orders', label: 'Pedidos' });
-  }
-  if (hasModuleCapability(context, 'billing', 'read')) {
-    items.push({ href: '/billing', label: 'Facturación' });
-  }
-  items.push({ href: '/logistics', label: 'Logística', current: true });
-  if (hasModuleCapability(context, 'freight', 'read')) {
-    items.push({ href: '/freight', label: 'Fletes' });
-  }
-  if (hasModuleCapability(context, 'workforce', 'read')) {
-    items.push({ href: '/workforce', label: 'Jornada' });
-  }
-  return items;
-}
-
-function CandidateList(props: {
-  items: LogisticsCandidate[];
-  selectedId?: string;
-  onSelect(item: LogisticsCandidate): void;
-}) {
-  if (!props.items.length) {
-    return <p className={styles.empty}>No hay pedidos pendientes de liberación.</p>;
-  }
-  return (
-    <div className={styles.cards}>
-      {props.items.map((item) => (
-        <button
-          key={item.orderId}
-          type="button"
-          className={item.orderId === props.selectedId ? styles.selectedCard : styles.card}
-          onClick={() => props.onSelect(item)}
-        >
-          <strong>{item.orderNumber}</strong>
-          <span>{item.customerName}</span>
-          <small>{item.routeCode.replaceAll('_', ' ')} · {item.city || 'Sin ciudad'}</small>
-          <small>{item.readiness.readyForLogistics ? 'Listo para liberar' : 'Con restricción'}</small>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ShipmentList(props: {
-  items: LogisticsQueueItem[];
-  selectedOrderId?: string;
-  onSelect(orderId: string): void;
-}) {
-  if (!props.items.length) {
-    return <p className={styles.empty}>No hay despachos con estos filtros.</p>;
-  }
-  return (
-    <div className={styles.cards}>
-      {props.items.map((item) => (
-        <button
-          key={item.shipmentId}
-          type="button"
-          className={item.orderId === props.selectedOrderId ? styles.selectedCard : styles.card}
-          onClick={() => props.onSelect(item.orderId)}
-        >
-          <span className={styles.cardTop}>
-            <strong>{item.orderNumber}</strong>
-            <span>{item.status.replaceAll('_', ' ')}</span>
-          </span>
-          <span>{item.customerName}</span>
-          <small>{item.routeCode.replaceAll('_', ' ')} · {item.destination.city || 'Sin ciudad'}</small>
-          <small>{item.trackingNumber || 'Sin guía'}</small>
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
   const [candidate, setCandidate] = useState<LogisticsCandidate | null>(null);
   const canCreate = hasModuleCapability(props.context, 'shipping', 'create');
@@ -169,7 +98,7 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
     <AppShell
       userName={props.context.profile.name}
       organizationName={props.context.organization.name}
-      navigation={navigation(props.context)}
+      navigation={logisticsNavigation(props.context)}
       onSignOut={props.onSignOut}
     >
       <div className={styles.workspace}>
@@ -203,7 +132,7 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
             </div>
           </div>
           <div className={styles.twoColumns}>
-            <CandidateList
+            <LogisticsCandidateList
               items={props.candidates.items}
               selectedId={candidate?.orderId}
               onSelect={setCandidate}
@@ -227,6 +156,7 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
               <p>Consulta por estado, modalidad, pedido o guía.</p>
             </div>
           </div>
+
           <div className={styles.filters}>
             <input
               aria-label="Buscar despachos"
@@ -237,28 +167,38 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
             <select
               aria-label="Estado logístico"
               value={props.query.status ?? ''}
-              onChange={(event) => props.onQuery({ ...props.query, status: event.target.value || undefined })}
+              onChange={(event) =>
+                props.onQuery({ ...props.query, status: event.target.value || undefined })
+              }
             >
               <option value="">Todos los estados</option>
-              {['READY', 'IN_TRANSIT', 'DELIVERED', 'DELIVERY_FAILED', 'RETURNED'].map((status) => (
-                <option key={status} value={status}>{status.replaceAll('_', ' ')}</option>
-              ))}
+              {['READY', 'IN_TRANSIT', 'DELIVERED', 'DELIVERY_FAILED', 'RETURNED'].map(
+                (status) => (
+                  <option key={status} value={status}>{status.replaceAll('_', ' ')}</option>
+                ),
+              )}
             </select>
             <select
               aria-label="Modalidad"
               value={props.query.routeCode ?? ''}
-              onChange={(event) => props.onQuery({ ...props.query, routeCode: event.target.value || undefined })}
+              onChange={(event) =>
+                props.onQuery({ ...props.query, routeCode: event.target.value || undefined })
+              }
             >
               <option value="">Todas las modalidades</option>
-              {['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].map((route) => (
-                <option key={route} value={route}>{route.replaceAll('_', ' ')}</option>
-              ))}
+              {['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'].map(
+                (route) => (
+                  <option key={route} value={route}>{route.replaceAll('_', ' ')}</option>
+                ),
+              )}
             </select>
-            <button type="button" disabled={props.busy} onClick={props.onSearchQueue}>Filtrar</button>
+            <button type="button" disabled={props.busy} onClick={props.onSearchQueue}>
+              Filtrar
+            </button>
           </div>
 
           <div className={styles.twoColumns}>
-            <ShipmentList
+            <LogisticsShipmentList
               items={props.queue.items}
               selectedOrderId={props.detail?.order.id}
               onSelect={(orderId) => void props.onOpenDetail(orderId)}
@@ -288,7 +228,11 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
               {props.detail.events.slice(0, 20).map((event, index) => (
                 <li key={String(event.id ?? index)}>
                   <strong>{String(event.eventType ?? 'EVENTO').replaceAll('_', ' ')}</strong>
-                  <span>{event.createdAt ? new Date(String(event.createdAt)).toLocaleString('es-CO') : ''}</span>
+                  <span>
+                    {event.createdAt
+                      ? new Date(String(event.createdAt)).toLocaleString('es-CO')
+                      : ''}
+                  </span>
                 </li>
               ))}
             </ol>
