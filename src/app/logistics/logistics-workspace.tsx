@@ -87,6 +87,9 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
   const canCorrectCost =
     hasModuleCapability(props.context, 'shipping', 'approve') ||
     hasModuleCapability(props.context, 'freight', 'update');
+  const canSatisfaction =
+    hasModuleCapability(props.context, 'shipping', 'update') ||
+    hasModuleCapability(props.context, 'sales', 'create');
 
   useEffect(() => {
     if (candidate && !props.candidates.items.some((item) => item.orderId === candidate.orderId)) {
@@ -209,6 +212,7 @@ export function LogisticsWorkspace(props: LogisticsWorkspaceProps) {
               busy={props.busy}
               canUpdate={canUpdate}
               canCorrectCost={canCorrectCost}
+              canSatisfaction={canSatisfaction}
               onSaveGuide={props.onSaveGuide}
               onDispatch={props.onDispatch}
               onSetActualCost={props.onSetActualCost}
