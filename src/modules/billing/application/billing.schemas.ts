@@ -31,7 +31,7 @@ export const billingQueueItemSchema = z.object({
   orderType: z.string(),
   currentStep: z.string(),
   routeCode: z.string(),
-  orderVersion: z.number().int().positive().optional(),
+  orderVersion: z.number().int().positive(),
   billingReady: z.boolean(),
   financial: z.object({
     decision: z.string(),
