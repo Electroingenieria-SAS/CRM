@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(18);
 
 insert into auth.users(
   instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,
@@ -207,8 +207,14 @@ select is(
   'ledger explains the complete lifecycle'
 );
 
+select ok(
+  not ((public.erp_x_inventory_count_candidates('PGTAP-INV',1,10)->'items'->0) ? 'onHand')
+  and not ((public.erp_x_inventory_count_candidates('PGTAP-INV',1,10)->'items'->0) ? 'available'),
+  'blind count candidate contract does not expose theoretical stock'
+);
+
 select lives_ok(
-  $$select public.erp_x_inventory_submit_count(
+  $select public.erp_x_inventory_submit_count(
     (
       select id from erp_supply.inventory_balances
       where material_id='b3000000-0000-4000-8000-000000000001'

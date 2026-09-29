@@ -90,3 +90,24 @@ test('auditor can read inventory but cannot mutate it', async ({ page }, testInf
   await expect(page.getByRole('button', { name: 'Enviar conteo' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Pasar a picking' })).toHaveCount(0);
 });
+
+
+test('blind count capture does not expose theoretical stock', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'Blind count scenario runs once.');
+
+  await login(page, auxEmail);
+  await page.goto('/inventory/counts');
+  await expect(page.getByRole('heading', { name: 'Conteo ciego' })).toBeVisible();
+  await page.getByLabel('Buscar material o ubicación').fill('INV-CONC-RESERVE');
+  await page.getByRole('button', { name: 'Buscar' }).click();
+
+  const candidate = page.getByRole('article').filter({ hasText: 'INV-CONC-RESERVE' });
+  await expect(candidate).toBeVisible();
+  await expect(candidate.getByText(/Físico|Reservado|Disponible/i)).toHaveCount(0);
+  await candidate.getByRole('button', { name: 'Contar' }).click();
+
+  await page.getByLabel('Cantidad contada (UND)').fill('10');
+  await page.getByLabel('Observación').fill('Conteo físico E2E sin saldo teórico visible.');
+  await page.getByRole('button', { name: 'Enviar conteo' }).click();
+  await expect(page.getByRole('status')).toContainText('sin revelar el saldo teórico');
+});
