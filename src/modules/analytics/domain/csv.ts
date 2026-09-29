@@ -42,7 +42,9 @@ export function parseCsv(text: string): Array<Record<string, string>> {
   if (row.some((value) => value.trim() !== '')) rows.push(row);
   if (rows.length < 2) throw new Error('El CSV debe incluir encabezados y al menos una fila.');
 
-  const headerRow = rows[0];\n  if (!headerRow) throw new Error('El CSV no contiene encabezados.');\n  const headers = headerRow.map((value) => value.trim());
+  const headerRow = rows[0];
+  if (!headerRow) throw new Error('El CSV no contiene encabezados.');
+  const headers = headerRow.map((value) => value.trim());
   if (headers.some((header) => !header)) throw new Error('El CSV contiene encabezados vacíos.');
   if (new Set(headers).size !== headers.length) throw new Error('El CSV contiene encabezados duplicados.');
 
