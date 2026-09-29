@@ -100,15 +100,15 @@ test('historical CSV preview, partial apply and checksum replay are idempotent',
   });
   await page.getByRole('button', { name: 'Validar y previsualizar' }).click();
 
-  await expect(page.locator('article').filter({ hasText: 'Válidas' }).locator('strong')).toHaveText('1');
-  await expect(page.locator('article').filter({ hasText: 'Rechazadas' }).locator('strong')).toHaveText('1');
+  await expect(\n    page.locator('article').filter({ hasText: 'Válidas' }).locator('strong'),\n  ).toHaveText('1');
+  await expect(\n    page.locator('article').filter({ hasText: 'Rechazadas' }).locator('strong'),\n  ).toHaveText('1');
   await expect(page.getByText(/Etapa no reconocida/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Aplicar filas válidas' }).click();
   await expect(page.getByRole('status')).toContainText('1 aplicadas, 1 rechazadas');
 
   await page.getByRole('button', { name: 'Validar y previsualizar' }).click();
-  await expect(page.locator('article').filter({ hasText: 'Idempotente' }).locator('strong')).toHaveText('Sí');
+  await expect(\n    page.locator('article').filter({ hasText: 'Idempotente' }).locator('strong'),\n  ).toHaveText('Sí');
 });
 
 test('analytics routes provide cross-browser semantic smoke', async ({ page }) => {
