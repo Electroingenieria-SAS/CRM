@@ -5,6 +5,7 @@ import { ClientRuntime } from '@/app/client-runtime';
 export const metadata: Metadata = {
   title: 'CRM · Electroingeniería',
   description: 'CRM empresarial de Electroingeniería S.A.S.',
+  manifest: '/manifest.webmanifest',
   robots: { index: false, follow: false, nocache: true },
 };
 
