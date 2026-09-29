@@ -151,10 +151,11 @@ export function LogisticsDispatchActions(props: DispatchActionsProps) {
     props.shipment.routeCode === 'LOCAL_DISPATCH' ||
     props.shipment.routeCode === 'NATIONAL_DISPATCH';
   const canDispatch = dispatchRoute && props.shipment.status === 'READY';
+  const showGuide = canDispatch && !props.shipment.trackingNumber;
 
   return (
     <>
-      {canDispatch ? (
+      {showGuide ? (
         <GuideForm
           shipment={props.shipment}
           catalog={props.catalog}
