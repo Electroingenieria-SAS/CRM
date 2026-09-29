@@ -203,7 +203,7 @@ insert into erp_supply.role_module_permissions(
   ('jefe_logistica','shipping',true,true,true,true,false),
   ('ventas','shipping',true,false,false,false,false),
   ('auditoria','shipping',true,false,false,false,false),
-  ('coordinador_logistico','billing',true,false,false,false,false),
+  ('coordinador_logistico','billing',true,false,true,false,false),
   ('lider_logistica','billing',true,false,false,false,false),
   ('jefe_logistica','billing',true,false,false,true,false),
   ('auditoria','billing',true,false,false,false,false),
