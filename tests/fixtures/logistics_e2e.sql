@@ -47,6 +47,21 @@ insert into erp_supply.order_tasks(
 )
 on conflict(id) do nothing;
 
+insert into erp_supply.financial_validations(
+  id,organization_id,order_id,validation_type,result,reason,reference,
+  actor_profile_id,idempotency_key,metadata
+)
+select
+  '99100000-0000-4000-8000-000000000012',
+  o.organization_id,o.id,'CAJA','APPROVED',
+  'Validación QA previa a logística','LOG-E2E-APPROVED',
+  '93000000-0000-4000-8000-000000000008',
+  'log-e2e-finance-approve-1',
+  '{"source":"QA_SYNTHETIC"}'::jsonb
+from erp_supply.orders o
+where o.id='99100000-0000-4000-8000-000000000010'
+on conflict (organization_id,idempotency_key) do nothing;
+
 insert into erp_supply.orders(
   id,organization_id,order_number,order_type_code,payment_condition_code,delivery_route_code,
   client_name,client_document,client_city,client_address,seller_profile_id,current_step_code,
