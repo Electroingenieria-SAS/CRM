@@ -19,7 +19,10 @@ export default defineConfig({
     { name: 'desktop-firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'desktop-webkit', use: { ...devices['Desktop Safari'] } },
     { name: 'mobile-android', use: { ...devices['Pixel 7'] } },
-    { name: 'mobile-iphone', use: { ...devices['iPhone 13'] } },
+    {
+      name: 'mobile-iphone',
+      use: { ...devices['iPhone 13'], browserName: 'chromium' },
+    },
     { name: 'tablet-webkit', use: { ...devices['iPad (gen 7)'] } },
   ],
   webServer: {
