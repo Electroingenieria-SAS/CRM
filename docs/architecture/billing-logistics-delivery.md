@@ -8,7 +8,7 @@ Este bloque reconstruye el tramo final del pedido sin duplicar dominios existent
 - **Orders** sigue siendo dueño del workflow y del cierre global.
 - **Freight Intelligence** sigue siendo dueño de estimación y aprendizaje.
 - **Logistics** es dueño del shipment, guía, costo real, intentos, entrega y satisfacción.
-- **Inventory** se consume mediante `LogisticsInventoryPort`; mientras PR #16 siga fuera de `main`, no se escriben sus tablas ni se inventa una RPC.
+- **Inventory** ya está fusionado en `main`. Su contrato actual no expone una operación específica de salida por despacho ni devolución logística; `LogisticsInventoryPort` queda como boundary explícito sin adapter hasta que Inventory publique ese contrato, evitando escrituras directas o semántica inventada.
 - **Workforce** continúa recibiendo lifecycle por el contrato Orders ↔ Workforce existente.
 
 ## Flujo
@@ -80,4 +80,4 @@ Todas las RPC logísticas públicas usan `SECURITY INVOKER + RLS`.
 
 ## Inventory
 
-Hilo 10 define `onDispatched(orderId, key)` y `onReturned(orderId, reason, key)` como ports de Application. La implementación concreta se conecta solo cuando el contrato final de Inventory esté fusionado en `main`; hasta entonces no existe acceso directo a sus tablas.
+Hilo 10 define `onDispatched(orderId, key)` y `onReturned(orderId, reason, key)` como ports de Application. Inventory ya está en `main`, pero su contrato publicado cubre recepción, reserva, picking, consumo/corte, devoluciones reutilizables y trazabilidad, no una salida/devolución logística. Por ello estos ports permanecen sin adapter y Logistics no escribe tablas de Inventory directamente.
