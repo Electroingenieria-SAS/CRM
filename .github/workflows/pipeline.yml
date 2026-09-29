@@ -177,7 +177,7 @@ jobs:
         run: npx playwright install --with-deps
       - name: Authenticated domain journeys
         run: >
-          npx playwright test
+          npx playwright test --workers=1
           tests/e2e/authenticated-orders.spec.ts
           tests/e2e/operational-order-workflow.spec.ts
           tests/e2e/authenticated-freight.spec.ts
