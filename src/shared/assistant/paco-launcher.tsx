@@ -96,6 +96,7 @@ export function PacoLauncher() {
   }
 
   async function send(text: string) {
+    if (!application) return;
     const message = text.trim();
     if (!message || busy) return;
 
@@ -152,6 +153,7 @@ export function PacoLauncher() {
   }
 
   async function acknowledge(alertId: string) {
+    if (!application) return;
     try {
       await application.paco.acknowledgeAlert(alertId);
       setAlerts((current) =>
