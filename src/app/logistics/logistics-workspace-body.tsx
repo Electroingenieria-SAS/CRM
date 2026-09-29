@@ -84,8 +84,16 @@ export function LogisticsWorkspaceBody(props: LogisticsWorkspaceBodyProps) {
         </div>
       </header>
 
-      {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
-      {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
+      {props.message ? (
+        <p className={styles.error} role="alert">
+          {props.message}
+        </p>
+      ) : null}
+      {props.notice ? (
+        <p className={styles.notice} role="status">
+          {props.notice}
+        </p>
+      ) : null}
 
       <LogisticsReleaseSection
         candidates={props.candidates}

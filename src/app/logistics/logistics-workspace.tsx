@@ -3,7 +3,10 @@
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
 import { AppShell } from '@/shared/ui/app-shell';
-import { LogisticsWorkspaceBody, type LogisticsWorkspaceBodyProps } from './logistics-workspace-body';
+import {
+  LogisticsWorkspaceBody,
+  type LogisticsWorkspaceBodyProps,
+} from './logistics-workspace-body';
 import { logisticsNavigation } from './logistics-workspace-sections';
 
 interface LogisticsWorkspaceProps extends Omit<

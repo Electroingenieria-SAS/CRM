@@ -12,12 +12,7 @@ export function createLogisticsPrimaryDeliveryActions(deps: LogisticsPageActionD
       observation?: string,
     ) =>
       deps.execute(async () => {
-        const evidenceId = await uploadLogisticsEvidence(
-          deps,
-          orderId,
-          'DELIVERY_PHOTO',
-          file,
-        );
+        const evidenceId = await uploadLogisticsEvidence(deps, orderId, 'DELIVERY_PHOTO', file);
         if (!evidenceId) throw new Error('No se pudo registrar la evidencia de entrega.');
         await deps.application!.logistics.deliver(
           shipmentId,

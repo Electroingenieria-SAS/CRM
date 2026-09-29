@@ -14,7 +14,19 @@ export function useBillingPageState() {
   const [notice, setNotice] = useState<string | null>(null);
 
   return {
-    context, setContext, queue, setQueue, selected, setSelected,
-    search, setSearch, busy, setBusy, message, setMessage, notice, setNotice,
+    context,
+    setContext,
+    queue,
+    setQueue,
+    selected,
+    setSelected,
+    search,
+    setSearch,
+    busy,
+    setBusy,
+    message,
+    setMessage,
+    notice,
+    setNotice,
   };
 }

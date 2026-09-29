@@ -14,20 +14,25 @@ interface BillingLoaderDependencies {
 }
 
 export function useBillingLoader(deps: BillingLoaderDependencies) {
-  return useCallback(async (term = deps.search) => {
-    if (!deps.application) return;
-    deps.setBusy(true);
-    deps.setMessage(null);
-    try {
-      const next = await deps.application.billing.list(term, 1, 25);
-      deps.setQueue(next);
-      deps.setSelected((current) =>
-        current ? next.items.find((item) => item.orderId === current.orderId) ?? null : null,
-      );
-    } catch (error) {
-      deps.setMessage(error instanceof Error ? error.message : 'No fue posible cargar facturación.');
-    } finally {
-      deps.setBusy(false);
-    }
-  }, [deps]);
+  return useCallback(
+    async (term = deps.search) => {
+      if (!deps.application) return;
+      deps.setBusy(true);
+      deps.setMessage(null);
+      try {
+        const next = await deps.application.billing.list(term, 1, 25);
+        deps.setQueue(next);
+        deps.setSelected((current) =>
+          current ? (next.items.find((item) => item.orderId === current.orderId) ?? null) : null,
+        );
+      } catch (error) {
+        deps.setMessage(
+          error instanceof Error ? error.message : 'No fue posible cargar facturación.',
+        );
+      } finally {
+        deps.setBusy(false);
+      }
+    },
+    [deps],
+  );
 }

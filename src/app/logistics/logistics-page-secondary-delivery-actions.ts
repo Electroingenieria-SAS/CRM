@@ -5,11 +5,7 @@ export function createLogisticsSecondaryDeliveryActions(deps: LogisticsPageActio
   return {
     reprogram: (shipmentId: string, version: number) =>
       deps.execute(
-        () => deps.application!.logistics.reprogram(
-          shipmentId,
-          version,
-          crypto.randomUUID(),
-        ),
+        () => deps.application!.logistics.reprogram(shipmentId, version, crypto.randomUUID()),
         'Entrega reprogramada.',
       ),
     returnWithFile: (
@@ -33,12 +29,13 @@ export function createLogisticsSecondaryDeliveryActions(deps: LogisticsPageActio
       }, 'Devolución registrada.'),
     satisfaction: (shipmentId: string, rating: number, comment?: string) =>
       deps.execute(
-        () => deps.application!.logistics.satisfaction(
-          shipmentId,
-          rating,
-          comment,
-          crypto.randomUUID(),
-        ),
+        () =>
+          deps.application!.logistics.satisfaction(
+            shipmentId,
+            rating,
+            comment,
+            crypto.randomUUID(),
+          ),
         'Satisfacción registrada.',
       ),
     signOut: async () => {

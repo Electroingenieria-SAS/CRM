@@ -27,9 +27,27 @@ export function useLogisticsPageState() {
   const [notice, setNotice] = useState<string | null>(null);
 
   return {
-    context, setContext, candidates, setCandidates, queue, setQueue,
-    catalog, setCatalog, detail, setDetail, prediction, setPrediction,
-    query, setQuery, candidateSearch, setCandidateSearch,
-    busy, setBusy, message, setMessage, notice, setNotice,
+    context,
+    setContext,
+    candidates,
+    setCandidates,
+    queue,
+    setQueue,
+    catalog,
+    setCatalog,
+    detail,
+    setDetail,
+    prediction,
+    setPrediction,
+    query,
+    setQuery,
+    candidateSearch,
+    setCandidateSearch,
+    busy,
+    setBusy,
+    message,
+    setMessage,
+    notice,
+    setNotice,
   };
 }
