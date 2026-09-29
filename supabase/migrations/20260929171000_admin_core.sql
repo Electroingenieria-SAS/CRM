@@ -407,9 +407,6 @@ declare
   v_reason text:=btrim(coalesce(p_reason,''));
 begin
   perform erp_private.require_admin_aal2();
-  if not erp_private.admin_rate_limit('user_invite',5,600) then
-    raise exception 'Demasiadas invitaciones solicitadas; inténtalo más tarde' using errcode='22023';
-  end if;
 
   select coalesce(array_agg(distinct lower(btrim(x)) order by lower(btrim(x))),array[]::text[])
   into v_roles from unnest(coalesce(p_roles,array[]::text[])) x
@@ -638,6 +635,9 @@ declare
   v_primary text:=lower(btrim(coalesce(p_primary_role,'')));
 begin
   perform erp_private.require_admin_aal2();
+  if not erp_private.admin_rate_limit('user_invite',5,600) then
+    raise exception 'Demasiadas invitaciones solicitadas; inténtalo más tarde' using errcode='22023';
+  end if;
 
   select coalesce(array_agg(distinct lower(btrim(x)) order by lower(btrim(x))),array[]::text[])
   into v_roles from unnest(coalesce(p_roles,array[]::text[])) x where btrim(x)<>'';
