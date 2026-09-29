@@ -5,6 +5,7 @@ test('private CRM root renders login without horizontal overflow', async ({ page
   await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
   await expect(page.getByLabel('Correo')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Ingresar' })).toBeDisabled();
+  await page.waitForLoadState('networkidle');
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth,
@@ -19,8 +20,16 @@ test('semantic landmarks and language are present', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 });
 
-test('keyboard navigation exposes a visible focus target', async ({ page }) => {
+test('keyboard navigation exposes a visible focus target', async ({ page }, testInfo) => {
+  test.skip(
+    ['mobile-android', 'mobile-iphone'].includes(testInfo.project.name),
+    'Hardware Tab navigation is covered by desktop/tablet projects; touch projects use touch semantics.',
+  );
+
   await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Ingresar al CRM' })).toBeVisible();
+  await page.waitForLoadState('networkidle');
+
   await page.keyboard.press('Tab');
 
   const focused = page.locator(':focus');

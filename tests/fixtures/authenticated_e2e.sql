@@ -79,6 +79,16 @@ where o.code='EI';
 insert into erp_supply.profiles(
   id,organization_id,auth_user_id,email,display_name,employee_code
 )
+select
+  '93000000-0000-4000-8000-000000000012',
+  o.id,u.id,u.email,'QA Coordinador C','QA-COORD-C'
+from erp_supply.organizations o
+join auth.users u on u.email='qa-coordinator-c@example.test'
+where o.code='EI';
+
+insert into erp_supply.profiles(
+  id,organization_id,auth_user_id,email,display_name,employee_code
+)
 select '93000000-0000-4000-8000-000000000007',o.id,u.id,u.email,'QA Cartera','QA-CARTERA'
 from erp_supply.organizations o join auth.users u on u.email='qa-cartera@example.test'
 where o.code='EI';
@@ -117,7 +127,7 @@ where o.code='EI';
 
 do $e2e$
 begin
-  if (select count(*) from erp_supply.profiles where employee_code like 'QA-%') <> 11 then
+  if (select count(*) from erp_supply.profiles where employee_code like 'QA-%') <> 12 then
     raise exception 'Synthetic Auth users were not linked to all CRM profiles';
   end if;
 end
@@ -130,6 +140,7 @@ insert into erp_supply.profile_roles(profile_id,role_code,is_primary) values
 ('93000000-0000-4000-8000-000000000004','super_admin',true),
 ('93000000-0000-4000-8000-000000000005','coordinador_logistico',true),
 ('93000000-0000-4000-8000-000000000006','coordinador_logistico',true),
+('93000000-0000-4000-8000-000000000012','coordinador_logistico',true),
 ('93000000-0000-4000-8000-000000000007','cartera',true),
 ('93000000-0000-4000-8000-000000000008','caja',true),
 ('93000000-0000-4000-8000-000000000009','caja',true),

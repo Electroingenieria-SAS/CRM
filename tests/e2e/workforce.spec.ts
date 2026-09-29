@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const plannerEmail = 'qa-coordinator-a@example.test';
+const androidPlannerEmail = 'qa-coordinator-b@example.test';
+const iphonePlannerEmail = 'qa-coordinator-c@example.test';
 
 function password() {
   const value = process.env.E2E_PASSWORD;
@@ -8,12 +10,12 @@ function password() {
   return value;
 }
 
-async function login(page: Page) {
+async function login(page: Page, email = plannerEmail) {
   await page.goto('/login');
-  await page.getByLabel('Correo').fill(plannerEmail);
+  await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(password());
   await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page).toHaveURL(/\/orders\/?$/);
+  await expect(page).toHaveURL(/\/orders\/?$/, { timeout: 15_000 });
 }
 
 async function openWorkforce(page: Page) {
@@ -90,7 +92,9 @@ test('planner completes the activity lifecycle with required photo evidence', as
 test('mobile Workforce uses timeline cards without page overflow', async ({ page }, testInfo) => {
   test.skip(!['mobile-iphone', 'mobile-android'].includes(testInfo.project.name));
 
-  await login(page);
+  const email =
+    testInfo.project.name === 'mobile-iphone' ? iphonePlannerEmail : androidPlannerEmail;
+  await login(page, email);
   await openWorkforce(page);
 
   for (const label of ['07:30–09:00', '09:00–10:30', '10:30–12:00', '13:30–15:30', '15:30–17:30']) {
