@@ -19,14 +19,14 @@ El bridge guarda únicamente referencias: `order_id`, `order_task_id`, perfiles,
 
 ## Mappings
 
-| Orders step | Workforce catalog |
-| --- | --- |
-| ALISTAMIENTO | LOG_SUPPORT_PICKING |
-| CORTE | LOG_SUPPORT_CUTTING |
-| LOCAL_DISPATCH | LOG_LOADING |
-| NATIONAL_DISPATCH | LOG_LOADING |
-| CLIENT_POINT | LOG_LOADING |
-| CLIENT_PICKUP | LOG_LOADING |
+| Orders step       | Workforce catalog   |
+| ----------------- | ------------------- |
+| ALISTAMIENTO      | LOG_SUPPORT_PICKING |
+| CORTE             | LOG_SUPPORT_CUTTING |
+| LOCAL_DISPATCH    | LOG_LOADING         |
+| NATIONAL_DISPATCH | LOG_LOADING         |
+| CLIENT_POINT      | LOG_LOADING         |
+| CLIENT_PICKUP     | LOG_LOADING         |
 
 No existe mapping de PRODUCCION porque el workflow fuente auditado no contiene ese paso separado.
 
@@ -43,19 +43,19 @@ Restricciones principales:
 
 ## RPC de bridge
 
-| RPC | Propósito |
-| --- | --- |
-| `erp_x_order_workforce_pending` | lectura acotada de eventos procesables |
-| `erp_x_order_workforce_claim_outbox` | claim atómico de consumidor |
-| `erp_x_order_workforce_mark_processed` | ACK con activity_id |
-| `erp_x_order_workforce_mark_failed` | fallo + backoff |
-| `erp_x_order_workforce_reconcile` | detectar/reparar integración faltante |
-| `erp_x_order_workforce_binding` | resolver activity_id de una order_task |
-| `erp_x_order_workforce_health` | backlog/fallos/locks agregados |
-| `erp_x_workforce_create_from_order_event` | crear actividad ORDER_EVENT en ventana laboral |
-| `erp_x_workforce_reassign_from_order_event` | reasignar PLANNED o segmentar actividad activa |
-| `erp_x_order_workforce_completion_readiness` | impedir COMPLETE inconsistente |
-| `erp_x_order_workforce_indicators` | ocupación y tiempos agregados |
+| RPC                                          | Propósito                                      |
+| -------------------------------------------- | ---------------------------------------------- |
+| `erp_x_order_workforce_pending`              | lectura acotada de eventos procesables         |
+| `erp_x_order_workforce_claim_outbox`         | claim atómico de consumidor                    |
+| `erp_x_order_workforce_mark_processed`       | ACK con activity_id                            |
+| `erp_x_order_workforce_mark_failed`          | fallo + backoff                                |
+| `erp_x_order_workforce_reconcile`            | detectar/reparar integración faltante          |
+| `erp_x_order_workforce_binding`              | resolver activity_id de una order_task         |
+| `erp_x_order_workforce_health`               | backlog/fallos/locks agregados                 |
+| `erp_x_workforce_create_from_order_event`    | crear actividad ORDER_EVENT en ventana laboral |
+| `erp_x_workforce_reassign_from_order_event`  | reasignar PLANNED o segmentar actividad activa |
+| `erp_x_order_workforce_completion_readiness` | impedir COMPLETE inconsistente                 |
+| `erp_x_order_workforce_indicators`           | ocupación y tiempos agregados                  |
 
 Las RPC públicas son `SECURITY INVOKER`. Los helpers privados que necesitan atravesar RLS usan `SECURITY DEFINER` con `search_path` explícito y grants mínimos.
 

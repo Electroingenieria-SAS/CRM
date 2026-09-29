@@ -4,17 +4,17 @@ Corte: 2026-09-28.
 
 ## Checkpoints
 
-| Checkpoint | Estado | Evidencia |
-| --- | --- | --- |
-| A · inspección Orders/Workforce | Validado | Orders PR #8 + Workforce PR #11 fusionados en `main` |
-| B · contratos/eventos | Implementado | eventos v1.0.0 + ports de integración |
-| C · persistencia/idempotencia | Implementado | outbox transaccional, dedupe, binding y retry |
-| D · claim/start/complete | Implementado | adapter real sobre `WorkforceService` + readiness de cierre |
-| E · block/reassign/recovery | Implementado | lifecycle real, reasignación por segmentos y reconciliación |
-| F · ocupación/indicadores | Implementado | calendario Workforce + business seconds + políticas por perfil |
-| G · UI mínima | Implementado | health, ocupación, pedidos, tiempos y reconciliación |
-| H · tests | En validación CI | unit, integración, concurrencia, pgTAP/RLS y E2E real |
-| I · CI + merge | Pendiente | solo se fusionará con ambos pipelines verdes y 0 behind |
+| Checkpoint                      | Estado           | Evidencia                                                      |
+| ------------------------------- | ---------------- | -------------------------------------------------------------- |
+| A · inspección Orders/Workforce | Validado         | Orders PR #8 + Workforce PR #11 fusionados en `main`           |
+| B · contratos/eventos           | Implementado     | eventos v1.0.0 + ports de integración                          |
+| C · persistencia/idempotencia   | Implementado     | outbox transaccional, dedupe, binding y retry                  |
+| D · claim/start/complete        | Implementado     | adapter real sobre `WorkforceService` + readiness de cierre    |
+| E · block/reassign/recovery     | Implementado     | lifecycle real, reasignación por segmentos y reconciliación    |
+| F · ocupación/indicadores       | Implementado     | calendario Workforce + business seconds + políticas por perfil |
+| G · UI mínima                   | Implementado     | health, ocupación, pedidos, tiempos y reconciliación           |
+| H · tests                       | En validación CI | unit, integración, concurrencia, pgTAP/RLS y E2E real          |
+| I · CI + merge                  | Pendiente        | solo se fusionará con ambos pipelines verdes y 0 behind        |
 
 ## Reglas certificadas por diseño
 

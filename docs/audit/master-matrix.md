@@ -49,7 +49,6 @@ Corte: 2026-09-28 · baseline fuente `4bdceeaa54847581f83e9425aa0310aae8b0547d`.
 | WF-004 | P1 | Workforce calendario | Jornada, festivos y lunch break deben afectar planificación y métricas. | Ocupación/tiempos falsos. | Segmentos persistidos + festivos por año + business seconds. | 005_workforce_contract_test.sql. | Implementado |
 | WF-005 | P1 | Workforce UX | Tabla desktop no es usable en móvil. | Operación deficiente en iPhone/Android. | Día con 5 columnas exactas en desktop y cards/timeline en móvil; Semana/Mes adaptativos. | workforce.spec.ts. | En validación CI |
 
-
 | OWF-001 | P0 | Orders ↔ Workforce | Una etapa operativa de Orders podía existir sin actividad Workforce durable. | Ocupación y cronograma inconsistentes. | Outbox transaccional + observer + adapter real Workforce. | Migraciones 20260928210000–213000, Application/Infrastructure y pgTAP. | Implementado |
 | OWF-002 | P0 | Idempotencia/concurrencia | Retries o dos consumidores podían duplicar actividad o lifecycle. | Doble ocupación e historial incorrecto. | Dedupe por evento, activityKey estable, eventKey por mutación y claim atómico. | outbox constraints + concurrency test. | Implementado |
 | OWF-003 | P0 | Evidencia | Orders podía completar una etapa aunque Workforce exigiera evidencia. | Estado Orders COMPLETED con actividad operativa inconsistente. | Gate `beforeComplete` + `erp_x_order_workforce_completion_readiness`. | Unit gate + runtime pgTAP + E2E pendiente final. | En validación CI |
