@@ -228,7 +228,7 @@ create or replace function public.erp_x_admin_update_profile(
 )
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
@@ -281,7 +281,7 @@ create or replace function public.erp_x_admin_set_user_active(
 )
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
@@ -345,7 +345,7 @@ create or replace function public.erp_x_admin_set_user_roles(
 )
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
@@ -431,7 +431,7 @@ create or replace function public.erp_x_admin_set_permission(
 )
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
@@ -494,7 +494,7 @@ create or replace function public.erp_x_admin_update_organization(
 )
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
@@ -532,7 +532,7 @@ $$;
 create or replace function public.erp_x_admin_password_reset_prepare(p_profile_id uuid)
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
@@ -569,7 +569,7 @@ create or replace function public.erp_x_admin_invite_prepare(
 )
 returns jsonb
 language plpgsql
-security invoker
+security definer
 set search_path=pg_catalog,public,erp_supply,erp_private
 as $$
 declare
