@@ -45,7 +45,10 @@ test('dashboard, filters, VSM and report explorer use synthetic analytics data',
   await expect(page.getByRole('heading', { name: 'Tiempos y cuellos de botella' })).toBeVisible();
   await setRange(page);
   await page.getByRole('button', { name: 'Aplicar' }).click();
-  await expect(page.getByText('Alistamiento').first()).toBeVisible();
+  const stageRegion = page.getByRole('region', { name: 'Espera por etapa' });
+  await expect(
+    stageRegion.getByRole('article').filter({ hasText: 'Alistamiento' }),
+  ).toBeVisible();
 
   await page.getByLabel('Pedido o clave histórica').fill('aa100000-0000-4000-8000-000000000001');
   await page.getByRole('button', { name: 'Consultar' }).click();
