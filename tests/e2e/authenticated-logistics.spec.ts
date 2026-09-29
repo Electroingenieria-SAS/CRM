@@ -64,10 +64,7 @@ async function releaseShipmentIfPending(page: Page) {
   const releaseSection = page
     .getByRole('heading', { name: 'Por liberar' })
     .locator('xpath=ancestor::section[1]');
-  const candidate = releaseSection
-    .getByRole('button')
-    .filter({ hasText: orderNumber })
-    .first();
+  const candidate = releaseSection.getByRole('button').filter({ hasText: orderNumber }).first();
   if ((await candidate.count()) === 0) return;
   await candidate.click();
   await expect(page.getByRole('heading', { name: orderNumber, exact: true })).toBeVisible();
