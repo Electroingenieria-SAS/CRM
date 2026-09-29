@@ -52,3 +52,12 @@ La creación automática obtiene una ventana válida a partir de los segmentos y
 Integradas: ALISTAMIENTO, CORTE, LOCAL_DISPATCH, NATIONAL_DISPATCH, CLIENT_POINT y CLIENT_PICKUP.
 
 El workflow fuente auditado no tiene `PRODUCCION` como paso separado; no se inventa esa integración. Cartera, Caja, Compras y Facturación tampoco se convierten en actividades operativas de Workforce.
+
+
+## Frontera RLS de mutación operativa
+
+Los roles operativos conservan permisos mínimos sobre Orders. Un auxiliar puede tener `orders.read` y permisos de etapa en `step_roles` sin recibir `orders.update` sobre todo el módulo.
+
+Por esa razón, CLAIM, START, BLOCK, RESUME y COMPLETE se exponen como RPC estrechos `SECURITY DEFINER`. Cada RPC mantiene validación explícita de organización, perfil autenticado, asignación, `workflow_actor_can`, versión e idempotencia, con `search_path` fijo. `public` y `anon` no pueden ejecutarlos.
+
+Las consultas, salud del bridge y operaciones de outbox continúan `SECURITY INVOKER`. La decisión evita ampliar privilegios de tabla para resolver una acción de workflow específica.
