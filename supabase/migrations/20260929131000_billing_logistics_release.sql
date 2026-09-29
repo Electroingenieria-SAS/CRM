@@ -156,6 +156,7 @@ begin
     raise exception 'No autorizado para liberar pedidos a logística' using errcode='42501';
   end if;
 
+  perform erp_private.logistics_lock('RELEASE_ORDER',p_order_id::text);
   perform erp_private.logistics_lock('RELEASE',p_idempotency_key);
 
   select s.* into v_shipment
@@ -171,10 +172,20 @@ begin
     );
   end if;
 
+  select * into v_shipment
+  from erp_supply.logistics_shipments
+  where organization_id=v_org and order_id=p_order_id
+  limit 1;
+  if found then
+    return jsonb_build_object(
+      'success',true,'idempotent',true,'shipmentId',v_shipment.id,
+      'status',v_shipment.status,'version',v_shipment.version,'contractVersion','1.0.0'
+    );
+  end if;
+
   select * into v_order
   from erp_supply.orders
-  where id=p_order_id and organization_id=v_org
-  for update;
+  where id=p_order_id and organization_id=v_org;
   if not found then raise exception 'Pedido no encontrado' using errcode='22023'; end if;
 
   if v_order.current_step_code<>v_order.delivery_route_code
