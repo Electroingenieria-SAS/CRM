@@ -29,4 +29,4 @@ Una falla de aprendizaje Freight no revierte un despacho ya válido; se registra
 - Estimado y costo real permanecen separados.
 - El cierre global continúa bajo Orders.
 - Se evita polling entre dominios.
-- La integración Inventory puede completarse al fusionarse su contrato sin migrar las tablas de Logistics.
+- La integración de salida/devolución con Inventory podrá completarse cuando ese dominio publique una operación logística compatible, sin migrar las tablas de Logistics.
