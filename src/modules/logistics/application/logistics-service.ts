@@ -6,6 +6,7 @@ import type {
   LogisticsReleaseInput,
   LogisticsRepository,
 } from '@/modules/logistics/ports/logistics-ports';
+import type { OrderEvidenceStoragePort } from '@/shared/evidence/order-evidence-storage';
 
 function requiredKey(value: string) {
   const key = value.trim();
@@ -49,6 +50,30 @@ export class LogisticsService {
       carrierId.trim(),
       tracking.trim(),
       requiredKey(key),
+    );
+  }
+
+  async uploadEvidence(
+    organizationId: string,
+    orderId: string,
+    evidenceType: string,
+    file: File,
+    key: string,
+  ) {
+    const stored = await this.storage.upload({
+      organizationId,
+      orderId,
+      evidenceType: evidenceType.trim().toUpperCase(),
+      file,
+    });
+    return this.addEvidence(
+      orderId,
+      evidenceType,
+      stored.storageProvider,
+      stored.storageReference,
+      stored.fileName,
+      stored.mimeType,
+      key,
     );
   }
 
