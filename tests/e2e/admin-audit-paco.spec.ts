@@ -29,7 +29,7 @@ test('Admin, Audit and PACO close the release-critical operator journey', async 
 
   await page.goto('/admin/roles');
   await expect(page.getByRole('heading', { name: 'Roles y permisos' })).toBeVisible();
-  await expect(page.getByText('Superadministrador').first()).toBeVisible();
+  await expect(page.getByText('Superadministración').first()).toBeVisible();
 
   await page.goto('/admin/security');
   await expect(page.getByRole('heading', { name: 'MFA y organización' })).toBeVisible();
