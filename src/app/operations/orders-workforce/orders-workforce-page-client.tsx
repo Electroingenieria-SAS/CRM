@@ -6,7 +6,7 @@ import { useOrdersWorkforcePage } from './use-orders-workforce-page';
 export function OrdersWorkforcePageClient() {
   const page = useOrdersWorkforcePage();
 
-  if (!page.context || !page.health) {
+  if (!page.context || !page.health || !page.indicators) {
     return (
       <main id="main-content" className="centered-page">
         <section className="surface" aria-live="polite">
@@ -22,6 +22,7 @@ export function OrdersWorkforcePageClient() {
     <OrdersWorkforceWorkspace
       context={page.context}
       health={page.health}
+      indicators={page.indicators}
       repairing={page.repairing}
       message={page.message}
       notice={page.notice}
