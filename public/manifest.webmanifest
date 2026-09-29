@@ -1,9 +1,26 @@
 {
-  "name": "CRM Electroingeniería — Staging",
+  "name": "CRM Electroingeniería",
   "short_name": "CRM EI",
+  "description": "CRM empresarial privado de Electroingeniería S.A.S.",
   "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#f4f7fb",
   "theme_color": "#0b66c3",
-  "lang": "es"
+  "lang": "es-CO",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/crm-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/crm-maskable.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
 }
