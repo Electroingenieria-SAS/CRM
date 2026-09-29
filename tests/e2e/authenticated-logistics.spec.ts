@@ -25,7 +25,10 @@ async function logout(page: Page) {
 }
 
 async function selectOrderIfPresent(page: Page) {
-  const order = page.getByRole('button').filter({ hasText: orderNumber }).first();
+  const order = page
+    .getByRole('button')
+    .filter({ hasText: orderNumber })
+    .first();
   if ((await order.count()) === 0) return false;
   await order.click();
   return true;
@@ -64,10 +67,15 @@ async function releaseShipmentIfPending(page: Page) {
   const releaseSection = page
     .getByRole('heading', { name: 'Por liberar' })
     .locator('xpath=ancestor::section[1]');
-  const candidate = releaseSection.getByRole('button').filter({ hasText: orderNumber }).first();
+  const candidate = releaseSection
+    .getByRole('button')
+    .filter({ hasText: orderNumber })
+    .first();
   if ((await candidate.count()) === 0) return;
   await candidate.click();
-  await expect(page.getByRole('heading', { name: orderNumber, exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: orderNumber, exact: true }),
+  ).toBeVisible();
 
   await page
     .getByRole('combobox', { name: 'Destino Freight' })
@@ -84,7 +92,9 @@ async function releaseShipmentIfPending(page: Page) {
 async function openShipment(page: Page) {
   await page.getByLabel('Buscar despachos').fill(orderNumber);
   await page.getByRole('button', { name: 'Filtrar' }).click();
-  await expect(page.getByRole('button').filter({ hasText: orderNumber }).first()).toBeVisible();
+  await expect(
+    page.getByRole('button').filter({ hasText: orderNumber }).first(),
+  ).toBeVisible();
   await page.getByRole('button').filter({ hasText: orderNumber }).first().click();
 }
 
@@ -114,28 +124,41 @@ async function operateShipment(page: Page) {
       .setInputFiles({
         name: 'delivery.jpg',
         mimeType: 'image/jpeg',
-        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01]),
+        buffer: Buffer.from([
+          0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01,
+        ]),
       });
-    await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
+    await page
+      .getByLabel('Observación')
+      .first()
+      .fill('Entrega nacional conforme.');
     await deliver.click();
-    await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
+    await expect(
+      page.getByText('Entrega confirmada y enviada a cierre de Orders.'),
+    ).toBeVisible();
   }
 
   await expect(
     page.locator('span').filter({ hasText: /^DELIVERED$/ }).first(),
   ).toBeVisible();
 
-  const satisfaction = page.getByRole('button', { name: 'Guardar satisfacción' });
+  const satisfaction = page.getByRole('button', {
+    name: 'Guardar satisfacción',
+  });
   if (await satisfaction.isVisible().catch(() => false)) {
     await page.getByLabel('Comentario').fill('Entrega satisfactoria.');
     await satisfaction.click();
     await expect(page.getByText('Satisfacción registrada.')).toBeVisible();
   }
 
-  await expect(page.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Trazabilidad' }),
+  ).toBeVisible();
 }
 
-test('billing and logistics private routes redirect anonymous users', async ({ page }) => {
+test('billing and logistics private routes redirect anonymous users', async ({
+  page,
+}) => {
   await page.goto('/billing');
   await expect(page).toHaveURL(/\/login\/?$/);
   await page.goto('/logistics');
@@ -149,18 +172,27 @@ test('logistics workspace is usable on Android without horizontal page overflow'
 
   await login(page, coordinatorEmail);
   await page.goto('/logistics');
-  await expect(page.getByRole('heading', { level: 1, name: 'Logística y entrega' })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(
-    false,
-  );
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Logística y entrega' }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    ),
+  ).toBe(false);
   await expect(page.getByRole('heading', { name: 'Por liberar' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Despachos y entregas' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Despachos y entregas' }),
+  ).toBeVisible();
 });
 
 test('invoice to national delivery lifecycle is traceable end to end', async ({
   page,
 }, testInfo) => {
-  test.skip(testInfo.project.name !== 'desktop-chromium', 'Full logistics journey runs once.');
+  test.skip(
+    testInfo.project.name !== 'desktop-chromium',
+    'Full logistics journey runs once.',
+  );
 
   await login(page, cajaEmail);
   await ensureInvoice(page, testInfo.retry);
@@ -172,14 +204,25 @@ test('invoice to national delivery lifecycle is traceable end to end', async ({
   await operateShipment(page);
 });
 
-test('auditor can inspect logistics but cannot operate it', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'desktop-chromium', 'Authorization scenario runs once.');
+test('auditor can inspect logistics but cannot operate it', async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== 'desktop-chromium',
+    'Authorization scenario runs once.',
+  );
 
   await login(page, auditorEmail);
   await page.goto('/logistics');
-  await expect(page.getByRole('heading', { level: 1, name: 'Logística y entrega' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Logística y entrega' }),
+  ).toBeVisible();
   const release = page.getByRole('button', { name: 'Liberar pedido' });
   if (await release.count()) await expect(release).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Registrar salida' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Guardar satisfacción' })).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Registrar salida' }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Guardar satisfacción' }),
+  ).toHaveCount(0);
 });
