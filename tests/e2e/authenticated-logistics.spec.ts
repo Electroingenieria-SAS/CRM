@@ -103,9 +103,11 @@ async function operateShipment(page: Page) {
     await page.getByLabel('Costo real de salida, si ya se conoce').fill('22000');
     await dispatch.click();
     await expect(page.getByText('Despacho registrado.')).toBeVisible();
+    await expect(page.getByTestId('logistics-status')).toHaveText('IN TRANSIT');
   }
 
   const deliver = page.getByRole('button', { name: 'Confirmar entrega' });
+  await expect(deliver).toBeVisible();
   if (await deliver.isVisible().catch(() => false)) {
     await page.getByLabel('Receptor').fill('Cliente QA');
     await page
@@ -118,6 +120,8 @@ async function operateShipment(page: Page) {
       });
     await page.getByLabel('Observación').first().fill('Entrega nacional conforme.');
     await deliver.click();
+    await expect(page.getByText('Entrega confirmada y enviada a cierre de Orders.')).toBeVisible();
+    await expect(page.getByTestId('logistics-status')).toHaveText('DELIVERED');
   }
 
   await openShipment(page);
