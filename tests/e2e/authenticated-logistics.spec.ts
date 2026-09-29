@@ -62,8 +62,12 @@ async function releaseShipmentIfPending(page: Page) {
   await page.getByRole('button', { name: 'Buscar' }).first().click();
   if (!(await selectOrderIfPresent(page))) return;
 
-  await page.getByLabel('Destino Freight', { exact: true }).selectOption('99100000-0000-4000-8000-000000000002');
-  await page.getByLabel('Transportadora', { exact: true }).selectOption('99100000-0000-4000-8000-000000000001');
+  await page
+    .getByLabel('Destino Freight', { exact: true })
+    .selectOption('99100000-0000-4000-8000-000000000002');
+  await page
+    .getByLabel('Transportadora', { exact: true })
+    .selectOption('99100000-0000-4000-8000-000000000001');
   await page.getByRole('button', { name: 'Estimar flete' }).click();
   await expect(page.getByText(/Rango:|Histórico insuficiente/)).toBeVisible();
   await page.getByRole('button', { name: 'Liberar pedido' }).click();
