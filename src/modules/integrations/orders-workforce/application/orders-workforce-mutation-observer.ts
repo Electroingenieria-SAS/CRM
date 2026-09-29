@@ -5,6 +5,10 @@ import { OrdersWorkforceAutomationService } from '@/modules/integrations/orders-
 export class OrdersWorkforceMutationObserver implements OrderWorkflowMutationObserver {
   constructor(private readonly automation: OrdersWorkforceAutomationService) {}
 
+  beforeComplete(orderId: string): Promise<void> {
+    return this.automation.assertOrderCompletionReady(orderId);
+  }
+
   async onWorkflowMutation(result: WorkflowMutationResponse): Promise<void> {
     await this.automation.flushOrder(result.orderId);
   }
