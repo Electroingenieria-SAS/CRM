@@ -109,10 +109,7 @@ function distance(left: string, right: string) {
 function similarity(left: string, right: string) {
   if (!left || !right) return 0;
   if (left === right) return 1;
-  if (
-    Math.min(left.length, right.length) >= 4 &&
-    (left.includes(right) || right.includes(left))
-  ) {
+  if (Math.min(left.length, right.length) >= 4 && (left.includes(right) || right.includes(left))) {
     return 1;
   }
   return 1 - distance(left, right) / Math.max(left.length, right.length, 1);
