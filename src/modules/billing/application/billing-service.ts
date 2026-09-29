@@ -1,4 +1,5 @@
 import type { InvoiceInput } from '@/modules/finance/ports/finance-repository';
+import type { OrderEvidenceStoragePort } from '@/shared/evidence/order-evidence-storage';
 import type {
   BillingEvidencePort,
   BillingFinancePort,
@@ -18,6 +19,7 @@ export class BillingService {
     private readonly finance: BillingFinancePort,
     private readonly evidence: BillingEvidencePort,
     private readonly orders: BillingOrdersPort,
+    private readonly storage: OrderEvidenceStoragePort,
   ) {}
 
   list(search?: string, page = 1, pageSize = 25) {
@@ -30,6 +32,27 @@ export class BillingService {
 
   registerInvoice(orderId: string, input: InvoiceInput, key: string) {
     return this.finance.registerInvoice(orderId, input, requiredKey(key));
+  }
+
+  async uploadPvpAnnex(
+    organizationId: string,
+    orderId: string,
+    file: File,
+    key: string,
+  ) {
+    const stored = await this.storage.upload({
+      organizationId,
+      orderId,
+      evidenceType: 'PVP_ANNEX',
+      file,
+    });
+    return this.addPvpAnnex(
+      orderId,
+      stored.storageProvider,
+      stored.storageReference,
+      stored.fileName,
+      key,
+    );
   }
 
   addPvpAnnex(
