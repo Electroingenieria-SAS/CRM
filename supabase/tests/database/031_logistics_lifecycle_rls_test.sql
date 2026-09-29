@@ -106,11 +106,11 @@ select is(
 );
 
 select lives_ok(
-  $select public.erp_x_finance_validate_order(
+  $$select public.erp_x_finance_validate_order(
     '96000000-0000-4000-8000-000000000001',
     'CAJA','APPROVED','Validación QA previa a logística',
     'LOG-QA-APPROVED','{}'::jsonb,'log-finance-approve-1'
-  )$,
+  )$$,
   'Finance approves the CASH gate before logistics'
 );
 
