@@ -156,6 +156,8 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/orders_workforce_e2e.sql
+      - name: Seed synthetic release-control dataset
+        run: psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/fixtures/release_e2e.sql
       - name: Verify Auth and operational session contract
         run: node tests/fixtures/verify-authenticated-e2e-session.mjs
       - name: Prove atomic task claim concurrency
