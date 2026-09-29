@@ -1,6 +1,7 @@
 import type {
   InventoryAdjustmentResult,
   InventoryAvailability,
+  InventoryCountCandidates,
   InventoryCountQueue,
   InventoryCountResult,
   InventoryList,
@@ -97,6 +98,7 @@ export interface InventoryRepository {
     reason: string,
     key: string,
   ): Promise<InventoryAdjustmentResult>;
+  countCandidates(search?: string, page?: number, pageSize?: number): Promise<InventoryCountCandidates>;
   submitCount(
     balanceId: string,
     countedQuantity: number,

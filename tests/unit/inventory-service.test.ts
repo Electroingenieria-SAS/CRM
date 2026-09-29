@@ -26,6 +26,7 @@ function repository(): InventoryRepository {
     waste: vi.fn(),
     adjust: vi.fn(),
     reverseMovement: vi.fn(),
+    countCandidates: vi.fn(),
     submitCount: vi.fn(),
     reviewCount: vi.fn(),
     listCounts: vi.fn().mockResolvedValue({

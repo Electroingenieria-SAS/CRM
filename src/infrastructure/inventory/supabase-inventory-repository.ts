@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   inventoryAdjustmentResultSchema,
   inventoryAvailabilitySchema,
+  inventoryCountCandidatesSchema,
   inventoryCountQueueSchema,
   inventoryCountResultSchema,
   inventoryListSchema,
@@ -176,6 +177,15 @@ export class SupabaseInventoryRepository implements InventoryRepository {
       p_idempotency_key: key,
     });
     return inventoryAdjustmentResultSchema.parse(rpcPayload(data, error));
+  }
+
+  async countCandidates(search?: string, page = 1, pageSize = 25) {
+    const { data, error } = await this.client.rpc('erp_x_inventory_count_candidates', {
+      p_search: search ?? null,
+      p_page: page,
+      p_page_size: pageSize,
+    });
+    return inventoryCountCandidatesSchema.parse(rpcPayload(data, error));
   }
 
   async submitCount(balanceId: string, countedQuantity: number, note: string, key: string) {

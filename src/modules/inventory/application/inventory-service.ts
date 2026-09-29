@@ -143,6 +143,14 @@ export class InventoryService {
     );
   }
 
+  countCandidates(search?: string, page = 1, pageSize = 25) {
+    return this.repository.countCandidates(
+      search?.trim() || undefined,
+      Math.max(page, 1),
+      Math.min(Math.max(pageSize, 1), 100),
+    );
+  }
+
   submitCount(balanceId: string, countedQuantity: number, note: string, key: string) {
     if (!Number.isFinite(countedQuantity) || countedQuantity < 0) {
       throw new Error('El conteo físico no puede ser negativo.');

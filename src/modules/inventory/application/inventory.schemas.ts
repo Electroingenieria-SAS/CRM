@@ -178,6 +178,24 @@ export const inventoryCountResultSchema = z.object({
   contractVersion: z.string(),
 });
 
+export const inventoryCountCandidatesSchema = z.object({
+  items: z.array(
+    z.object({
+      balanceId: z.string().uuid(),
+      materialId: z.string().uuid(),
+      reference: z.string(),
+      name: z.string(),
+      unit: z.string(),
+      variantLabel: z.string().nullable(),
+      locationCode: z.string(),
+      locationName: z.string(),
+    }),
+  ),
+  pagination: inventoryPaginationSchema,
+  blind: z.literal(true),
+  contractVersion: z.string(),
+});
+
 export const inventoryCountQueueSchema = z.object({
   items: z.array(
     z.object({
@@ -210,4 +228,5 @@ export type InventoryReceiptResult = z.infer<typeof inventoryReceiptResultSchema
 export type InventoryReservationResult = z.infer<typeof inventoryReservationResultSchema>;
 export type InventoryAdjustmentResult = z.infer<typeof inventoryAdjustmentResultSchema>;
 export type InventoryCountResult = z.infer<typeof inventoryCountResultSchema>;
+export type InventoryCountCandidates = z.infer<typeof inventoryCountCandidatesSchema>;
 export type InventoryCountQueue = z.infer<typeof inventoryCountQueueSchema>;
