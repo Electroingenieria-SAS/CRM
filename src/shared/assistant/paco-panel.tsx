@@ -1,7 +1,7 @@
 'use client';
 
 import type { PacoService } from '@/modules/assistant/application/paco-service';
-import { canUseSpeechRecognition, speakPaco } from './paco-voice';
+import { canUseSpeechRecognition } from './paco-voice';
 import { PacoActivityWizard } from './paco-activity-wizard';
 import { PacoAlertList } from './paco-alert-list';
 import type { ChatMessage } from './use-paco-chat';
