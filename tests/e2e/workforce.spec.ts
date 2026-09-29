@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
 
 const plannerEmail = 'qa-coordinator-a@example.test';
-const alternatePlannerEmail = 'qa-superadmin@example.test';
+const androidPlannerEmail = 'qa-coordinator-b@example.test';
+const iphonePlannerEmail = 'qa-coordinator-c@example.test';
 
 function password() {
   const value = process.env.E2E_PASSWORD;
@@ -11,30 +11,10 @@ function password() {
 }
 
 async function login(page: Page, email = plannerEmail) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error('Local Supabase E2E configuration is required.');
-
-  const client = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  const { data, error } = await client.auth.signInWithPassword({
-    email,
-    password: password(),
-  });
-  if (error || !data.session) {
-    throw new Error(`Unable to create Workforce E2E session: ${error?.message ?? 'no session'}`);
-  }
-
-  const storageKey = `sb-${new URL(url).hostname.split('.')[0]}-auth-token`;
-  await page.addInitScript(
-    ({ keyName, session }) => {
-      window.localStorage.setItem(keyName, JSON.stringify(session));
-    },
-    { keyName: storageKey, session: data.session },
-  );
-
-  await page.goto('/orders');
+  await page.goto('/login');
+  await page.getByLabel('Correo').fill(email);
+  await page.getByLabel('Contraseña').fill(password());
+  await page.getByRole('button', { name: 'Ingresar' }).click();
   await expect(page).toHaveURL(/\/orders\/?$/, { timeout: 15_000 });
 }
 
@@ -112,10 +92,9 @@ test('planner completes the activity lifecycle with required photo evidence', as
 test('mobile Workforce uses timeline cards without page overflow', async ({ page }, testInfo) => {
   test.skip(!['mobile-iphone', 'mobile-android'].includes(testInfo.project.name));
 
-  await login(
-    page,
-    testInfo.project.name === 'mobile-iphone' ? alternatePlannerEmail : plannerEmail,
-  );
+  const email =
+    testInfo.project.name === 'mobile-iphone' ? iphonePlannerEmail : androidPlannerEmail;
+  await login(page, email);
   await openWorkforce(page);
 
   for (const label of ['07:30–09:00', '09:00–10:30', '10:30–12:00', '13:30–15:30', '15:30–17:30']) {
