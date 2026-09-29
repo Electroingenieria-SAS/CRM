@@ -47,7 +47,7 @@ test('planner completes the activity lifecycle with required photo evidence', as
   await page
     .getByRole('combobox', { name: 'Actividad específica', exact: true })
     .selectOption({ label: 'Cargue' });
-  await page.getByLabel('Inicio').fill('2026-09-29T07:00');
+  await page.getByLabel('Inicio').fill('2026-09-29T07:30');
   await page.getByLabel('Fin').fill('2026-09-29T09:00');
   await page.getByRole('button', { name: 'Planificar actividad' }).click();
 
@@ -93,7 +93,7 @@ test('mobile Workforce uses timeline cards without page overflow', async ({ page
   await login(page);
   await openWorkforce(page);
 
-  for (const label of ['07:00–09:00', '09:00–11:00', '11:00–12:00', '13:40–15:40', '15:40–17:30']) {
+  for (const label of ['07:30–09:00', '09:00–10:30', '10:30–12:00', '13:30–15:30', '15:30–17:30']) {
     await expect(page.getByRole('heading', { name: label }).first()).toBeVisible();
   }
 
