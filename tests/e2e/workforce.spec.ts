@@ -53,7 +53,6 @@ test('planner completes the activity lifecycle with required photo evidence', as
 
   await expect(page.getByRole('status')).toContainText('Actividad planificada correctamente.');
 
-  await page.getByRole('button', { name: 'Periodo siguiente' }).click();
   const activity = page.getByRole('button', { name: /Cargue.*Planificada/ }).first();
   await expect(activity).toBeVisible();
   await activity.click();
