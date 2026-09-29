@@ -23,10 +23,16 @@ import { AppError } from '@/shared/errors/app-error';
 
 function mapInventoryError(error: { code?: string; message?: string } | null) {
   if (error?.code === '42501') {
-    return new AppError('AUTHORIZATION', error.message ?? 'No tienes permisos para esta operación.');
+    return new AppError(
+      'AUTHORIZATION',
+      error.message ?? 'No tienes permisos para esta operación.',
+    );
   }
   if (error?.code === '23514' || error?.code === '22023') {
-    return new AppError('BUSINESS_RULE', error.message ?? 'La operación de inventario no es válida.');
+    return new AppError(
+      'BUSINESS_RULE',
+      error.message ?? 'La operación de inventario no es válida.',
+    );
   }
   if (error?.code === '23505') {
     return new AppError('BUSINESS_RULE', error.message ?? 'La operación ya fue procesada.');
@@ -106,7 +112,12 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryReservationResultSchema.parse(rpcPayload(data, error));
   }
 
-  async release(reservationId: string, quantity: number | undefined, reason: string, key: string) {
+  async release(
+    reservationId: string,
+    quantity: number | undefined,
+    reason: string,
+    key: string,
+  ) {
     const { data, error } = await this.client.rpc('erp_x_inventory_release', {
       p_reservation_id: reservationId,
       p_quantity: quantity ?? null,
@@ -125,7 +136,12 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryReservationResultSchema.parse(rpcPayload(data, error));
   }
 
-  async consume(reservationId: string, quantity: number | undefined, reason: string, key: string) {
+  async consume(
+    reservationId: string,
+    quantity: number | undefined,
+    reason: string,
+    key: string,
+  ) {
     const { data, error } = await this.client.rpc('erp_x_inventory_consume', {
       p_reservation_id: reservationId,
       p_quantity: quantity ?? null,
@@ -150,7 +166,12 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryReservationResultSchema.parse(rpcPayload(data, error));
   }
 
-  async waste(reservationId: string, quantity: number | undefined, reason: string, key: string) {
+  async waste(
+    reservationId: string,
+    quantity: number | undefined,
+    reason: string,
+    key: string,
+  ) {
     const { data, error } = await this.client.rpc('erp_x_inventory_waste', {
       p_reservation_id: reservationId,
       p_quantity: quantity ?? null,
@@ -188,7 +209,12 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     return inventoryCountCandidatesSchema.parse(rpcPayload(data, error));
   }
 
-  async submitCount(balanceId: string, countedQuantity: number, note: string, key: string) {
+  async submitCount(
+    balanceId: string,
+    countedQuantity: number,
+    note: string,
+    key: string,
+  ) {
     const { data, error } = await this.client.rpc('erp_x_inventory_submit_count', {
       p_balance_id: balanceId,
       p_counted_quantity: countedQuantity,

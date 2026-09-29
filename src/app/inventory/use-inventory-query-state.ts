@@ -53,7 +53,11 @@ export function useInventoryQueryState(
         setList(data.list);
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible abrir Inventario.');
+        if (active) {
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible abrir Inventario.',
+          );
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -70,14 +74,18 @@ export function useInventoryQueryState(
       setLoading(true);
       setMessage(null);
       try {
-        setList(await application.inventory.list({
-          search,
-          locationId: locationId || undefined,
-          page,
-          pageSize: 25,
-        }));
+        setList(
+          await application.inventory.list({
+            search,
+            locationId: locationId || undefined,
+            page,
+            pageSize: 25,
+          }),
+        );
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible consultar Inventario.');
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible consultar Inventario.',
+        );
       } finally {
         setLoading(false);
       }
@@ -91,9 +99,17 @@ export function useInventoryQueryState(
       setBusy(true);
       setMessage(null);
       try {
-        setDetail(await application.inventory.materialDetail({ materialId, variantId, pageSize: 25 }));
+        setDetail(
+          await application.inventory.materialDetail({
+            materialId,
+            variantId,
+            pageSize: 25,
+          }),
+        );
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'No fue posible abrir el material.');
+        setMessage(
+          error instanceof Error ? error.message : 'No fue posible abrir el material.',
+        );
       } finally {
         setBusy(false);
       }
@@ -104,16 +120,34 @@ export function useInventoryQueryState(
   const reloadDetail = useCallback(async () => {
     const material = detail?.material;
     if (!application || !material) return;
-    setDetail(await application.inventory.materialDetail({
-      materialId: material.id,
-      variantId: material.variant?.id,
-      pageSize: 25,
-    }));
+    setDetail(
+      await application.inventory.materialDetail({
+        materialId: material.id,
+        variantId: material.variant?.id,
+        pageSize: 25,
+      }),
+    );
   }, [application, detail?.material]);
 
   return {
-    context, locations, list, detail, search, locationId, loading, busy, message, notice,
-    setSearch, setLocationId, setDetail, setBusy, setMessage, setNotice,
-    loadList, openDetail, reloadDetail,
+    context,
+    locations,
+    list,
+    detail,
+    search,
+    locationId,
+    loading,
+    busy,
+    message,
+    notice,
+    setSearch,
+    setLocationId,
+    setDetail,
+    setBusy,
+    setMessage,
+    setNotice,
+    loadList,
+    openDetail,
+    reloadDetail,
   };
 }

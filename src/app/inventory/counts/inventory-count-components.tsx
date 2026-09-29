@@ -25,9 +25,13 @@ export function InventoryCountCandidatesGrid(props: {
           <strong>{item.reference}</strong>
           <p>{item.name}</p>
           {item.variantLabel ? <small>{item.variantLabel}</small> : null}
-          <span>{item.locationCode} · {item.locationName}</span>
+          <span>
+            {item.locationCode} · {item.locationName}
+          </span>
           <span>Unidad: {item.unit}</span>
-          <button type="button" onClick={() => props.select(item.balanceId)}>Contar</button>
+          <button type="button" onClick={() => props.select(item.balanceId)}>
+            Contar
+          </button>
         </article>
       ))}
     </section>
@@ -52,7 +56,9 @@ export function InventoryCountCapture(props: {
   return (
     <form className={styles.countForm} onSubmit={(event) => void submit(event)}>
       <h2>Registrar conteo · {props.selected.reference}</h2>
-      <p>{props.selected.locationCode} · {props.selected.locationName}</p>
+      <p>
+        {props.selected.locationCode} · {props.selected.locationName}
+      </p>
       <label>
         Cantidad contada ({props.selected.unit})
         <input
@@ -68,7 +74,9 @@ export function InventoryCountCapture(props: {
         Observación
         <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} />
       </label>
-      <button type="submit" disabled={props.busy}>Enviar conteo</button>
+      <button type="submit" disabled={props.busy}>
+        Enviar conteo
+      </button>
     </form>
   );
 }
@@ -83,7 +91,9 @@ export function InventoryCountPagination(props: {
       <button type="button" disabled={page <= 1} onClick={() => void props.goPage(page - 1)}>
         Anterior
       </button>
-      <span>Página {page} de {Math.max(totalPages, 1)}</span>
+      <span>
+        Página {page} de {Math.max(totalPages, 1)}
+      </span>
       <button
         type="button"
         disabled={page >= totalPages}

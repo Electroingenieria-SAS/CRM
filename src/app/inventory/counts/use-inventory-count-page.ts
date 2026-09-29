@@ -55,7 +55,9 @@ export function useInventoryCountPage() {
         setData(await application.inventory.countCandidates(undefined, 1, 25));
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible abrir Conteos.');
+        if (active) {
+          setMessage(error instanceof Error ? error.message : 'No fue posible abrir Conteos.');
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -82,7 +84,9 @@ export function useInventoryCountPage() {
       setData(await application.inventory.countCandidates(search, 1, 25));
       setNotice('Conteo enviado para revisión sin revelar el saldo teórico.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible registrar el conteo.');
+      setMessage(
+        error instanceof Error ? error.message : 'No fue posible registrar el conteo.',
+      );
     } finally {
       setBusy(false);
     }
@@ -95,7 +99,9 @@ export function useInventoryCountPage() {
     selectedBalanceId,
     loading: application ? loading : false,
     busy,
-    message: application ? message : 'Este entorno no tiene un backend de staging configurado.',
+    message: application
+      ? message
+      : 'Este entorno no tiene un backend de staging configurado.',
     notice,
     setSearch,
     select: setSelectedBalanceId,

@@ -28,7 +28,9 @@ interface Props {
 }
 
 export function InventoryCountWorkspace(props: Props) {
-  const selected = props.data.items.find((item) => item.balanceId === props.selectedBalanceId);
+  const selected = props.data.items.find(
+    (item) => item.balanceId === props.selectedBalanceId,
+  );
 
   return (
     <AppShell
@@ -45,7 +47,9 @@ export function InventoryCountWorkspace(props: Props) {
         <header>
           <p className="eyebrow">Inventario · Conteo físico</p>
           <h1>Conteo ciego</h1>
-          <p>Registra lo observado físicamente. El saldo teórico no se muestra durante la captura.</p>
+          <p>
+            Registra lo observado físicamente. El saldo teórico no se muestra durante la captura.
+          </p>
         </header>
 
         <form
@@ -58,13 +62,26 @@ export function InventoryCountWorkspace(props: Props) {
         >
           <label>
             Buscar material o ubicación
-            <input value={props.search} onChange={(event) => props.setSearch(event.target.value)} />
+            <input
+              value={props.search}
+              onChange={(event) => props.setSearch(event.target.value)}
+            />
           </label>
-          <button type="submit" disabled={props.loading}>Buscar</button>
+          <button type="submit" disabled={props.loading}>
+            Buscar
+          </button>
         </form>
 
-        {props.notice ? <p className={styles.notice} role="status">{props.notice}</p> : null}
-        {props.message ? <p className={styles.error} role="alert">{props.message}</p> : null}
+        {props.notice ? (
+          <p className={styles.notice} role="status">
+            {props.notice}
+          </p>
+        ) : null}
+        {props.message ? (
+          <p className={styles.error} role="alert">
+            {props.message}
+          </p>
+        ) : null}
 
         <InventoryCountCandidatesGrid
           items={props.data.items}

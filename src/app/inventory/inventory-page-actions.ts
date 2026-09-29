@@ -54,12 +54,16 @@ export function createInventoryPageActions(context: ActionContext) {
   ) => {
     if (!application || !detail) return Promise.resolve();
     return mutate(
-      () => application.inventory.receive({
-        ...input,
-        materialId: detail.material.id,
-        variantId: detail.material.variant?.id,
-        unit: detail.material.unit,
-      }, crypto.randomUUID()),
+      () =>
+        application.inventory.receive(
+          {
+            ...input,
+            materialId: detail.material.id,
+            variantId: detail.material.variant?.id,
+            unit: detail.material.unit,
+          },
+          crypto.randomUUID(),
+        ),
       'Entrada registrada con trazabilidad.',
     );
   };
@@ -69,12 +73,16 @@ export function createInventoryPageActions(context: ActionContext) {
   ) => {
     if (!application || !detail) return Promise.resolve();
     return mutate(
-      () => application.inventory.reserve({
-        ...input,
-        materialId: detail.material.id,
-        variantId: detail.material.variant?.id,
-        unit: detail.material.unit,
-      }, crypto.randomUUID()),
+      () =>
+        application.inventory.reserve(
+          {
+            ...input,
+            materialId: detail.material.id,
+            variantId: detail.material.variant?.id,
+            unit: detail.material.unit,
+          },
+          crypto.randomUUID(),
+        ),
       'Reserva confirmada.',
     );
   };
@@ -82,7 +90,7 @@ export function createInventoryPageActions(context: ActionContext) {
   const action = (
     operation: (app: InventoryBrowserApplication) => Promise<unknown>,
     success: string,
-  ) => application ? mutate(() => operation(application), success) : Promise.resolve();
+  ) => (application ? mutate(() => operation(application), success) : Promise.resolve());
 
   return {
     receive,
@@ -104,7 +112,13 @@ export function createInventoryPageActions(context: ActionContext) {
       ),
     returnReusable: (reservationId: string, reason: string) =>
       action(
-        (app) => app.inventory.returnReusable(reservationId, undefined, reason, crypto.randomUUID()),
+        (app) =>
+          app.inventory.returnReusable(
+            reservationId,
+            undefined,
+            reason,
+            crypto.randomUUID(),
+          ),
         'Sobrante reutilizable devuelto.',
       ),
     waste: (reservationId: string, reason: string) =>

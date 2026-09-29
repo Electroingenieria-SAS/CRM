@@ -100,7 +100,11 @@ export class InventoryService {
   }
 
   pick(reservationId: string, quantity: number | undefined, key: string) {
-    return this.repository.pick(reservationId, optionalPositiveQuantity(quantity), requiredKey(key));
+    return this.repository.pick(
+      reservationId,
+      optionalPositiveQuantity(quantity),
+      requiredKey(key),
+    );
   }
 
   consume(reservationId: string, quantity: number | undefined, reason: string, key: string) {
@@ -112,7 +116,12 @@ export class InventoryService {
     );
   }
 
-  returnReusable(reservationId: string, quantity: number | undefined, reason: string, key: string) {
+  returnReusable(
+    reservationId: string,
+    quantity: number | undefined,
+    reason: string,
+    key: string,
+  ) {
     return this.repository.returnReusable(
       reservationId,
       optionalPositiveQuantity(quantity),
@@ -155,7 +164,12 @@ export class InventoryService {
     if (!Number.isFinite(countedQuantity) || countedQuantity < 0) {
       throw new Error('El conteo físico no puede ser negativo.');
     }
-    return this.repository.submitCount(balanceId, countedQuantity, note.trim(), requiredKey(key));
+    return this.repository.submitCount(
+      balanceId,
+      countedQuantity,
+      note.trim(),
+      requiredKey(key),
+    );
   }
 
   reviewCount(

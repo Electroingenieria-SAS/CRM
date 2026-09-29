@@ -35,8 +35,18 @@ interface Props {
   goPage(page: number): Promise<void>;
   openDetail(materialId: string, variantId?: string): Promise<void>;
   closeDetail(): void;
-  receive(input: { locationId: string; quantity: number; reference?: string; reason?: string }): Promise<void>;
-  reserve(input: { orderNumber: string; locationId?: string; quantity: number; reference?: string }): Promise<void>;
+  receive(input: {
+    locationId: string;
+    quantity: number;
+    reference?: string;
+    reason?: string;
+  }): Promise<void>;
+  reserve(input: {
+    orderNumber: string;
+    locationId?: string;
+    quantity: number;
+    reference?: string;
+  }): Promise<void>;
   release(reservationId: string, reason: string): Promise<void>;
   pick(reservationId: string): Promise<void>;
   consume(reservationId: string, reason: string): Promise<void>;
@@ -48,12 +58,16 @@ interface Props {
 
 function navigation(context: SessionContext): AppShellNavigationItem[] {
   const items: AppShellNavigationItem[] = [];
-  if (hasModuleCapability(context, 'orders', 'read')) items.push({ href: '/orders', label: 'Pedidos' });
+  if (hasModuleCapability(context, 'orders', 'read')) {
+    items.push({ href: '/orders', label: 'Pedidos' });
+  }
   items.push({ href: '/inventory', label: 'Inventario', current: true });
   if (hasModuleCapability(context, 'inventory', 'create')) {
     items.push({ href: '/inventory/counts', label: 'Conteos' });
   }
-  if (hasModuleCapability(context, 'workforce', 'read')) items.push({ href: '/workforce', label: 'Jornada' });
+  if (hasModuleCapability(context, 'workforce', 'read')) {
+    items.push({ href: '/workforce', label: 'Jornada' });
+  }
   return items;
 }
 
@@ -89,14 +103,20 @@ export function InventoryWorkspace(props: Props) {
           setLocationId={props.setLocationId}
           searchNow={props.searchNow}
         />
-        <InventoryFeedback notice={props.notice} message={props.message} loading={props.loading} />
+        <InventoryFeedback
+          notice={props.notice}
+          message={props.message}
+          loading={props.loading}
+        />
 
         {!props.loading ? (
           <>
             <InventoryList
               data={props.list}
               loading={props.busy}
-              onOpen={(materialId, variantId) => void props.openDetail(materialId, variantId)}
+              onOpen={(materialId, variantId) =>
+                void props.openDetail(materialId, variantId)
+              }
             />
             <InventoryPagination pagination={props.list.pagination} goPage={props.goPage} />
           </>
