@@ -5,9 +5,7 @@ import type {
   LogisticsOrdersPort,
 } from '@/modules/logistics/ports/logistics-ports';
 
-export class OrdersLogisticsAdapter
-  implements LogisticsOrdersPort, LogisticsEvidencePort
-{
+export class OrdersLogisticsAdapter implements LogisticsOrdersPort, LogisticsEvidencePort {
   constructor(
     private readonly orders: OrdersService,
     private readonly workflow: OrderWorkflowService,
@@ -19,9 +17,7 @@ export class OrdersLogisticsAdapter
       throw new Error('La tarea logística está bloqueada y no puede continuar.');
     }
 
-    const actions = new Map(
-      detail.workflow.actions.map((action) => [action.code, action]),
-    );
+    const actions = new Map(detail.workflow.actions.map((action) => [action.code, action]));
     let version = detail.order.version;
 
     if (actions.get('RESUME')?.enabled) {
@@ -60,12 +56,7 @@ export class OrdersLogisticsAdapter
 
   async completeDelivery(orderId: string, key: string) {
     const detail = await this.orders.get(orderId);
-    const routeSteps = [
-      'CLIENT_POINT',
-      'CLIENT_PICKUP',
-      'LOCAL_DISPATCH',
-      'NATIONAL_DISPATCH',
-    ];
+    const routeSteps = ['CLIENT_POINT', 'CLIENT_PICKUP', 'LOCAL_DISPATCH', 'NATIONAL_DISPATCH'];
     if (!routeSteps.includes(detail.order.current_step_code)) return;
 
     await this.workflow.complete(
