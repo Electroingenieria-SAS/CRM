@@ -41,6 +41,9 @@ begin
   if v_shipment.status<>'READY' then
     raise exception 'La guía solo puede registrarse antes del despacho' using errcode='23514';
   end if;
+  if v_shipment.tracking_number is not null or v_shipment.carrier_id is not null then
+    raise exception 'La guía ya fue registrada para este despacho' using errcode='23514';
+  end if;
   if v_shipment.route_code not in('LOCAL_DISPATCH','NATIONAL_DISPATCH') then
     raise exception 'Esta modalidad no requiere guía de transportadora' using errcode='22023';
   end if;
