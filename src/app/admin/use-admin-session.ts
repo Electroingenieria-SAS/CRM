@@ -61,3 +61,5 @@ export function useAdminSession() {
     signOut,
   };
 }
+
+export type ReturnTypeOfAdminSession = ReturnType<typeof useAdminSession>;
