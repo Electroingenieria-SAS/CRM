@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
+import { ClientRuntime } from '@/app/client-runtime';
 
 export const metadata: Metadata = {
   title: 'CRM · Electroingeniería',
@@ -20,7 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#main-content">
           Saltar al contenido principal
         </a>
-        {children}
+        <ClientRuntime>{children}</ClientRuntime>
       </body>
     </html>
   );
