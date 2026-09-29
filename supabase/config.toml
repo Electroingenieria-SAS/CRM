@@ -27,3 +27,6 @@ enabled = true
 port = 55324
 smtp_port = 55325
 pop3_port = 55326
+
+[functions.admin-users]
+verify_jwt = true
