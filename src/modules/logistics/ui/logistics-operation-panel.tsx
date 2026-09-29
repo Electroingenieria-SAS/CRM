@@ -94,7 +94,6 @@ export function LogisticsOperationPanel(props: OperationPanelProps) {
         catalog={props.catalog}
         busy={props.busy}
         canUpdate={props.canUpdate}
-        canSatisfaction={props.canSatisfaction}
         canCorrectCost={props.canCorrectCost}
         onSaveGuide={props.onSaveGuide}
         onDispatch={props.onDispatch}
@@ -107,6 +106,7 @@ export function LogisticsOperationPanel(props: OperationPanelProps) {
         satisfaction={props.detail?.satisfaction ?? null}
         busy={props.busy}
         canUpdate={props.canUpdate}
+        canSatisfaction={props.canSatisfaction}
         onDeliver={props.onDeliver}
         onFail={props.onFail}
         onReprogram={props.onReprogram}
