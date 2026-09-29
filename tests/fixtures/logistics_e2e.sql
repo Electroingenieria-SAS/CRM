@@ -15,7 +15,7 @@ insert into erp_supply.freight_destinations(
   id,country_code,department_key,department_name,city_key,city_name,active,metadata
 ) values(
   '99100000-0000-4000-8000-000000000002',
-  'CO','QA_QUINDIO','QA Quindío','QA_ARMENIA','QA Armenia',true,
+  'CO','QA_LOGISTICS','QA Logistics','QA_LOGISTICS_CITY','QA Logistics City',true,
   '{"source":"QA_SYNTHETIC"}'::jsonb
 )
 on conflict (country_code,department_key,city_key) do nothing;
