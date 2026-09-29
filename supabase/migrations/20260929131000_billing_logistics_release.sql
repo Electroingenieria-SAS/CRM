@@ -4,7 +4,7 @@ create or replace function erp_private.billing_is_ready(p_order_id uuid)
 returns boolean
 language plpgsql
 stable
-security invoker
+security definer
 set search_path=pg_catalog,erp_supply,erp_private
 as $$
 declare
