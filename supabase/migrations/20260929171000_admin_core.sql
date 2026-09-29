@@ -19,7 +19,58 @@ create table erp_supply.security_role_policies (
   updated_at timestamptz not null default now()
 );
 
+create table erp_supply.admin_rate_windows (
+  organization_id uuid not null references erp_supply.organizations(id) on delete cascade,
+  profile_id uuid not null references erp_supply.profiles(id) on delete cascade,
+  operation text not null,
+  window_start timestamptz not null,
+  request_count integer not null default 1 check (request_count>0),
+  primary key (organization_id,profile_id,operation,window_start)
+);
+
 alter table erp_supply.security_role_policies enable row level security;
+alter table erp_supply.admin_rate_windows enable row level security;
+revoke all on erp_supply.admin_rate_windows from authenticated;
+
+create or replace function erp_private.admin_rate_limit(
+  p_operation text,
+  p_limit integer,
+  p_window_seconds integer
+)
+returns boolean
+language plpgsql
+security definer
+set search_path=pg_catalog,public,erp_supply,erp_private
+as $
+declare
+  v_org uuid:=erp_private.current_org_id();
+  v_profile uuid:=erp_private.current_profile_id();
+  v_window timestamptz;
+  v_count integer;
+begin
+  if v_org is null or v_profile is null then
+    raise exception 'Sesión administrativa inválida' using errcode='42501';
+  end if;
+  v_window:=to_timestamp(
+    floor(extract(epoch from now())/p_window_seconds)*p_window_seconds
+  );
+  insert into erp_supply.admin_rate_windows(
+    organization_id,profile_id,operation,window_start,request_count
+  )
+  values(v_org,v_profile,lower(btrim(p_operation)),v_window,1)
+  on conflict (organization_id,profile_id,operation,window_start)
+  do update set request_count=erp_supply.admin_rate_windows.request_count+1
+  returning request_count into v_count;
+
+  delete from erp_supply.admin_rate_windows
+  where window_start<now()-interval '24 hours';
+
+  return v_count<=p_limit;
+end;
+$;
+
+revoke all on function erp_private.admin_rate_limit(text,integer,integer) from public,anon;
+grant execute on function erp_private.admin_rate_limit(text,integer,integer) to authenticated;
 
 create policy security_role_policies_read
 on erp_supply.security_role_policies
@@ -356,6 +407,9 @@ declare
   v_reason text:=btrim(coalesce(p_reason,''));
 begin
   perform erp_private.require_admin_aal2();
+  if not erp_private.admin_rate_limit('user_invite',5,600) then
+    raise exception 'Demasiadas invitaciones solicitadas; inténtalo más tarde' using errcode='22023';
+  end if;
 
   select coalesce(array_agg(distinct lower(btrim(x)) order by lower(btrim(x))),array[]::text[])
   into v_roles from unnest(coalesce(p_roles,array[]::text[])) x
@@ -540,6 +594,9 @@ declare
   v_email text;
 begin
   perform erp_private.require_admin_aal2();
+  if not erp_private.admin_rate_limit('password_reset',5,600) then
+    raise exception 'Demasiados restablecimientos solicitados; inténtalo más tarde' using errcode='22023';
+  end if;
 
   select email into v_email
   from erp_supply.profiles
