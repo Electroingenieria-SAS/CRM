@@ -8,6 +8,7 @@ import {
 } from '@/composition/orders-workforce-browser-application';
 import { hasModuleCapability } from '@/modules/auth/application/session-permissions';
 import type { SessionContext } from '@/modules/auth/application/session.schemas';
+import type { OrdersWorkforceIndicatorSnapshot } from '@/modules/integrations/orders-workforce/application/orders-workforce-indicators';
 import type { OrderWorkforceHealth } from '@/modules/integrations/orders-workforce/application/orders-workforce.schemas';
 
 const unavailableMessage = 'Este entorno no tiene un backend de staging configurado.';
@@ -15,6 +16,7 @@ const unavailableMessage = 'Este entorno no tiene un backend de staging configur
 interface WorkspaceData {
   context: SessionContext;
   health: OrderWorkforceHealth | null;
+  indicators: OrdersWorkforceIndicatorSnapshot | null;
   forbidden: boolean;
 }
 
@@ -25,14 +27,15 @@ async function loadWorkspace(
   if (!context) return null;
 
   if (!hasModuleCapability(context, 'orders', 'read')) {
-    return { context, health: null, forbidden: true };
+    return { context, health: null, indicators: null, forbidden: true };
   }
 
-  return {
-    context,
-    health: await application.health.health(),
-    forbidden: false,
-  };
+  const [health, indicators] = await Promise.all([
+    application.dashboard.health(),
+    application.dashboard.indicatorsToday(),
+  ]);
+
+  return { context, health, indicators, forbidden: false };
 }
 
 export function useOrdersWorkforcePage() {
@@ -40,6 +43,7 @@ export function useOrdersWorkforcePage() {
   const application = useMemo(() => createOrdersWorkforceBrowserApplication(), []);
   const [context, setContext] = useState<SessionContext | null>(null);
   const [health, setHealth] = useState<OrderWorkforceHealth | null>(null);
+  const [indicators, setIndicators] = useState<OrdersWorkforceIndicatorSnapshot | null>(null);
   const [loading, setLoading] = useState(() => Boolean(application));
   const [repairing, setRepairing] = useState(false);
   const [message, setMessage] = useState<string | null>(() =>
@@ -65,6 +69,7 @@ export function useOrdersWorkforcePage() {
 
         setContext(workspace.context);
         setHealth(workspace.health);
+        setIndicators(workspace.indicators);
         if (workspace.forbidden) {
           setMessage('Tu perfil no tiene acceso a la operación de pedidos.');
         }
@@ -92,13 +97,13 @@ export function useOrdersWorkforcePage() {
     setMessage(null);
     setNotice(null);
     try {
-      const result = await application.health.reconcile(undefined, repair);
+      const result = await application.dashboard.reconcile(undefined, repair);
       setNotice(
         repair
           ? `Reconciliación terminada: ${result.repaired} eventos reparados.`
           : `Revisión terminada: ${result.items.length} inconsistencias detectadas.`,
       );
-      setHealth(await application.health.health());
+      setHealth(await application.dashboard.health());
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No fue posible reconciliar.');
     } finally {
@@ -114,6 +119,7 @@ export function useOrdersWorkforcePage() {
   return {
     context,
     health,
+    indicators,
     loading,
     repairing,
     message,
