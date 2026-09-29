@@ -78,7 +78,9 @@ export function LogisticsOperationPanel(props: OperationPanelProps) {
           <h2 id="logistics-operation-title">{order.orderNumber}</h2>
           <p>{order.customerName}</p>
         </div>
-        <span className={styles.badge}>{shipment.status.replaceAll('_', ' ')}</span>
+        <span className={styles.badge} data-testid="logistics-status">
+          {shipment.status.replaceAll('_', ' ')}
+        </span>
       </div>
 
       <dl className={styles.definitionGrid}>
