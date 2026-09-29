@@ -9,6 +9,7 @@ import type { InventoryRepository } from '@/modules/inventory/ports/inventory-re
 function repository(): InventoryRepository {
   return {
     locations: vi.fn().mockResolvedValue([]),
+    availability: vi.fn(),
     list: vi.fn().mockResolvedValue({
       items: [],
       pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },

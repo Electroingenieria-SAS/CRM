@@ -75,8 +75,6 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Prove inventory concurrency and idempotency
-        run: node tests/integration/inventory-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Responsive + semantic private-shell smoke
@@ -158,6 +156,8 @@ jobs:
         run: node tests/integration/orders-workforce-outbox-concurrency.mjs
       - name: Prove financial concurrency and idempotency
         run: node tests/integration/finance-concurrency.mjs
+      - name: Prove inventory concurrency and idempotency
+        run: node tests/integration/inventory-concurrency.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Authenticated domain journeys

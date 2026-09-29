@@ -33,22 +33,29 @@ test('inventory lifecycle is traceable from receipt to consumption', async ({ pa
   await login(page, auxEmail);
   await openCable(page);
 
-  await page.getByLabel('Ubicación').first().selectOption('a1000000-0000-4000-8000-000000000001');
-  await page.getByLabel('Cantidad (M)').first().fill('5');
-  await page.getByLabel('Referencia de recepción').fill('E2E-RECEIPT');
-  await page.getByRole('button', { name: 'Registrar entrada' }).click();
+  const receiptForm = page.getByRole('heading', { name: 'Registrar entrada' }).locator('..');
+  await receiptForm.getByLabel('Ubicación').selectOption('a1000000-0000-4000-8000-000000000001');
+  await receiptForm.getByLabel('Cantidad (M)').fill('5');
+  await receiptForm.getByLabel('Referencia de recepción').fill('E2E-RECEIPT');
+  await receiptForm.getByRole('button', { name: 'Registrar entrada' }).click();
   await expect(page.getByRole('status')).toContainText('Entrada registrada');
 
-  await page.getByLabel('Número de pedido').fill('INV-E2E-ORDER');
-  await page.getByLabel('Cantidad (M)').last().fill('4');
-  await page.getByRole('button', { name: 'Reservar' }).click();
+  const reserveForm = page.getByRole('heading', { name: 'Reservar para pedido' }).locator('..');
+  await reserveForm.getByLabel('Número de pedido').fill('INV-E2E-ORDER');
+  await reserveForm.getByLabel('Cantidad (M)').fill('4');
+  await reserveForm.getByRole('button', { name: 'Reservar' }).click();
   await expect(page.getByRole('status')).toContainText('Reserva confirmada');
 
-  const reservation = page.getByRole('article').filter({ hasText: 'INV-E2E-ORDER' });
+  const reservationSection = page.getByRole('heading', { name: 'Reservas activas' }).locator('..');
+  const reservation = reservationSection.getByRole('article').filter({ hasText: 'INV-E2E-ORDER' });
   await reservation.getByRole('button', { name: 'Pasar a picking' }).click();
   await expect(page.getByRole('status')).toContainText('Material comprometido');
 
-  const pickedReservation = page.getByRole('article').filter({ hasText: 'INV-E2E-ORDER' });
+  const pickedReservation = page
+    .getByRole('heading', { name: 'Reservas activas' })
+    .locator('..')
+    .getByRole('article')
+    .filter({ hasText: 'INV-E2E-ORDER' });
   await pickedReservation.getByLabel('Motivo / resultado').fill('Consumo E2E');
   await pickedReservation.getByRole('button', { name: 'Consumir' }).click();
   await expect(page.getByRole('status')).toContainText('Consumo registrado');
