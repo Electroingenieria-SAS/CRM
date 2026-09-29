@@ -15,8 +15,6 @@ interface Props {
   onComplete(message: string): void;
 }
 
-export type ReturnTypeOfPacoWizard = ReturnType<typeof usePacoActivityWizard>;
-
 export function PacoActivityWizard({ paco, onCancel, onComplete }: Props) {
   const data = usePacoActivityWizard(paco, onComplete);
 
