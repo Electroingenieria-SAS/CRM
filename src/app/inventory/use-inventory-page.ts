@@ -192,6 +192,41 @@ export function useInventoryPage() {
     closeDetail: () => setDetail(null),
     receive,
     reserve,
+    release: (reservationId: string, reason: string) =>
+      application
+        ? mutate(
+            () => application.inventory.release(reservationId, undefined, reason, crypto.randomUUID()),
+            'Reserva liberada.',
+          )
+        : Promise.resolve(),
+    pick: (reservationId: string) =>
+      application
+        ? mutate(
+            () => application.inventory.pick(reservationId, undefined, crypto.randomUUID()),
+            'Material comprometido para picking.',
+          )
+        : Promise.resolve(),
+    consume: (reservationId: string, reason: string) =>
+      application
+        ? mutate(
+            () => application.inventory.consume(reservationId, undefined, reason, crypto.randomUUID()),
+            'Consumo registrado.',
+          )
+        : Promise.resolve(),
+    returnReusable: (reservationId: string, reason: string) =>
+      application
+        ? mutate(
+            () => application.inventory.returnReusable(reservationId, undefined, reason, crypto.randomUUID()),
+            'Sobrante reutilizable devuelto.',
+          )
+        : Promise.resolve(),
+    waste: (reservationId: string, reason: string) =>
+      application
+        ? mutate(
+            () => application.inventory.waste(reservationId, undefined, reason, crypto.randomUUID()),
+            'Desperdicio registrado.',
+          )
+        : Promise.resolve(),
     adjust: (balanceId: string, delta: number, reason: string) =>
       application
         ? mutate(

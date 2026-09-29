@@ -32,6 +32,11 @@ interface Props {
   closeDetail(): void;
   receive(input: { locationId: string; quantity: number; reference?: string; reason?: string }): Promise<void>;
   reserve(input: { orderNumber: string; locationId?: string; quantity: number; reference?: string }): Promise<void>;
+  release(reservationId: string, reason: string): Promise<void>;
+  pick(reservationId: string): Promise<void>;
+  consume(reservationId: string, reason: string): Promise<void>;
+  returnReusable(reservationId: string, reason: string): Promise<void>;
+  waste(reservationId: string, reason: string): Promise<void>;
   adjust(balanceId: string, delta: number, reason: string): Promise<void>;
   submitCount(balanceId: string, countedQuantity: number, note: string): Promise<void>;
   signOut(): Promise<void>;
@@ -47,6 +52,7 @@ function navigation(context: SessionContext): AppShellNavigationItem[] {
 
 export function InventoryWorkspace(props: Props) {
   const canCreate = hasModuleCapability(props.context, 'inventory', 'create');
+  const canUpdate = hasModuleCapability(props.context, 'inventory', 'update');
   const canApprove =
     hasModuleCapability(props.context, 'inventory', 'approve') ||
     hasModuleCapability(props.context, 'inventory', 'admin');
@@ -135,9 +141,15 @@ export function InventoryWorkspace(props: Props) {
             busy={props.busy}
             canCreate={canCreate}
             canApprove={canApprove}
+            canUpdate={canUpdate}
             onClose={props.closeDetail}
             onReceive={props.receive}
             onReserve={props.reserve}
+            onRelease={props.release}
+            onPick={props.pick}
+            onConsume={props.consume}
+            onReturn={props.returnReusable}
+            onWaste={props.waste}
             onAdjust={props.adjust}
             onCount={props.submitCount}
           />

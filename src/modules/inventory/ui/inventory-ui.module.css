@@ -269,3 +269,41 @@
     grid-template-columns: 1fr;
   }
 }
+
+.reservationActions {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #e6e9ef;
+}
+
+.reservationActions label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.reservationActions input {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd3df;
+  border-radius: 0.65rem;
+  font: inherit;
+}
+
+.reservationActions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.reservationActions button {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #aeb8c6;
+  border-radius: 0.65rem;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+}

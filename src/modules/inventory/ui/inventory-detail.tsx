@@ -7,6 +7,7 @@ import {
   InventoryReceiptForm,
   InventoryReserveForm,
 } from './inventory-forms';
+import { InventoryReservationActions } from './inventory-reservation-actions';
 import styles from './inventory-ui.module.css';
 
 interface Props {
@@ -15,9 +16,15 @@ interface Props {
   busy: boolean;
   canCreate: boolean;
   canApprove: boolean;
+  canUpdate: boolean;
   onClose(): void;
   onReceive(input: { locationId: string; quantity: number; reference?: string; reason?: string }): Promise<void>;
   onReserve(input: { orderNumber: string; locationId?: string; quantity: number; reference?: string }): Promise<void>;
+  onRelease(reservationId: string, reason: string): Promise<void>;
+  onPick(reservationId: string): Promise<void>;
+  onConsume(reservationId: string, reason: string): Promise<void>;
+  onReturn(reservationId: string, reason: string): Promise<void>;
+  onWaste(reservationId: string, reason: string): Promise<void>;
   onAdjust(balanceId: string, delta: number, reason: string): Promise<void>;
   onCount(balanceId: string, counted: number, note: string): Promise<void>;
 }
@@ -104,6 +111,18 @@ export function InventoryDetail(props: Props) {
                 <strong>{reservation.orderNumber}</strong>
                 <span>{reservation.quantity} {reservation.unit}</span>
                 <span>{reservation.status}</span>
+                {props.canUpdate ? (
+                  <InventoryReservationActions
+                    reservationId={reservation.id}
+                    status={reservation.status}
+                    busy={props.busy}
+                    onRelease={props.onRelease}
+                    onPick={props.onPick}
+                    onConsume={props.onConsume}
+                    onReturn={props.onReturn}
+                    onWaste={props.onWaste}
+                  />
+                ) : null}
               </article>
             ))}
           </div>
