@@ -194,6 +194,11 @@ grant usage,select on sequence erp_supply.logistics_events_id_seq to authenticat
 grant select,insert on erp_supply.delivery_attempts to authenticated;
 grant select,insert on erp_supply.delivery_satisfaction to authenticated;
 
+insert into erp_supply.modules(code,name,description,icon,sort_order,active) values
+  ('billing','Facturación','Facturas, soportes y liberación','receipt-text',110,true),
+  ('shipping','Despachos','Rutas locales, nacionales y recogidas','truck',120,true)
+on conflict(code) do nothing;
+
 insert into erp_supply.roles(code,name,description,system_role,active) values
   ('auditoria','Auditoría','Lectura integral sin operación',true,true),
   ('aux_logistica','Auxiliar de logística','Alistamiento y preparación de pedidos',true,true),
