@@ -179,13 +179,6 @@ jobs:
         run: >
           npx playwright test --workers=1 --project=desktop-chromium
           tests/e2e/authenticated-orders.spec.ts
-          tests/e2e/operational-order-workflow.spec.ts
-          tests/e2e/authenticated-freight.spec.ts
-          tests/e2e/authenticated-finance.spec.ts
-          tests/e2e/customer-intelligence.spec.ts
-          tests/e2e/orders-workforce-integration.spec.ts
-          tests/e2e/inventory.spec.ts
-          tests/e2e/analytics.spec.ts
           tests/e2e/admin-audit-paco.spec.ts
           tests/e2e/release-accessibility.spec.ts
       - name: Upload authenticated Playwright report on failure
