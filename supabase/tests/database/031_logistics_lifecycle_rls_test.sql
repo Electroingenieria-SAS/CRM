@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(23);
+select plan(24);
 
 insert into auth.users(
   instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,
@@ -103,6 +103,15 @@ select is(
   public.erp_x_billing_readiness('96000000-0000-4000-8000-000000000001')->>'billingReady',
   'true',
   'billing readiness sees the Finance invoice'
+);
+
+select lives_ok(
+  $select public.erp_x_finance_validate_order(
+    '96000000-0000-4000-8000-000000000001',
+    'CAJA','APPROVED','Validación QA previa a logística',
+    'LOG-QA-APPROVED','{}'::jsonb,'log-finance-approve-1'
+  )$,
+  'Finance approves the CASH gate before logistics'
 );
 
 reset role;
