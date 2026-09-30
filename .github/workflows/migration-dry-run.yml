@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       execute_remote_reconciliation:
-        description: "Run source vs non-production target reconciliation"
+        description: Run source vs non-production target reconciliation
         required: true
         type: boolean
         default: false
