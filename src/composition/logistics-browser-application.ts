@@ -5,6 +5,7 @@ import { SupabaseFreightRepository } from '@/infrastructure/freight/supabase-fre
 import { SupabaseOrderWorkforceOutboxRepository } from '@/infrastructure/integrations/supabase-order-workforce-outbox-repository';
 import { SupabaseWorkforceAutomationAdapter } from '@/infrastructure/integrations/supabase-workforce-automation-adapter';
 import { OrdersLogisticsAdapter } from '@/infrastructure/logistics/orders-logistics-adapter';
+import { SupabaseLogisticsWorkforceEvidenceAdapter } from '@/infrastructure/logistics/supabase-logistics-workforce-evidence-adapter';
 import { SupabaseLogisticsRepository } from '@/infrastructure/logistics/supabase-logistics-repository';
 import { SupabaseOrderWorkflowRepository } from '@/infrastructure/orders/supabase-order-workflow-repository';
 import { SupabaseOrdersRepository } from '@/infrastructure/orders/supabase-orders-repository';
@@ -56,6 +57,8 @@ export function createLogisticsBrowserApplication(): LogisticsBrowserApplication
       new OrdersLogisticsAdapter(orders, workflow),
       new OrdersLogisticsAdapter(orders, workflow),
       new SupabaseOrderEvidenceStorage(client),
+      undefined,
+      new SupabaseLogisticsWorkforceEvidenceAdapter(client),
     ),
     freight,
   };
