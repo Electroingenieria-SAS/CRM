@@ -24,7 +24,11 @@ const target=JSON.parse(fs.readFileSync(targetPath,'utf8'));
 delete source.captured_at;
 delete target.captured_at;
 
-const critical=['organizations','profiles','profile_roles','orders','order_items','invoices','materials','shipments'];
+const critical=[
+  'organizations','profiles','profile_roles','orders','order_items','invoices','archived_invoice_refs',
+  'materials','shipments','inventory_movements','workforce_activities',
+  'workforce_execution_events','workforce_evidence','legacy_audit_events'
+];
 let failed=false;
 for(const key of critical){
   const ok=JSON.stringify(source[key])===JSON.stringify(target[key]);
