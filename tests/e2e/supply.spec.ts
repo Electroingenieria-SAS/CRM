@@ -27,16 +27,16 @@ test('supply workspace exposes the four certified operational queues', async ({ 
   await expect(page.getByRole('button', { name: 'Recepción' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Alistamiento' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Corte' })).toBeVisible();
-  await expect(page.getByText('SUP-E2E-PVE')).toBeVisible();
+  await expect(page.getByText('SUP-E2E-PVE', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Recepción' }).click();
-  await expect(page.getByText('SUP-E2E-REC')).toBeVisible();
+  await expect(page.getByText('SUP-E2E-REC', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Alistamiento' }).click();
-  await expect(page.getByText('INV-E2E-ORDER')).toBeVisible();
+  await expect(page.getByText('INV-E2E-ORDER', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Corte' }).click();
-  await expect(page.getByText('INV-CONC-A')).toBeVisible();
+  await expect(page.getByText('INV-CONC-A', { exact: true })).toBeVisible();
 });
 
 test('supply workspace has no page overflow at required widths', async ({ page }) => {
