@@ -22,7 +22,7 @@ Estado: **NO-GO temporal para cutover**
 | MIG-002 | Restore real no ensayado | Abierto | dump reciente restaurado en destino no productivo y smoke aprobado |
 | MIG-003 | Proyecto Vercel nuevo inexistente | Abierto | proyecto separado de `crm-suministros`, Preview configurado y smoke aprobado |
 | MIG-004 | Protección de `main` inexistente | Abierto | PR/checks obligatorios y force-push bloqueado |
-| MIG-005 | Edge Function legacy insegura | Abierto | `erp-auditoria-metrics` retirada o endurecida antes de reutilizar el proyecto legado |
+| MIG-005 | Edge Function legacy insegura | Condicional / aislada | No migrar `erp-auditoria-metrics`; búsqueda runtime sin consumidores. El legado debe quedar aislado/read-only y su retiro se hace en ventana separada. |
 | MIG-006 | Ventana/responsable de cutover no documentados | Abierto | ventana, freeze, responsable y canal de rollback definidos |
 
 ## Decisión técnica actual
@@ -34,11 +34,19 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 ## Checkpoints
 
 - A Readiness: **completado / Hilo 14 cerrado; NO-GO por infraestructura/restore**
-- B Inventario y clasificación: **preparado**
+- B Inventario y clasificación: **completado; preflight 15/15 PASS**
 - C Backup + restore rehearsal: **bloqueado por destino no productivo**
 - D Migración seca: **bloqueado por C**
-- E Validación/reconciliación: **scripts/checklist preparados**
+- E Validación/reconciliación: **scripts ejecutables preparados; baseline origen capturado**
 - F Infraestructura: **Vercel/Supabase destino pendientes**
 - G Cutover: **no autorizado**
 - H Smoke productivo: **no ejecutado**
 - I Handoff a Hilo 16: **no procede todavía**
+
+
+## Evidencia adicional 2026-09-30
+
+- Preflight referencial/inventario del origen: 15/15 PASS.
+- Pedido en vuelo: 1, etapa `LOCAL_DISPATCH`, 4 tareas, 1 factura, 1 reserva consumida, 0 entregas.
+- Workflow manual de dry-run protegido agregado; requiere secretos de origen/destino y nunca publica dumps.
+- Estrategia Auth documentada conforme a la guía vigente de Supabase para migración entre proyectos.
