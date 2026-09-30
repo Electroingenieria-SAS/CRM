@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(23);
 
 select has_table('erp_supply','purchase_requests','purchase requests exist');
 select has_table('erp_supply','purchase_orders','purchase orders exist');
