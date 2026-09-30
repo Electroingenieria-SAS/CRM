@@ -48,7 +48,6 @@ VSM tampoco se completa aquí. Orders + Workforce conservan referencias, eventos
 
 Este hilo no modifica Supabase/Auth/datos productivos. Toda validación se ejecuta con Supabase local y fixtures sintéticos.
 
-
 ## Evidencia de cierre
 
 - PR #12 fusionado en `main`.
