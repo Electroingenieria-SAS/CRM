@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: "Exact Preview/production URL to smoke"
+        description: Exact Preview/production URL to smoke
         required: true
         type: string
 
