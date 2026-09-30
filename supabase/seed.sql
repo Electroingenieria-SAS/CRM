@@ -248,29 +248,29 @@ on conflict (code) do update set
 
 insert into erp_supply.workflow_transitions(
   from_step_code,action_code,to_step_code,order_type_code,delivery_route_code,
-  priority,metadata
+  requires_cut,priority,metadata
 ) values
-('CARTERA','COMPLETE','RECEPCION_PEDIDO',null,null,100,'{"source":"legacy-certified"}'),
-('CAJA','COMPLETE','RECEPCION_PEDIDO',null,null,100,'{"source":"legacy-certified"}'),
-('COMPRAS','COMPLETE','RECEPCION_MERCANCIA',null,null,100,'{"source":"legacy-certified"}'),
-('RECEPCION_MERCANCIA','COMPLETE','RECEPCION_PEDIDO',null,null,100,'{"source":"legacy-certified"}'),
-('RECEPCION_PEDIDO','COMPLETE','ALISTAMIENTO',null,null,100,'{"source":"legacy-v10.12-parallel-cut"}'),
-('CORTE','COMPLETE','ALISTAMIENTO',null,null,100,'{"source":"legacy-historical-compatibility"}'),
-('ALISTAMIENTO','COMPLETE','CAJA_FACTURACION','PVN',null,10,'{"source":"legacy-cash-billing"}'),
-('ALISTAMIENTO','COMPLETE','FACTURACION',null,null,100,'{"source":"legacy-certified"}'),
-('CAJA_FACTURACION','COMPLETE','CLIENT_POINT',null,'CLIENT_POINT',10,'{}'),
-('CAJA_FACTURACION','COMPLETE','CLIENT_PICKUP',null,'CLIENT_PICKUP',10,'{}'),
-('CAJA_FACTURACION','COMPLETE','LOCAL_DISPATCH',null,'LOCAL_DISPATCH',10,'{}'),
-('CAJA_FACTURACION','COMPLETE','NATIONAL_DISPATCH',null,'NATIONAL_DISPATCH',10,'{}'),
-('FACTURACION','COMPLETE','CLIENT_POINT',null,'CLIENT_POINT',10,'{}'),
-('FACTURACION','COMPLETE','CLIENT_PICKUP',null,'CLIENT_PICKUP',10,'{}'),
-('FACTURACION','COMPLETE','LOCAL_DISPATCH',null,'LOCAL_DISPATCH',10,'{}'),
-('FACTURACION','COMPLETE','NATIONAL_DISPATCH',null,'NATIONAL_DISPATCH',10,'{}'),
-('CLIENT_POINT','COMPLETE','CLOSURE',null,null,100,'{}'),
-('CLIENT_PICKUP','COMPLETE','CLOSURE',null,null,100,'{}'),
-('LOCAL_DISPATCH','COMPLETE','CLOSURE',null,null,100,'{}'),
-('NATIONAL_DISPATCH','COMPLETE','CLOSURE',null,null,100,'{}'),
-('CLOSURE','COMPLETE','CLOSED',null,null,100,'{}')
+('CARTERA','COMPLETE','RECEPCION_PEDIDO',null,null,null,100,'{"source":"legacy-certified"}'),
+('CAJA','COMPLETE','RECEPCION_PEDIDO',null,null,null,100,'{"source":"legacy-certified"}'),
+('COMPRAS','COMPLETE','RECEPCION_PEDIDO',null,null,null,10,'{"source":"hilo8-v11.5-certified"}'),
+('RECEPCION_PEDIDO','COMPLETE','CORTE',null,null,true,10,'{"source":"hilo8-cut-routing","requiresCut":true}'),
+('RECEPCION_PEDIDO','COMPLETE','ALISTAMIENTO',null,null,false,20,'{"source":"hilo8-no-cut-routing","requiresCut":false}'),
+('CORTE','COMPLETE','ALISTAMIENTO',null,null,null,100,'{"source":"hilo8-cut-complete"}'),
+('ALISTAMIENTO','COMPLETE','CAJA_FACTURACION','PVN',null,null,10,'{"source":"legacy-cash-billing"}'),
+('ALISTAMIENTO','COMPLETE','FACTURACION',null,null,null,100,'{"source":"legacy-certified"}'),
+('CAJA_FACTURACION','COMPLETE','CLIENT_POINT',null,'CLIENT_POINT',null,10,'{}'),
+('CAJA_FACTURACION','COMPLETE','CLIENT_PICKUP',null,'CLIENT_PICKUP',null,10,'{}'),
+('CAJA_FACTURACION','COMPLETE','LOCAL_DISPATCH',null,'LOCAL_DISPATCH',null,10,'{}'),
+('CAJA_FACTURACION','COMPLETE','NATIONAL_DISPATCH',null,'NATIONAL_DISPATCH',null,10,'{}'),
+('FACTURACION','COMPLETE','CLIENT_POINT',null,'CLIENT_POINT',null,10,'{}'),
+('FACTURACION','COMPLETE','CLIENT_PICKUP',null,'CLIENT_PICKUP',null,10,'{}'),
+('FACTURACION','COMPLETE','LOCAL_DISPATCH',null,'LOCAL_DISPATCH',null,10,'{}'),
+('FACTURACION','COMPLETE','NATIONAL_DISPATCH',null,'NATIONAL_DISPATCH',null,10,'{}'),
+('CLIENT_POINT','COMPLETE','CLOSURE',null,null,null,100,'{}'),
+('CLIENT_PICKUP','COMPLETE','CLOSURE',null,null,null,100,'{}'),
+('LOCAL_DISPATCH','COMPLETE','CLOSURE',null,null,null,100,'{}'),
+('NATIONAL_DISPATCH','COMPLETE','CLOSURE',null,null,null,100,'{}'),
+('CLOSURE','COMPLETE','CLOSED',null,null,null,100,'{}')
 on conflict do nothing;
 
 insert into erp_supply.step_roles(
@@ -368,6 +368,49 @@ on conflict(step_code) do update set
   metadata=excluded.metadata,
   updated_at=now();
 
+
+-- Hilo 8 supply-chain capability mapping.
+insert into erp_supply.role_module_permissions(
+  role_code,module_code,can_read,can_create,can_update,can_approve,can_admin
+) values
+('compras','purchasing',true,true,true,false,false),
+('auditoria','purchasing',true,false,false,false,false),
+('coordinador_logistico','purchasing',true,false,false,true,false),
+('lider_logistica','purchasing',true,false,false,true,false),
+('jefe_logistica','purchasing',true,false,false,true,false),
+('gerencia','purchasing',true,false,false,true,false),
+('recepcion_mercancia','receiving',true,true,true,false,false),
+('coordinador_logistico','receiving',true,true,true,true,false),
+('lider_logistica','receiving',true,true,true,true,false),
+('jefe_logistica','receiving',true,false,true,true,false),
+('auditoria','receiving',true,false,false,false,false),
+('aux_logistica','picking',true,true,true,false,false),
+('coordinador_logistico','picking',true,true,true,true,false),
+('lider_logistica','picking',true,true,true,true,false),
+('jefe_logistica','picking',true,false,true,true,false),
+('auditoria','picking',true,false,false,false,false),
+('auxiliar_corte','cutting',true,true,true,false,false),
+('lider_logistica','cutting',true,true,true,true,false),
+('jefe_logistica','cutting',true,false,true,true,false),
+('coordinador_logistico','cutting',true,false,true,true,false),
+('auditoria','cutting',true,false,false,false,false)
+on conflict (role_code,module_code) do update set
+  can_read=excluded.can_read,can_create=excluded.can_create,can_update=excluded.can_update,
+  can_approve=excluded.can_approve,can_admin=excluded.can_admin;
+
+insert into erp_supply.workflow_step_requirements(
+  step_code,requirement_code,requirement_type,approval_contract_code,required_count,metadata
+) values
+('COMPRAS','PROCUREMENT_READY','APPROVAL_CONTRACT','PROCUREMENT_READY',1,'{"owner":"purchasing"}'),
+('RECEPCION_PEDIDO','ORDER_RECEPTION_READY','APPROVAL_CONTRACT','ORDER_RECEPTION_READY',1,'{"owner":"receiving"}'),
+('ALISTAMIENTO','PICKING_COMPLETE','APPROVAL_CONTRACT','PICKING_COMPLETE',1,'{"owner":"picking"}'),
+('CORTE','CUTTING_COMPLETE','APPROVAL_CONTRACT','CUTTING_COMPLETE',1,'{"owner":"cutting"}')
+on conflict (step_code,requirement_code) do update set
+  approval_contract_code=excluded.approval_contract_code,active=true,metadata=excluded.metadata;
+
+update erp_supply.workflow_steps
+set metadata=metadata||'{"legacyCompatibilityOnly":true,"standaloneReceiving":true}'::jsonb
+where code='RECEPCION_MERCANCIA';
 
 -- Inventory capability mapping for the current module-level RBAC model.
 -- read = consulta; create = recepción/reserva/conteo; update = lifecycle operativo;

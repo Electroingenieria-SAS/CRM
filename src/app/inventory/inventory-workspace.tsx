@@ -61,6 +61,13 @@ function navigation(context: SessionContext): AppShellNavigationItem[] {
   if (hasModuleCapability(context, 'orders', 'read')) {
     items.push({ href: '/orders', label: 'Pedidos' });
   }
+  if (
+    ['purchasing', 'receiving', 'picking', 'cutting'].some((module) =>
+      hasModuleCapability(context, module, 'read'),
+    )
+  ) {
+    items.push({ href: '/supply', label: 'Operación' });
+  }
   items.push({ href: '/inventory', label: 'Inventario', current: true });
   if (hasModuleCapability(context, 'inventory', 'create')) {
     items.push({ href: '/inventory/counts', label: 'Conteos' });

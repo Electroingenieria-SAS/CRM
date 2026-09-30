@@ -50,10 +50,10 @@ select is(
 
 select is(
   (select to_step_code from erp_supply.workflow_transitions
-   where from_step_code='RECEPCION_PEDIDO' and active
+   where from_step_code='RECEPCION_PEDIDO' and requires_cut is true and active
    order by priority limit 1),
-  'ALISTAMIENTO',
-  'main order continues to picking while cut remains an integration subflow'
+  'CORTE',
+  'orders requiring cut route through Corte before Alistamiento'
 );
 
 select ok(

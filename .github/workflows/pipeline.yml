@@ -168,6 +168,11 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/logistics_e2e.sql
+      - name: Seed synthetic Supply operations dataset
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/supply_e2e.sql
       - name: Verify Auth and operational session contract
         run: node tests/fixtures/verify-authenticated-e2e-session.mjs
       - name: Prove atomic task claim concurrency
@@ -189,6 +194,7 @@ jobs:
           tests/e2e/authenticated-logistics.spec.ts
           tests/e2e/admin-audit-paco.spec.ts
           tests/e2e/release-accessibility.spec.ts
+          tests/e2e/supply.spec.ts
       - name: Upload authenticated Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7

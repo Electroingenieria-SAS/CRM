@@ -1,0 +1,138 @@
+.workspace {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+}
+
+.header h1,
+.sectionHeader h2 {
+  margin: 0.2rem 0;
+}
+
+.header p,
+.sectionHeader p,
+.card p {
+  margin: 0.25rem 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tabs button,
+.filters button,
+.pagination button {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 0.65rem 0.9rem;
+  cursor: pointer;
+}
+
+.tabs button[aria-current='page'],
+.activeTab {
+  border-color: var(--brand);
+  font-weight: 700;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(10rem, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.filters label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.filters input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.75rem;
+  background: var(--surface);
+  color: inherit;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0.75rem;
+}
+
+.card,
+.empty {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  background: var(--surface);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cardTop span {
+  border-radius: 999px;
+  background: var(--surface-muted);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.card small {
+  overflow-wrap: anywhere;
+}
+
+.message {
+  border-left: 4px solid var(--danger);
+  padding: 0.75rem;
+  background: var(--surface);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeader,
+  .cardTop {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

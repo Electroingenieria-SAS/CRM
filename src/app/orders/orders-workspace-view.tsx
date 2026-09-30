@@ -70,6 +70,13 @@ function navigationFor(context: SessionContext): AppShellNavigationItem[] {
     items.unshift({ href: '/analytics', label: 'Panel' });
   }
 
+  if (
+    ['purchasing', 'receiving', 'picking', 'cutting'].some((module) =>
+      hasModuleCapability(context, module, 'read'),
+    )
+  ) {
+    items.push({ href: '/supply', label: 'Operación' });
+  }
   if (hasModuleCapability(context, 'freight', 'read')) {
     items.push({ href: '/freight', label: 'Fletes' });
   }
