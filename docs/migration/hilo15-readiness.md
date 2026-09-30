@@ -17,13 +17,13 @@ Estado: **NO-GO temporal para cutover**
 
 ## Blockers de GO
 
-| ID      | Bloqueante                                     | Estado                | Criterio de cierre                                                                                                                                     |
-| ------- | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| MIG-002 | Restore real no ensayado                       | Abierto               | dump reciente restaurado en PostgreSQL/Supabase local efímero aislado y validado; no requiere staging remoto                                            |
-| MIG-003 | Proyecto Vercel / Preview                      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                                     |
-| MIG-004 | Gobernanza de `main`                           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                                |
-| MIG-005 | Drift `erp-auditoria-metrics`                  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor                 |
-| MIG-006 | Ventana/responsable de cutover                 | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                                    |
+| ID      | Bloqueante                     | Estado                | Criterio de cierre                                                                                                                      |
+| ------- | ------------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| MIG-002 | Restore real no ensayado       | Abierto               | dump reciente restaurado en PostgreSQL/Supabase local efímero aislado y validado; no requiere staging remoto                            |
+| MIG-003 | Proyecto Vercel / Preview      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                    |
+| MIG-004 | Gobernanza de `main`           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                |
+| MIG-005 | Drift `erp-auditoria-metrics`  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor |
+| MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |
 
 ## Decisión técnica actual
 
@@ -52,7 +52,6 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - `erp-auditoria-metrics` presenta drift entre código y deployment: el repositorio legado exige JWT y CORS allowlist, pero la versión productiva activa continúa pública. Se observó tráfico real exitoso sin Authorization en las últimas 24 h, por lo que el cambio debe hacerse mediante ventana de compatibilidad, no por retiro abrupto.
 - Estrategia Auth documentada conforme a la guía vigente de Supabase para migración entre proyectos.
 
-
 ## Evidencia Vercel 2026-09-30
 
 - Proyecto nuevo: `crm` (`prj_MEFvzc4lfeK6aZAtSnw9ue83gWdS`), separado de `crm-suministros`.
@@ -65,13 +64,11 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 
 - GitHub branch protection endpoint: 403 `Resource not accessible by integration`; no se reintenta desde este hilo.
 
-
 ## Intentos de staging Supabase
 
 - Proyecto nuevo `crm-reconstruction-staging`: costo reportado **USD 0/mes**; creación rechazada porque un miembro administrador ya alcanzó el límite de **2 proyectos Free activos**.
 - Development Branch `hilo15-migration-rehearsal`: costo reportado **USD 0,01344/h**; creación rechazada porque Supabase Branching requiere plan **Pro o superior**.
 - Decisión: no pausar/eliminar proyectos desconocidos y no subir de plan desde este hilo. Se usa Supabase local efímero en CI como rehearsal estructural; el restore con copia productiva sigue requiriendo un destino remoto o una credencial protegida para dump + restore aislado.
-
 
 ## Política Free-only
 
@@ -81,7 +78,6 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Dumps y datos sensibles nunca se publican como artifacts ni se guardan en Git.
 - Producción conserva el único destino Supabase operativo permitido por esta estrategia.
 - Si una capacidad exige plan Pro o costo recurrente, se reemplaza por una alternativa reproducible gratuita o se documenta como no adoptada.
-
 
 ## Gobernanza y ownership
 
