@@ -16,9 +16,7 @@ function mapError(error: { code?: string; message?: string } | null) {
   );
 }
 
-export class SupabaseLogisticsWorkforceEvidenceAdapter
-  implements LogisticsWorkforceEvidencePort
-{
+export class SupabaseLogisticsWorkforceEvidenceAdapter implements LogisticsWorkforceEvidencePort {
   constructor(private readonly client: SupabaseClient) {}
 
   async attachFinalEvidence(orderId: string, evidence: StoredOrderEvidence, key: string) {
