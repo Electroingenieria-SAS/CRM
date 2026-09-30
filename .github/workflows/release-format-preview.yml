@@ -1,0 +1,26 @@
+name: Release format preview
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/migration-dry-run.yml"
+      - ".github/workflows/release-format-preview.yml"
+      - "docs/migration/**"
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Print canonical Prettier diff
+        run: |
+          npx prettier --write .github/workflows/migration-dry-run.yml docs/migration/data-classification.md docs/migration/hilo15-readiness.md
+          git diff -- .github/workflows/migration-dry-run.yml docs/migration/data-classification.md docs/migration/hilo15-readiness.md
