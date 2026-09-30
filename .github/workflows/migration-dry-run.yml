@@ -8,6 +8,11 @@ on:
       - '.github/workflows/migration-dry-run.yml'
   workflow_dispatch:
     inputs:
+      execute_source_restore_rehearsal:
+        description: Run real source backup/restore rehearsal in ephemeral local PostgreSQL
+        required: true
+        type: boolean
+        default: false
       execute_remote_reconciliation:
         description: Run source vs non-production target reconciliation
         required: true
@@ -70,6 +75,7 @@ jobs:
         run: supabase stop --no-backup
 
   local-source-restore-rehearsal:
+    if: github.event_name == 'workflow_dispatch' && inputs.execute_source_restore_rehearsal
     runs-on: ubuntu-latest
     needs: validate-scripts
     env:
