@@ -1,0 +1,45 @@
+name: Migration transform rehearsal
+
+on:
+  pull_request:
+    paths:
+      - "scripts/migration/legacy-fixture.sql"
+      - "scripts/migration/transform-from-legacy.sql"
+      - "scripts/migration/transform-rehearsal.sh"
+      - ".github/workflows/migration-transform-rehearsal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  transform-rehearsal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate shell
+        run: bash -n scripts/migration/transform-rehearsal.sh
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Start clean target Supabase
+        run: |
+          supabase start
+          supabase db reset
+      - name: Resolve local target database
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          test -n "${DB_URL:-}" || { echo "DB_URL missing"; exit 2; }
+          echo "::add-mask::$DB_URL"
+          echo "LOCAL_ADMIN_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+          echo "TARGET_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+      - name: Legacy to target transformation rehearsal
+        run: bash scripts/migration/transform-rehearsal.sh
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
