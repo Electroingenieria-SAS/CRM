@@ -58,11 +58,11 @@ jobs:
         run: psql "$DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/validate-critical.sql
       - name: Validate migration snapshot query
         run: |
-          psql "$DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/snapshot.sql > /tmp/snapshot.json
+          psql "$DB_URL" -qAt -v ON_ERROR_STOP=1 -f scripts/migration/snapshot.sql > /tmp/snapshot.json
           node -e "JSON.parse(require('fs').readFileSync('/tmp/snapshot.json','utf8')); console.log('PASS snapshot JSON')"
       - name: Validate active-order snapshot query
         run: |
-          psql "$DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/active-orders-snapshot.sql > /tmp/active.json
+          psql "$DB_URL" -qAt -v ON_ERROR_STOP=1 -f scripts/migration/active-orders-snapshot.sql > /tmp/active.json
           node -e "JSON.parse(require('fs').readFileSync('/tmp/active.json','utf8') || '[]'); console.log('PASS active-order JSON')"
       - name: Stop local Supabase
         if: always()
