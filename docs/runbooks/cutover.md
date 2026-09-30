@@ -7,11 +7,13 @@ No ejecutar este runbook hasta que:
 - Hilo 14 esté mergeado y certificado;
 - `main` esté verde y sin PR funcionales relevantes abiertos;
 - backup lógico reciente tenga checksum válido;
-- el mismo backup haya sido restaurado en no-producción y aprobado;
+- el mismo backup haya sido restaurado y validado en PostgreSQL/Supabase local efímero aislado;
 - Preview Vercel del CRM nuevo esté validado;
 - variables productivas estén inventariadas;
 - rollback frontend/DB/Functions esté preparado;
 - MIG-001..MIG-003 estén cerrados.
+
+No se exige staging Supabase remoto ni plan pago para cumplir esta precondición.
 
 ## Secuencia
 
