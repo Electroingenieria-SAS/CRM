@@ -19,6 +19,7 @@ async function selectOptionContaining(page: Page, label: string, occurrence: num
 
 async function login(page: Page, email: string) {
   await page.goto('/login');
+  await page.waitForLoadState('networkidle');
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(password());
   await page.getByRole('button', { name: 'Ingresar' }).click();
