@@ -108,16 +108,14 @@ Si Hilo 16 detecta:
 
 No hacer dual-write ni reparar producción manualmente desde ambos hilos.
 
-
 ## Fuente viva antes del freeze
 
 Los valores anteriores son observaciones pre-freeze, no baseline final. Durante Hilo 15 se observaron dos snapshots válidos con una diferencia de 8 unidades en el agregado de inventario. La comprobación mostró 2.963 lotes activos y 0 inactivos, por lo que la diferencia corresponde a cambio operativo del origen entre lecturas, no a un filtro de migración.
 
 Consecuencia: el baseline definitivo se captura **después del freeze** y es el único que Hilo 16 debe usar para detectar drift posproducción.
 
-
 ## Intentos de staging Supabase
 
 - Proyecto nuevo `crm-reconstruction-staging`: costo reportado **USD 0/mes**; creación rechazada porque un miembro administrador ya alcanzó el límite de **2 proyectos Free activos**.
 - Development Branch `hilo15-migration-rehearsal`: costo reportado **USD 0,01344/h**; creación rechazada porque Supabase Branching requiere plan **Pro o superior**.
-- Decisión: no pausar/eliminar proyectos desconocidos y no subir de plan desde este hilo. Se usa Supabase local efímero en CI como rehearsal estructural; el restore con copia productiva sigue requiriendo un destino remoto o una credencial protegida para dump + restore aislado.
+- Decisión: no pausar/eliminar proyectos desconocidos y no subir de plan. El rehearsal se ejecuta con PostgreSQL/Supabase local efímero y el acceso al origen se entrega únicamente como secreto protegido `MIGRATION_SOURCE_DB_URL`; no se exige staging remoto.
