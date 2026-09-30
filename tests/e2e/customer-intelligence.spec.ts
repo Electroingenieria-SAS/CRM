@@ -10,6 +10,7 @@ function password() {
 
 async function login(page: Page) {
   await page.goto('/login');
+  await page.waitForLoadState('networkidle');
   await page.getByLabel('Correo').fill(sellerEmail);
   await page.getByLabel('Contraseña').fill(password());
   await page.getByRole('button', { name: 'Ingresar' }).click();

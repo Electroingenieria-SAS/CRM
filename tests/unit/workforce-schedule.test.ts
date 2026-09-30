@@ -9,25 +9,25 @@ import {
 } from '@/modules/workforce/domain/work-schedule';
 
 describe('workforce official schedule', () => {
-  it('keeps the exact Tuesday-Friday five day columns', () => {
+  it('keeps the exact five business-day columns', () => {
     expect(workforceDaySlots.map((slot) => slot.label)).toEqual([
-      '07:30–09:00',
-      '09:00–10:30',
-      '10:30–12:00',
-      '13:30–15:30',
-      '15:30–17:30',
+      '07:00–09:00',
+      '09:00–11:00',
+      '11:00–12:00',
+      '13:40–15:40',
+      '15:40–17:30',
     ]);
   });
 
-  it('ends the Monday schedule at 17:00', () => {
+  it('uses the same official schedule Monday through Friday', () => {
     expect(workforceDaySlotsFor('2026-09-28').map((slot) => slot.label)).toEqual([
-      '07:30–09:00',
-      '09:00–10:30',
-      '10:30–12:00',
-      '13:30–15:30',
-      '15:30–17:00',
+      '07:00–09:00',
+      '09:00–11:00',
+      '11:00–12:00',
+      '13:40–15:40',
+      '15:40–17:30',
     ]);
-    expect(workforceDaySlotsFor('2026-09-29').at(-1)?.label).toBe('15:30–17:30');
+    expect(workforceDaySlotsFor('2026-09-29').at(-1)?.label).toBe('15:40–17:30');
   });
 
   it('maps an activity only to overlapping slots', () => {
@@ -40,7 +40,7 @@ describe('workforce official schedule', () => {
     expect(
       slotIndexesFor({
         startMinutes: clockToMinutes('12:00'),
-        endMinutes: clockToMinutes('13:30'),
+        endMinutes: clockToMinutes('13:40'),
       }),
     ).toEqual([]);
   });
@@ -52,7 +52,7 @@ describe('workforce official schedule', () => {
     expect(
       overlaps({ startMinutes: 450, endMinutes: 510 }, { startMinutes: 510, endMinutes: 550 }),
     ).toBe(false);
-    expect(plannedMinutes({ startMinutes: 810, endMinutes: 930 })).toBe(120);
+    expect(plannedMinutes({ startMinutes: 820, endMinutes: 940 })).toBe(120);
   });
 
   it('rejects malformed clock values', () => {

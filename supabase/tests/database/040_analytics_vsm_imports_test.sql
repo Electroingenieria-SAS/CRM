@@ -142,8 +142,8 @@ select is(
     )
     where order_id='d3000000-0000-4000-8000-000000000001'
   ),
-  1800::bigint,
-  'stage read model respects the official 07:30 workday start'
+  3600::bigint,
+  'stage read model respects the official 07:00 workday start'
 );
 
 select is(
@@ -200,7 +200,7 @@ select is(
       '2026-09-29','2026-09-29',null,null,'ALISTAMIENTO',null,null,null
     )->'stages'->0->>'medianMinutes'
   )::numeric,
-  150::numeric,
+  180::numeric,
   'VSM median uses official business-calendar cycle time'
 );
 
@@ -210,7 +210,7 @@ select is(
       'd3000000-0000-4000-8000-000000000001',null
     )->>'leadTimeMinutes'
   )::numeric,
-  150::numeric,
+  180::numeric,
   'order VSM reports business lead time separately from processing time'
 );
 

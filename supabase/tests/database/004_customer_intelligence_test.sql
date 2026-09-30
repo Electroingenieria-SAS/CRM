@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(42);
+select plan(44);
 
 select has_table('erp_supply','customers','stable customer identity table exists');
 select has_table('erp_supply','invoices','invoice payment ledger exists');
@@ -424,6 +424,23 @@ select is(
   public.erp_x_customer_priority_signal('SIN-HISTORIA')->>'segment',
   'NORMAL',
   'new customer receives provisional Normal signal instead of an insufficient-history failure'
+);
+
+select lives_ok(
+  $sql$select public.erp_x_create_order(
+    '{"orderNumber":"CI-PRIORITY-INTEGRATION","orderType":"PVC","paymentCondition":"CASH","deliveryRoute":"LOCAL_DISPATCH","clientName":"Cliente Test 5","clientDocument":"NIT-5","clientCity":"Cali","clientAddress":"Calle Integración 1","items":[{"description":"Material integración","quantity":1}]}'::jsonb,
+    'ci-priority-integration'
+  )$sql$,
+  'orders creation consumes the customer intelligence priority signal'
+);
+
+select is(
+  (select o.priority
+   from erp_supply.orders o
+   where o.organization_id='42000000-0000-0000-0000-000000000001'
+     and o.order_number='CI-PRIORITY-INTEGRATION'),
+  public.erp_x_customer_priority_signal('NIT-5')->>'orderPriority',
+  'new order priority matches the current customer intelligence signal'
 );
 
 reset role;

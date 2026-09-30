@@ -45,15 +45,15 @@ select is(
     '2026-09-29 07:00-05'::timestamptz,
     '2026-09-29 12:00-05'::timestamptz
   ),
-  16200::bigint,
-  'Tuesday-Friday morning business interval is four and a half hours'
+  18000::bigint,
+  'weekday morning business interval is five hours'
 );
 
 select is(
   erp_private.workforce_business_seconds(
     '71000000-0000-4000-8000-000000000001',
     '2026-09-29 12:00-05'::timestamptz,
-    '2026-09-29 13:30-05'::timestamptz
+    '2026-09-29 13:40-05'::timestamptz
   ),
   0::bigint,
   'lunch break is excluded'
@@ -62,27 +62,27 @@ select is(
 select is(
   erp_private.workforce_business_seconds(
     '71000000-0000-4000-8000-000000000001',
-    '2026-09-28 13:30-05'::timestamptz,
+    '2026-09-28 13:40-05'::timestamptz,
     '2026-09-28 17:30-05'::timestamptz
   ),
-  12600::bigint,
-  'Monday afternoon ends at 17:00'
+  13800::bigint,
+  'Monday uses the same three-hour-fifty-minute afternoon segment'
 );
 
 select is(
   erp_private.workforce_business_seconds(
     '71000000-0000-4000-8000-000000000001',
-    '2026-09-29 13:30-05'::timestamptz,
+    '2026-09-29 13:40-05'::timestamptz,
     '2026-09-29 17:30-05'::timestamptz
   ),
-  14400::bigint,
-  'Tuesday-Friday afternoon runs until 17:30'
+  13800::bigint,
+  'weekday afternoon runs from 13:40 until 17:30'
 );
 
 select is(
   erp_private.workforce_business_seconds(
     '71000000-0000-4000-8000-000000000001',
-    '2026-07-13 07:30-05'::timestamptz,
+    '2026-07-13 07:00-05'::timestamptz,
     '2026-07-13 09:00-05'::timestamptz
   ),
   0::bigint,
@@ -92,7 +92,7 @@ select is(
 select is(
   erp_private.workforce_business_seconds(
     '71000000-0000-4000-8000-000000000001',
-    '2026-10-03 07:30-05'::timestamptz,
+    '2026-10-03 07:00-05'::timestamptz,
     '2026-10-03 09:00-05'::timestamptz
   ),
   0::bigint,
