@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const externalBaseURL = process.env.E2E_BASE_URL?.trim();
+const localBaseURL = 'http://127.0.0.1:3000';
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -11,7 +14,7 @@ export default defineConfig({
     timeout: process.env.CI ? 12_000 : 5_000,
   },
   use: {
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: externalBaseURL || localBaseURL,
     trace: 'on-first-retry',
   },
   projects: [
@@ -25,10 +28,12 @@ export default defineConfig({
     },
     { name: 'tablet-webkit', use: { ...devices['iPad (gen 7)'] } },
   ],
-  webServer: {
-    command: 'npm run build && npm run start -- --hostname 127.0.0.1',
-    url: 'http://127.0.0.1:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: externalBaseURL
+    ? undefined
+    : {
+        command: 'npm run build && npm run start -- --hostname 127.0.0.1',
+        url: localBaseURL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+      },
 });
