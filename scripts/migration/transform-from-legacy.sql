@@ -14,7 +14,7 @@ options (host '127.0.0.1', port '5432', dbname :'legacy_db_name');
 
 create user mapping for current_user
 server hilo15_legacy
-options (user 'postgres', password 'postgres');
+options (user 'postgres', password_required 'false');
 
 import foreign schema erp_supply
 limit to (
