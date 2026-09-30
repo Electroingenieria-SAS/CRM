@@ -31,8 +31,8 @@ async function bootstrap(application: SupplyBrowserApplication) {
   const context = await application.auth.restoreContext();
   if (!context) return null;
   const areas = allowedAreas(context);
-  if (!areas.length) throw new Error('No tienes permisos para consultar la operación de materiales.');
-  const area = areas[0];
+  const [area] = areas;
+  if (!area) throw new Error('No tienes permisos para consultar la operación de materiales.');
   return { context, areas, area, queue: await application.supply.queue(area) };
 }
 
