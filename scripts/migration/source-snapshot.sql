@@ -61,7 +61,8 @@ select jsonb_pretty(jsonb_build_object(
   'profile_roles',(select count(*) from erp_supply.profile_roles),
   'orders',(select count(*) from erp_supply.orders),
   'order_items',(select count(*) from erp_supply.order_items),
-  'invoices',(select count(*) from erp_supply.invoices),
+  'invoices',(select count(*) from erp_supply.invoices where amount>0),
+  'archived_invoice_refs',(select count(*) from erp_supply.invoices where amount is null or amount<=0),
   'materials',(select count(*) from erp_supply.material_master),
   'shipments',(select count(*) from erp_supply.deliveries),
   'orders_by_status',coalesce((
