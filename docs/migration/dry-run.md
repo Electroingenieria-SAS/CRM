@@ -44,7 +44,6 @@ Guardar fuera de Git cualquier dump o dato sensible. En Git solo se registran:
 - resultado PASS/FAIL;
 - diferencias justificadas.
 
-
 ## Restricción de costo
 
 Este procedimiento es **Free-only**. Un branch Supabase Pro o un proyecto QA persistente no es requisito de aprobación. El criterio es aislamiento + repetibilidad + restore/import real + reconciliación, no la existencia de infraestructura remota permanente.
