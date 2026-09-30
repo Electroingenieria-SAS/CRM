@@ -1,16 +1,11 @@
 import type { WorkforceDaySlot } from '@/modules/workforce/domain/workforce-types';
 
 const weekdaySlots: readonly WorkforceDaySlot[] = [
-  { key: '0730-0900', label: '07:30–09:00', startMinutes: 7 * 60 + 30, endMinutes: 9 * 60 },
-  { key: '0900-1030', label: '09:00–10:30', startMinutes: 9 * 60, endMinutes: 10 * 60 + 30 },
-  { key: '1030-1200', label: '10:30–12:00', startMinutes: 10 * 60 + 30, endMinutes: 12 * 60 },
-  { key: '1330-1530', label: '13:30–15:30', startMinutes: 13 * 60 + 30, endMinutes: 15 * 60 + 30 },
-  { key: '1530-1730', label: '15:30–17:30', startMinutes: 15 * 60 + 30, endMinutes: 17 * 60 + 30 },
-];
-
-const mondaySlots: readonly WorkforceDaySlot[] = [
-  ...weekdaySlots.slice(0, 4),
-  { key: '1530-1700', label: '15:30–17:00', startMinutes: 15 * 60 + 30, endMinutes: 17 * 60 },
+  { key: '0700-0900', label: '07:00–09:00', startMinutes: 7 * 60, endMinutes: 9 * 60 },
+  { key: '0900-1100', label: '09:00–11:00', startMinutes: 9 * 60, endMinutes: 11 * 60 },
+  { key: '1100-1200', label: '11:00–12:00', startMinutes: 11 * 60, endMinutes: 12 * 60 },
+  { key: '1340-1540', label: '13:40–15:40', startMinutes: 13 * 60 + 40, endMinutes: 15 * 60 + 40 },
+  { key: '1540-1730', label: '15:40–17:30', startMinutes: 15 * 60 + 40, endMinutes: 17 * 60 + 30 },
 ];
 
 export const workforceDaySlots = weekdaySlots;
@@ -23,7 +18,7 @@ export function workforceDaySlotsFor(day: string): readonly WorkforceDaySlot[] {
     Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])),
   ).getUTCDay();
 
-  return weekday === 1 ? mondaySlots : weekdaySlots;
+  return weekdaySlots;
 }
 
 export interface ScheduleSegment {
