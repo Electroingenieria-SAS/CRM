@@ -3,9 +3,9 @@ name: Migration dry-run
 on:
   pull_request:
     paths:
-      - "scripts/migration/**"
-      - "docs/migration/**"
-      - ".github/workflows/migration-dry-run.yml"
+      - 'scripts/migration/**'
+      - 'docs/migration/**'
+      - '.github/workflows/migration-dry-run.yml'
   workflow_dispatch:
     inputs:
       execute_remote_reconciliation:
