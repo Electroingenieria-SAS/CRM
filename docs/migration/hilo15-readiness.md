@@ -24,7 +24,7 @@ Estado: **NO-GO temporal para cutover**
 | MIG-004 | Gobernanza de `main`           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                |
 | MIG-005 | Drift `erp-auditoria-metrics`  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor |
 | MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |
-| MIG-007 | Destino Free-only / transición | Abierto               | rehearsal real aprobado + rotación de cupo: freeze → backup → pausar legacy → crear target Free → Auth/datos → Preview/UAT               |
+| MIG-007 | Destino Free-only / transición | Abierto               | rehearsal real aprobado + rotación de cupo: freeze → backup → pausar legacy → crear target Free → Auth/datos → Preview/UAT              |
 
 ## Decisión técnica actual
 
