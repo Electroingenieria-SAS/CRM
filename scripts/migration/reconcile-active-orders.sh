@@ -9,8 +9,8 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 chmod 700 "$TMP"
 
-psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/source-active-orders-snapshot.sql" > "$TMP/source.json"
-psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/active-orders-snapshot.sql" > "$TMP/target.json"
+psql "$SOURCE_DB_URL" -qAt -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/source-active-orders-snapshot.sql" > "$TMP/source.json"
+psql "$TARGET_DB_URL" -qAt -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/active-orders-snapshot.sql" > "$TMP/target.json"
 
 node - "$TMP/source.json" "$TMP/target.json" <<'NODE'
 const fs=require('fs');
