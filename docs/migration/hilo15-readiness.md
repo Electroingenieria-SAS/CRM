@@ -23,7 +23,8 @@ Estado: **NO-GO temporal para cutover**
 | MIG-003 | Proyecto Vercel / Preview      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                    |
 | MIG-004 | Gobernanza de `main`           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                |
 | MIG-005 | Drift `erp-auditoria-metrics`  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor |
-| MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |\n| MIG-007 | Destino Free-only / transición  | Abierto               | rehearsal real aprobado + estrategia de rotación de cupo: freeze → backup → pausar legacy → crear target Free → Auth/datos → Preview/UAT |
+| MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |
+| MIG-007 | Destino Free-only / transición | Abierto               | rehearsal real aprobado + rotación de cupo: freeze → backup → pausar legacy → crear target Free → Auth/datos → Preview/UAT               |
 
 ## Decisión técnica actual
 
@@ -96,7 +97,6 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 ## Excepción legacy
 
 `erp-auditoria-metrics` no forma parte del CRM nuevo. Durante coexistencia permanece legacy-only y monitorizada; su hardening definitivo se ejecuta en un cambio separado después de identificar el consumidor anónimo observado.
-
 
 ## Evidencia de compatibilidad del destino Free-only
 
