@@ -97,7 +97,7 @@ select * from checks;
 select check_name,failures,case when failures=0 then 'PASS' else 'FAIL' end status
 from migration_compatibility_checks order by check_name;
 
-do $
+do $$
 declare
   v_failures bigint;
 begin
