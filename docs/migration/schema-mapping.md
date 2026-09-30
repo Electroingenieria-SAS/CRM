@@ -10,24 +10,24 @@
 
 ## Mapa por entidad
 
-| Origen | Destino CRM nuevo | Transformación principal | Validación |
-| --- | --- | --- | --- |
-| `erp_supply.organizations` | `erp_supply.organizations` | preservar UUID/code/timezone | 1:1 y unique code |
-| `auth.users` | Supabase Auth destino | mecanismo soportado; no secretos manuales | usuario/perfil/roles |
-| `erp_supply.profiles` | `erp_supply.profiles` | normalizar email; remap auth_user_id si aplica | org + rol + activo |
-| `erp_supply.profile_roles` | `erp_supply.profile_roles` | preservar roles válidos | FK perfil/rol |
-| roles/permisos legacy | seed/migraciones destino + asignaciones | catálogo reconstruido | diff de capacidades |
-| `erp_supply.orders` | `erp_supply.orders` | mapear catálogos/estado/paso/responsable | activos por etapa |
-| `erp_supply.order_items` | `erp_supply.order_items` | material/reference/unit | FK pedido/material |
-| `erp_supply.invoices` | Finance/Invoices destino | conservar número, estado y valor real | reconciliación monetaria |
-| `erp_supply.material_master` | material master destino | identidad estable + unidad | duplicados/documento lógico |
-| `erp_supply.inventory_items` + lotes | inventory balances/ledger destino | opening balance trazable cuando aplique | on_hand/reserved/available |
-| `erp_supply.inventory_movements` | inventory movements destino | preservar eventos confiables | saldo reconstruible |
-| `erp_supply.work_assignments` / executions | Workforce destino | activos/futuros completos; histórico selectivo | actividad/responsable/estado |
-| freight reference/history | Freight Intelligence destino | normalizar destino/transportadora | observaciones y rangos |
-| `erp_supply.deliveries` | Logistics destino | separar estimado/real/evidencia | estado + costo + pedido |
-| `erp_supply.system_audit` | Audit destino/archivo | ventana y eventos críticos | append-only / actor / fecha |
-| `public.evidences` | referencias de evidencia destino | URL + metadata + ownership | accesibilidad y permiso |
+| Origen                                     | Destino CRM nuevo                       | Transformación principal                       | Validación                   |
+| ------------------------------------------ | --------------------------------------- | ---------------------------------------------- | ---------------------------- |
+| `erp_supply.organizations`                 | `erp_supply.organizations`              | preservar UUID/code/timezone                   | 1:1 y unique code            |
+| `auth.users`                               | Supabase Auth destino                   | mecanismo soportado; no secretos manuales      | usuario/perfil/roles         |
+| `erp_supply.profiles`                      | `erp_supply.profiles`                   | normalizar email; remap auth_user_id si aplica | org + rol + activo           |
+| `erp_supply.profile_roles`                 | `erp_supply.profile_roles`              | preservar roles válidos                        | FK perfil/rol                |
+| roles/permisos legacy                      | seed/migraciones destino + asignaciones | catálogo reconstruido                          | diff de capacidades          |
+| `erp_supply.orders`                        | `erp_supply.orders`                     | mapear catálogos/estado/paso/responsable       | activos por etapa            |
+| `erp_supply.order_items`                   | `erp_supply.order_items`                | material/reference/unit                        | FK pedido/material           |
+| `erp_supply.invoices`                      | Finance/Invoices destino                | conservar número, estado y valor real          | reconciliación monetaria     |
+| `erp_supply.material_master`               | material master destino                 | identidad estable + unidad                     | duplicados/documento lógico  |
+| `erp_supply.inventory_items` + lotes       | inventory balances/ledger destino       | opening balance trazable cuando aplique        | on_hand/reserved/available   |
+| `erp_supply.inventory_movements`           | inventory movements destino             | preservar eventos confiables                   | saldo reconstruible          |
+| `erp_supply.work_assignments` / executions | Workforce destino                       | activos/futuros completos; histórico selectivo | actividad/responsable/estado |
+| freight reference/history                  | Freight Intelligence destino            | normalizar destino/transportadora              | observaciones y rangos       |
+| `erp_supply.deliveries`                    | Logistics destino                       | separar estimado/real/evidencia                | estado + costo + pedido      |
+| `erp_supply.system_audit`                  | Audit destino/archivo                   | ventana y eventos críticos                     | append-only / actor / fecha  |
+| `public.evidences`                         | referencias de evidencia destino        | URL + metadata + ownership                     | accesibilidad y permiso      |
 
 ## Field-level checklist obligatorio por batch
 
