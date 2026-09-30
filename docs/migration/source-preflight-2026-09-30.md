@@ -54,3 +54,10 @@ El proyecto legado mantiene cuatro funciones activas. `erp-auditoria-metrics` ti
 ## Conclusión
 
 El origen no presenta inconsistencias referenciales críticas detectables por este preflight. Esto habilita preparar el dry-run, pero no sustituye backup, restore rehearsal ni reconciliación destino.
+
+
+## Fuente viva antes del freeze
+
+Los valores anteriores son observaciones pre-freeze, no baseline final. Durante Hilo 15 se observaron dos snapshots válidos con una diferencia de 8 unidades en el agregado de inventario. La comprobación mostró 2.963 lotes activos y 0 inactivos, por lo que la diferencia corresponde a cambio operativo del origen entre lecturas, no a un filtro de migración.
+
+Consecuencia: el baseline definitivo se captura **después del freeze** y es el único que Hilo 16 debe usar para detectar drift posproducción.
