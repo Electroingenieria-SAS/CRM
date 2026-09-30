@@ -11,7 +11,7 @@ trap 'rm -rf "$TMP"' EXIT
 chmod 700 "$TMP"
 
 echo "Capturing source snapshot..."
-psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/snapshot.sql" > "$TMP/source.json"
+psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/source-snapshot.sql" > "$TMP/source.json"
 
 echo "Capturing target snapshot..."
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/snapshot.sql" > "$TMP/target.json"
@@ -24,20 +24,33 @@ const target=JSON.parse(fs.readFileSync(targetPath,'utf8'));
 delete source.captured_at;
 delete target.captured_at;
 
-const critical=[
-  'organizations','profiles','profile_roles','orders','order_items','invoices',
-  'material_master','inventory_items','inventory_lots','inventory_movements',
-  'material_reservations','work_assignments','work_executions','deliveries'
-];
+const critical=['organizations','profiles','profile_roles','orders','order_items','invoices','materials','shipments'];
 let failed=false;
 for(const key of critical){
   const ok=JSON.stringify(source[key])===JSON.stringify(target[key]);
   console.log(`${ok?'PASS':'FAIL'} ${key}: source=${JSON.stringify(source[key])} target=${JSON.stringify(target[key])}`);
   if(!ok) failed=true;
 }
-for(const key of ['invoice_amount_by_currency','inventory_lot_totals','orders_by_status']){
+for(const key of ['invoice_amount_by_currency','orders_by_status','shipments_by_status']){
   const ok=JSON.stringify(source[key])===JSON.stringify(target[key]);
   console.log(`${ok?'PASS':'FAIL'} ${key}`);
+  if(!ok) failed=true;
+}
+const numericPaths=[
+  ['actual_freight_total'],
+  ['inventory','physical_total'],
+  ['inventory','committed_total'],
+  ['inventory','erp_reserved_effective'],
+  ['inventory','available_to_promise'],
+  ['inventory','active_reservation_count'],
+  ['inventory','active_reservation_requested']
+];
+const at=(obj,path)=>path.reduce((v,k)=>v?.[k],obj);
+for(const path of numericPaths){
+  const left=Number(at(source,path) ?? 0);
+  const right=Number(at(target,path) ?? 0);
+  const ok=Math.abs(left-right)<=0.0001;
+  console.log(`${ok?'PASS':'FAIL'} ${path.join('.')}: source=${left} target=${right}`);
   if(!ok) failed=true;
 }
 if(failed) process.exit(4);
