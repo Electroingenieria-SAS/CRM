@@ -10,7 +10,8 @@ const weekdaySlots: readonly WorkforceDaySlot[] = [
 
 export const workforceDaySlots = weekdaySlots;
 
-export function workforceDaySlotsFor(_day: string): readonly WorkforceDaySlot[] {
+export function workforceDaySlotsFor(day: string): readonly WorkforceDaySlot[] {
+  void day;
   return weekdaySlots;
 }
 
