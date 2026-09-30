@@ -345,7 +345,13 @@ begin
   perform set_config('hilo15.target_org',v_target_org::text,true);
 end $$;
 
-do $$
+delete from erp_supply.inventory_reservation_allocations a
+using erp_supply.inventory_reservations r
+where a.reservation_id=r.id
+  and r.status='ACTIVE'
+  and r.metadata->>'migrationSource'='CRM-SUMINISTROS';
+
+do $
 declare
   v_res record;
   v_bal record;
