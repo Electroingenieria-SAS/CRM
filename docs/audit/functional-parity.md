@@ -8,16 +8,16 @@
 | Login / sesión                     |       ✓        |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging               |
 | Recuperación de contraseña         | Fuente parcial |        ✓        |     Unit + E2E      |   ✓    |     ✓     | Validado en staging               |
 | Dashboard / centro de operaciones  |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
-| Pedidos / ventas                   |       ✓        | UI + núcleo/API | Unit + DB/RLS + E2E |   ✓    |     ✓     | Slice inicial validado            |
-| Segmentación de clientes           |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Pedidos / ventas                   |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado integralmente            |
+| Segmentación de clientes           |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #7                    |
 | Inteligencia/predicción de fletes  |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
 | Crédito                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
 | Cartera                            |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
 | Caja                               |       ✓        |        ✓        | Unit + DB/RLS + E2E |   ✓    |     ✓     | Validado                          |
-| Compras                            |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| Recepción                          |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| Alistamiento                       |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
-| Corte                              |       ✓        |        —        |          —          |   —    |     —     | Pendiente                         |
+| Compras                            |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #23                   |
+| Recepción                          |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #23                   |
+| Alistamiento                       |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #23                   |
+| Corte                              |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #23                   |
 | Facturación                        |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; gate final PR #17   |
 | Despachos / entrega / satisfacción |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado; gate final PR #17   |
 | Inventario                         |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
@@ -27,9 +27,9 @@
 | VSM / tiempos                      |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
 | Reportes / analítica               |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
 | Histórico/importaciones            |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · evidencia CI en PR |
-| Auditoría                          |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · en validación CI   |
-| Administración / roles             |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · en validación CI   |
-| PACO asistente                     |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Implementado · en validación CI   |
+| Auditoría                          |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #19                   |
+| Administración / roles             |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #19                   |
+| PACO asistente                     |       ✓        |        ✓        | Unit + pgTAP + E2E  |   ✓    |     ✓     | Validado PR #19                   |
 
 Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, seguridad, responsive y evidencia.
 
@@ -47,3 +47,10 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 > usa evidencia privada referenciada y controla estados logísticos. Inventory ya está en `main`; su
 > contrato actual termina en Receiving/Picking/Cutting y no expone una mutación de despacho por
 > `orderId`, por lo que Logistics no escribe sus tablas ni inventa una adaptación incompatible.
+
+
+## Certificación transversal — Hilo 13
+
+La integración global se certifica sobre `main` mediante un único entorno Supabase local y fixtures sintéticos compartidos. El gate autenticado ejecuta en conjunto Orders, Customer Intelligence, Freight, Finance, Workforce, Orders↔Workforce, Inventory, Supply, Billing/Logistics, Analytics, Admin/Audit/PACO y accesibilidad.
+
+Además, la creación de pedidos consume en backend la señal `erp_x_customer_priority_signal`; la prioridad manual continúa fuera del formulario y la integración queda cubierta por pgTAP y E2E.
