@@ -22,8 +22,13 @@ psql "$FIXTURE_DB_URL" -v ON_ERROR_STOP=1   -f "$ROOT/scripts/migration/legacy-f
 echo "Validating synthetic source compatibility..."
 psql "$FIXTURE_DB_URL" -v ON_ERROR_STOP=1   -f "$ROOT/scripts/migration/source-compatibility.sql"
 
-echo "Transforming legacy source into clean target schema..."
-psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1   -v legacy_db_name="$FIXTURE_DB"   -f "$ROOT/scripts/migration/transform-from-legacy.sql"
+echo "Staging synthetic legacy data into nonprivileged target schema..."
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/stage-legacy.sh"
+
+echo "Transforming staged legacy source into clean target schema..."
+psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/transform-from-legacy.sql"
 
 echo "Validating transformed target..."
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
@@ -38,9 +43,12 @@ SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
   -f "$ROOT/scripts/migration/migrated-uat.sql"
 
+echo "Re-staging synthetic legacy data for idempotent recovery..."
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/stage-legacy.sh"
+
 echo "Re-running transformation to validate idempotent recovery..."
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
-  -v legacy_db_name="$FIXTURE_DB" \
   -f "$ROOT/scripts/migration/transform-from-legacy.sql"
 
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
