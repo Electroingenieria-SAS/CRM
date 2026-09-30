@@ -62,20 +62,14 @@ function SupplyQueueSection({ area, queue }: Pick<Props, 'area' | 'queue'>) {
           {queue.items.map((item) => (
             <article className={styles.card} key={item.id}>
               <div className={styles.cardTop}>
-                <strong>
-                  {item.orderNumber ?? item.reference ?? 'Operación independiente'}
-                </strong>
+                <strong>{item.orderNumber ?? item.reference ?? 'Operación independiente'}</strong>
                 <span>{item.status}</span>
               </div>
               {item.clientName ? <p>{item.clientName}</p> : null}
               {item.reference ? <small>Referencia: {item.reference}</small> : null}
               {item.assignedTo ? <small>Responsable: {item.assignedTo}</small> : null}
-              <small>
-                Actualizado: {new Date(item.updatedAt).toLocaleString('es-CO')}
-              </small>
-              {item.orderId ? (
-                <Link href={`/orders?order=${item.orderId}`}>Ver pedido</Link>
-              ) : null}
+              <small>Actualizado: {new Date(item.updatedAt).toLocaleString('es-CO')}</small>
+              {item.orderId ? <Link href={`/orders?order=${item.orderId}`}>Ver pedido</Link> : null}
             </article>
           ))}
         </div>
@@ -89,11 +83,7 @@ function SupplyQueueSection({ area, queue }: Pick<Props, 'area' | 'queue'>) {
   );
 }
 
-function SupplyPagination({
-  queue,
-  loading,
-  goPage,
-}: Pick<Props, 'queue' | 'loading' | 'goPage'>) {
+function SupplyPagination({ queue, loading, goPage }: Pick<Props, 'queue' | 'loading' | 'goPage'>) {
   const { pagination } = queue;
   return (
     <footer className={styles.pagination} aria-label="Paginación">
@@ -168,11 +158,7 @@ export function SupplyWorkspace(props: Props) {
               placeholder="Ej. OPEN"
             />
           </label>
-          <button
-            type="button"
-            disabled={props.loading}
-            onClick={() => void props.searchNow()}
-          >
+          <button type="button" disabled={props.loading} onClick={() => void props.searchNow()}>
             {props.loading ? 'Consultando…' : 'Buscar'}
           </button>
         </section>
@@ -183,11 +169,7 @@ export function SupplyWorkspace(props: Props) {
           </p>
         ) : null}
         <SupplyQueueSection area={props.area} queue={props.queue} />
-        <SupplyPagination
-          queue={props.queue}
-          loading={props.loading}
-          goPage={props.goPage}
-        />
+        <SupplyPagination queue={props.queue} loading={props.loading} goPage={props.goPage} />
       </div>
     </AppShell>
   );

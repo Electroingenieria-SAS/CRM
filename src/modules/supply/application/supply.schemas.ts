@@ -95,14 +95,7 @@ export const receiptInputSchema = z.object({
           rejectedQuantity: z.number().nonnegative().default(0),
           unit: z.string().trim().min(1).max(20),
           incidentCode: z
-            .enum([
-              'SHORTAGE',
-              'SURPLUS',
-              'DAMAGED',
-              'WRONG_REFERENCE',
-              'WRONG_QUANTITY',
-              'OTHER',
-            ])
+            .enum(['SHORTAGE', 'SURPLUS', 'DAMAGED', 'WRONG_REFERENCE', 'WRONG_QUANTITY', 'OTHER'])
             .optional(),
           note: z.string().trim().max(1000).optional(),
         })

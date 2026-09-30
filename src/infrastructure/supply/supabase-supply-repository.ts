@@ -24,11 +24,7 @@ function mapSupplyError(error: { code?: string; message?: string } | null) {
       message || 'La operación cambió mientras estaba abierta. Actualiza e inténtalo de nuevo.',
     );
   }
-  if (
-    error?.code === '22023' ||
-    error?.code === '23514' ||
-    error?.code === '23505'
-  ) {
+  if (error?.code === '22023' || error?.code === '23514' || error?.code === '23505') {
     return new AppError(
       'BUSINESS_RULE',
       message || 'La operación no cumple las reglas del proceso.',
@@ -46,13 +42,7 @@ export class SupabaseSupplyRepository implements SupplyRepository {
     return supplyMutationSchema.parse(data);
   }
 
-  async queue(
-    area: SupplyArea,
-    status?: string,
-    search?: string,
-    page = 1,
-    pageSize = 25,
-  ) {
+  async queue(area: SupplyArea, status?: string, search?: string, page = 1, pageSize = 25) {
     const { data, error } = await this.client.rpc('erp_x_supply_queue', {
       p_area: area,
       p_status: status ?? null,
@@ -99,11 +89,7 @@ export class SupabaseSupplyRepository implements SupplyRepository {
     });
   }
 
-  confirmReceiptLine(
-    lineId: string,
-    movementId: string | undefined,
-    key: string,
-  ) {
+  confirmReceiptLine(lineId: string, movementId: string | undefined, key: string) {
     return this.mutation('erp_x_receiving_confirm_line', {
       p_line_id: lineId,
       p_inventory_movement_id: movementId ?? null,
@@ -118,12 +104,7 @@ export class SupabaseSupplyRepository implements SupplyRepository {
     });
   }
 
-  syncPickingLine(
-    lineId: string,
-    reservationId: string,
-    pickedQuantity: number,
-    key: string,
-  ) {
+  syncPickingLine(lineId: string, reservationId: string, pickedQuantity: number, key: string) {
     return this.mutation('erp_x_picking_sync_line', {
       p_line_id: lineId,
       p_reservation_id: reservationId,
@@ -146,13 +127,7 @@ export class SupabaseSupplyRepository implements SupplyRepository {
     });
   }
 
-  syncCuttingLine(
-    lineId: string,
-    consumed: number,
-    reusable: number,
-    waste: number,
-    key: string,
-  ) {
+  syncCuttingLine(lineId: string, consumed: number, reusable: number, waste: number, key: string) {
     return this.mutation('erp_x_cutting_sync_line', {
       p_line_id: lineId,
       p_consumed: consumed,
