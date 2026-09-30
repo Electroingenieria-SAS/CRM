@@ -19,7 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Validate shell
-        run: bash -n scripts/migration/transform-rehearsal.sh
+        run: |
+          bash -n scripts/migration/transform-rehearsal.sh
+          bash -n scripts/migration/stage-legacy.sh
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
