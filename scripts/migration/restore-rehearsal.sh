@@ -114,5 +114,7 @@ SOURCE_DB_URL="$LEGACY_DB_URL" TARGET_DB_URL="$LOCAL_ADMIN_DB_URL" \
   bash "$ROOT/scripts/migration/reconcile.sh"
 SOURCE_DB_URL="$LEGACY_DB_URL" TARGET_DB_URL="$LOCAL_ADMIN_DB_URL" \
   bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
+SOURCE_DB_URL="$LEGACY_DB_URL" TARGET_DB_URL="$LOCAL_ADMIN_DB_URL" \
+  bash "$ROOT/scripts/migration/validate-real-transform.sh"
 
-echo "PASS real backup -> restore -> transform -> reconciliation rehearsal completed."
+echo "PASS real backup -> restore -> transform -> reconciliation + semantic checks rehearsal completed."
