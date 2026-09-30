@@ -246,7 +246,7 @@ begin
   from migration_legacy.inventory_lots l
   join migration_legacy.inventory_items i on i.id=l.inventory_item_id
   where i.active and coalesce(l.source_active,true)
-  group by l.location
+  group by coalesce(l.warehouse_code,''),l.location
   on conflict(organization_id,code) do nothing;
 
   insert into erp_supply.inventory_balances(
