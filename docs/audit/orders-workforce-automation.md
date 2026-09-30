@@ -50,6 +50,8 @@ Este hilo no modifica Supabase/Auth/datos productivos. Toda validación se ejecu
 
 ## Evidencia de cierre
 
+- PR #22 reemplaza el cierre documental obsoleto #14 sobre el `main` actual.
+
 - PR #12 fusionado en `main`.
 - SHA pre-merge validado: `cb82ac7cdd39d795c0ae6a1a6c3b2c074c0cd16c`.
 - Merge commit: `9f17a394338fb7daf916a3dc70ee9a2efc5e2a14`.
