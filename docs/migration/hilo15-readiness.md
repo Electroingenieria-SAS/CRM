@@ -43,7 +43,6 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - H Smoke productivo: **no ejecutado**
 - I Handoff a Hilo 16: **no procede todavía**
 
-
 ## Evidencia adicional 2026-09-30
 
 - Preflight referencial/inventario del origen: 15/15 PASS.
