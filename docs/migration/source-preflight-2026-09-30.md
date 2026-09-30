@@ -49,12 +49,11 @@ Estos valores son **baseline de preflight**, no cifras congeladas de cutover. De
 
 ## Edge Functions
 
-El proyecto legado mantiene cuatro funciones activas. `erp-auditoria-metrics` tiene `verify_jwt=false`. Búsqueda de código confirmó referencias documentales/configuración en el legado, pero no llamadas de runtime en `src`, `public` o `supabase/functions`; el CRM nuevo tampoco la referencia. No se migra tal cual. Cualquier retiro del legado debe hacerse en ventana coordinada.
+El proyecto legado mantiene cuatro funciones activas. `erp-auditoria-metrics` continúa desplegada de forma pública. En la ventana observada se registraron 18 GET exitosos sin `Authorization`, `Origin`, `Referer` ni `User-Agent`; existe por tanto un consumidor real no identificado. El CRM nuevo no depende de esta función y no la migra. Su hardening definitivo queda separado del cutover hasta identificar/adaptar ese consumidor.
 
 ## Conclusión
 
 El origen no presenta inconsistencias referenciales críticas detectables por este preflight. Esto habilita preparar el dry-run, pero no sustituye backup, restore rehearsal ni reconciliación destino.
-
 
 ## Fuente viva antes del freeze
 
