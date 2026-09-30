@@ -39,6 +39,8 @@ SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
 
 SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
   bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/validate-real-transform.sh"
 
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
   -f "$ROOT/scripts/migration/migrated-uat.sql"
@@ -59,6 +61,8 @@ SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
 
 SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
   bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/validate-real-transform.sh"
 
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
   -f "$ROOT/scripts/migration/migrated-uat.sql"
