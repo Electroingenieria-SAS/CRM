@@ -17,13 +17,13 @@ Estado: **NO-GO temporal para cutover**
 
 ## Blockers de GO
 
-| ID | Bloqueante | Estado | Criterio de cierre |
-| --- | --- | --- | --- |
-| MIG-002 | Restore real no ensayado | Abierto | dump reciente restaurado en destino no productivo y smoke aprobado |
-| MIG-003 | Proyecto Vercel nuevo inexistente | Abierto | proyecto separado de `crm-suministros`, Preview configurado y smoke aprobado |
-| MIG-004 | Protección de `main` inexistente | Abierto | PR/checks obligatorios y force-push bloqueado |
-| MIG-005 | Edge Function legacy insegura | Condicional / aislada | No migrar `erp-auditoria-metrics`; búsqueda runtime sin consumidores. El legado debe quedar aislado/read-only y su retiro se hace en ventana separada. |
-| MIG-006 | Ventana/responsable de cutover no documentados | Abierto | ventana, freeze, responsable y canal de rollback definidos |
+| ID      | Bloqueante                                     | Estado                | Criterio de cierre                                                                                                                                     |
+| ------- | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| MIG-002 | Restore real no ensayado                       | Abierto               | dump reciente restaurado en destino no productivo y smoke aprobado                                                                                     |
+| MIG-003 | Proyecto Vercel nuevo inexistente              | Abierto               | proyecto separado de `crm-suministros`, Preview configurado y smoke aprobado                                                                           |
+| MIG-004 | Protección de `main` inexistente               | Abierto               | PR/checks obligatorios y force-push bloqueado                                                                                                          |
+| MIG-005 | Edge Function legacy insegura                  | Condicional / aislada | No migrar `erp-auditoria-metrics`; búsqueda runtime sin consumidores. El legado debe quedar aislado/read-only y su retiro se hace en ventana separada. |
+| MIG-006 | Ventana/responsable de cutover no documentados | Abierto               | ventana, freeze, responsable y canal de rollback definidos                                                                                             |
 
 ## Decisión técnica actual
 
