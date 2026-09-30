@@ -62,6 +62,20 @@ select jsonb_pretty(jsonb_build_object(
   'archived_invoice_refs',(select count(*) from erp_supply.invoices where amount is null or amount<=0),
   'materials',(select count(*) from erp_supply.material_master),
   'shipments',(select count(*) from erp_supply.deliveries),
+  'inventory_movements',(select count(*) from erp_supply.inventory_movements),
+  'workforce_activities',(
+    (select count(*) from erp_supply.work_assignment_members)
+    +(select count(*) from erp_supply.work_executions where assignment_id is null)
+  ),
+  'workforce_execution_events',(select count(*) from erp_supply.work_executions),
+  'workforce_evidence',(select count(*) from erp_supply.work_evidence),
+  'legacy_audit_events',(
+    select count(*) from erp_supply.system_audit a
+    where a.created_at >= (select max(created_at)-interval '30 days' from erp_supply.system_audit)
+       or upper(a.action) like 'AUTH\_%' escape '\\'
+       or upper(a.action) like 'ADMIN\_%' escape '\\'
+       or upper(a.action) like 'APPROVAL\_%' escape '\\'
+  ),
   'orders_by_status',coalesce((
     select jsonb_object_agg(status,total)
     from (select status,count(*)::bigint total from erp_supply.orders group by status) x
