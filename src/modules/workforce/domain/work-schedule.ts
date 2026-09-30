@@ -10,14 +10,7 @@ const weekdaySlots: readonly WorkforceDaySlot[] = [
 
 export const workforceDaySlots = weekdaySlots;
 
-export function workforceDaySlotsFor(day: string): readonly WorkforceDaySlot[] {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
-  if (!match) return weekdaySlots;
-
-  const weekday = new Date(
-    Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])),
-  ).getUTCDay();
-
+export function workforceDaySlotsFor(_day: string): readonly WorkforceDaySlot[] {
   return weekdaySlots;
 }
 
