@@ -3,13 +3,13 @@ name: Migration transform rehearsal
 on:
   pull_request:
     paths:
-      - "scripts/migration/legacy-fixture.sql"
-      - "scripts/migration/legacy-staging-schema.sql"
-      - "scripts/migration/stage-legacy.sh"
-      - "scripts/migration/transform-from-legacy.sql"
-      - "scripts/migration/transform-rehearsal.sh"
-      - "scripts/migration/migrated-uat.sql"
-      - ".github/workflows/migration-transform-rehearsal.yml"
+      - 'scripts/migration/legacy-fixture.sql'
+      - 'scripts/migration/legacy-staging-schema.sql'
+      - 'scripts/migration/stage-legacy.sh'
+      - 'scripts/migration/transform-from-legacy.sql'
+      - 'scripts/migration/transform-rehearsal.sh'
+      - 'scripts/migration/migrated-uat.sql'
+      - '.github/workflows/migration-transform-rehearsal.yml'
   workflow_dispatch:
 
 permissions:
