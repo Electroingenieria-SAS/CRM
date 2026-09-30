@@ -11,10 +11,10 @@ trap 'rm -rf "$TMP"' EXIT
 chmod 700 "$TMP"
 
 echo "Capturing source snapshot..."
-psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/source-snapshot.sql" > "$TMP/source.json"
+psql "$SOURCE_DB_URL" -qAt -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/source-snapshot.sql" > "$TMP/source.json"
 
 echo "Capturing target snapshot..."
-psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/snapshot.sql" > "$TMP/target.json"
+psql "$TARGET_DB_URL" -qAt -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/snapshot.sql" > "$TMP/target.json"
 
 node - "$TMP/source.json" "$TMP/target.json" <<'NODE'
 const fs = require('fs');
@@ -57,6 +57,6 @@ if(failed) process.exit(4);
 NODE
 
 echo "Running referential validation on target..."
-psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/validate-critical.sql"
+psql "$TARGET_DB_URL" -qAt -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/validate-critical.sql"
 
 echo "Reconciliation completed."
