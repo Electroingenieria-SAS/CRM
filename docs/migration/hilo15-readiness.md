@@ -48,4 +48,6 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Preflight referencial/inventario del origen: 15/15 PASS.
 - Pedido en vuelo: 1, etapa `LOCAL_DISPATCH`, 4 tareas, 1 factura, 1 reserva consumida, 0 entregas.
 - Workflow manual de dry-run protegido agregado; requiere secretos de origen/destino y nunca publica dumps.
+- El workflow de reconciliación remota aún no se ejecutó porque no existe destino no productivo autorizado.
+- `erp-auditoria-metrics` presenta drift entre código y deployment: el repositorio legado exige JWT y CORS allowlist, pero la versión productiva activa continúa pública. Se observó tráfico real exitoso sin Authorization en las últimas 24 h, por lo que el cambio debe hacerse mediante ventana de compatibilidad, no por retiro abrupto.
 - Estrategia Auth documentada conforme a la guía vigente de Supabase para migración entre proyectos.
