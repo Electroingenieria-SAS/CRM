@@ -379,6 +379,8 @@ begin
   end loop;
 end $$;
 
+\ir transform-classified-legacy.sql
+
 drop schema migration_legacy cascade;
 
 commit;

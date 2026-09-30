@@ -11,7 +11,13 @@ chmod 700 "$TMP"
 
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 -f "$ROOT/scripts/migration/legacy-staging-schema.sql"
 
-tables=("organizations" "profiles" "profile_roles" "orders" "order_items" "order_tasks" "invoices" "material_master" "material_variants" "inventory_items" "inventory_lots" "material_reservations" "deliveries")
+tables=(
+  "organizations" "profiles" "profile_roles" "orders" "order_items" "order_tasks"
+  "invoices" "material_master" "material_variants" "inventory_items" "inventory_lots"
+  "material_reservations" "deliveries" "inventory_movements" "work_activity_catalog"
+  "work_assignments" "work_assignment_members" "work_executions" "work_evidence"
+  "system_audit"
+)
 
 for table in "${tables[@]}"; do
   file="$TMP/$table.csv"

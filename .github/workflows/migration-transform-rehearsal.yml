@@ -7,8 +7,13 @@ on:
       - 'scripts/migration/legacy-staging-schema.sql'
       - 'scripts/migration/stage-legacy.sh'
       - 'scripts/migration/transform-from-legacy.sql'
+      - 'scripts/migration/transform-classified-legacy.sql'
       - 'scripts/migration/transform-rehearsal.sh'
       - 'scripts/migration/migrated-uat.sql'
+      - 'scripts/migration/source-compatibility.sql'
+      - 'scripts/migration/source-snapshot.sql'
+      - 'scripts/migration/snapshot.sql'
+      - 'scripts/migration/reconcile.sh'
       - '.github/workflows/migration-transform-rehearsal.yml'
   workflow_dispatch:
 

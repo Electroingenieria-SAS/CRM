@@ -85,5 +85,74 @@ begin
     raise exception 'UAT active order acquired artificial shipment';
   end if;
 
-  raise notice 'PASS migrated UAT: order/invoice/inventory/logistics semantics preserved';
+  if (select count(*) from erp_supply.inventory_movements
+      where metadata->>'migrationSource'='CRM-SUMINISTROS'
+        and metadata->>'historicalOnly'='true')<>1 then
+    raise exception 'UAT classified inventory movement history mismatch';
+  end if;
+
+  if exists(
+    select 1 from erp_supply.inventory_movements
+    where metadata->>'migrationSource'='CRM-SUMINISTROS'
+      and metadata->>'historicalOnly'='true'
+      and reason<>'LEGACY_HISTORY_NO_BALANCE_REPLAY'
+  ) then
+    raise exception 'UAT historical movement replay guard missing';
+  end if;
+
+  if (select count(*) from erp_supply.workforce_activities
+      where metadata->>'migrationSource'='CRM-SUMINISTROS')<>2 then
+    raise exception 'UAT workforce activity mapping mismatch';
+  end if;
+
+  if (select count(*) from erp_supply.workforce_activity_events
+      where idempotency_key like 'legacy-execution:%')<>2 then
+    raise exception 'UAT workforce execution event idempotency mismatch';
+  end if;
+
+  if (select count(*) from erp_supply.workforce_activity_evidence
+      where metadata->>'migrationSource'='CRM-SUMINISTROS')<>1 then
+    raise exception 'UAT workforce evidence mapping mismatch';
+  end if;
+
+  if not exists(
+    select 1 from erp_supply.workforce_activities
+    where id='00000000-0000-0000-0000-000000001301'
+      and status='IN_PROGRESS'
+      and source='PLANNED'
+  ) then
+    raise exception 'UAT planned workforce state mismatch';
+  end if;
+
+  if not exists(
+    select 1 from erp_supply.workforce_activities
+    where id='00000000-0000-0000-0000-000000001402'
+      and status='COMPLETED'
+      and source='MANUAL'
+      and actual_end is not null
+  ) then
+    raise exception 'UAT manual workforce execution mismatch';
+  end if;
+
+  if (select count(*) from erp_supply.audit_events
+      where request_id like 'legacy-audit:%')<>2 then
+    raise exception 'UAT legacy audit selection mismatch';
+  end if;
+
+  if exists(
+    select 1 from erp_supply.audit_events where request_id='legacy-audit:2'
+  ) then
+    raise exception 'UAT stale noncritical audit event should remain archive-only';
+  end if;
+
+  if not exists(
+    select 1 from erp_supply.audit_events
+    where request_id='legacy-audit:3'
+      and actor_kind='SYSTEM'
+      and metadata->>'legacyOrganizationMissing'='true'
+  ) then
+    raise exception 'UAT critical audit fallback mapping mismatch';
+  end if;
+
+  raise notice 'PASS migrated UAT: operational + classified migration semantics preserved';
 end $$;

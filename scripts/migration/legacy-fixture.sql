@@ -79,6 +79,54 @@ create table erp_supply.deliveries(
   satisfaction_confirmed_by uuid, satisfaction_note text
 );
 
+
+create table erp_supply.inventory_movements(
+  id bigint primary key, organization_id uuid, inventory_item_id uuid, lot_id uuid,
+  order_id uuid, movement_type text, quantity numeric, unit text, from_location text,
+  to_location text, actor_profile_id uuid, reference text, metadata jsonb, created_at timestamptz
+);
+create table erp_supply.work_activity_catalog(
+  id uuid primary key, organization_id uuid, code text, name text, description text,
+  activity_group text, activity_kind text, standard_minutes integer, evidence_policy text,
+  acceptance_required boolean, team_allowed boolean, allowed_roles text[], active boolean,
+  sort_order integer, metadata jsonb, created_at timestamptz, updated_at timestamptz,
+  created_by uuid, catalog_origin text, archived_at timestamptz
+);
+create table erp_supply.work_assignments(
+  id uuid primary key, organization_id uuid, catalog_id uuid, series_id uuid, title text,
+  description text, assignment_kind text, status text, priority text, planned_start timestamptz,
+  planned_end timestamptz, due_at timestamptz, estimated_minutes integer, evidence_policy text,
+  acceptance_required boolean, assigned_by uuid, related_entity_type text,
+  related_entity_id text, recurrence jsonb, metadata jsonb, created_at timestamptz,
+  updated_at timestamptz, request_origin text, request_reason text, approval_status text,
+  approval_scope text, requested_by uuid, requested_at timestamptz, decided_by uuid,
+  decided_at timestamptz, decision_note text
+);
+create table erp_supply.work_assignment_members(
+  id uuid primary key, assignment_id uuid, profile_id uuid, status text,
+  assigned_at timestamptz, first_started_at timestamptz, submitted_at timestamptz,
+  completed_at timestamptz, cancelled_at timestamptz, metadata jsonb
+);
+create table erp_supply.work_executions(
+  id uuid primary key, organization_id uuid, assignment_id uuid, assignment_member_id uuid,
+  catalog_id uuid, profile_id uuid, source text, status text, title_snapshot text,
+  started_at timestamptz, ended_at timestamptz, elapsed_seconds bigint, active_seconds bigint,
+  business_seconds bigint, paused_seconds bigint, start_delay_seconds bigint,
+  deviation_ratio numeric, deviation_reason text, result_note text,
+  related_entity_type text, related_entity_id text, metadata jsonb,
+  created_at timestamptz, updated_at timestamptz
+);
+create table erp_supply.work_evidence(
+  id uuid primary key, organization_id uuid, execution_id uuid, profile_id uuid,
+  evidence_type text, drive_file_id text, file_name text, mime_type text, size_bytes bigint,
+  web_view_link text, external_value text, note text, metadata jsonb, created_at timestamptz
+);
+create table erp_supply.system_audit(
+  id bigint primary key, organization_id uuid, actor_profile_id uuid, action text,
+  entity_type text, entity_id text, before_data jsonb, after_data jsonb,
+  metadata jsonb, created_at timestamptz
+);
+
 insert into erp_supply.organizations values
 ('00000000-0000-0000-0000-000000000001','EI','Electroingeniería S.A.S.','America/Bogota',true,'{"currency":"COP"}',now()-interval '1 year',now());
 
@@ -124,5 +172,30 @@ insert into erp_supply.material_reservations values
 
 insert into erp_supply.deliveries values
 ('00000000-0000-0000-0000-000000001001','00000000-0000-0000-0000-000000000202','LOCAL_DISPATCH','DELIVERED',now()-interval '2 days',now()-interval '2 days',now()-interval '1 day','Cliente Cerrado',null,'Transportadora Legacy','TRACK-1','00000000-0000-0000-0000-000000000102','{}',now()-interval '2 days',now()-interval '1 day','FLET-1',1000,'COP','00000000-0000-0000-0000-000000000102',now()-interval '1 day',15,'MANUAL',now()-interval '2 days','00000000-0000-0000-0000-000000000102','CONFIRMED',now()-interval '1 day','00000000-0000-0000-0000-000000000102','OK');
+
+
+insert into erp_supply.inventory_movements values
+(1,'00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000501','00000000-0000-0000-0000-000000000601','00000000-0000-0000-0000-000000000201','ISSUE',2,'UND','A-01','ALISTAMIENTO','00000000-0000-0000-0000-000000000101','LEG-ACTIVE','{"source":"fixture"}',now()-interval '1 day');
+
+insert into erp_supply.work_activity_catalog values
+('00000000-0000-0000-0000-000000001101','00000000-0000-0000-0000-000000000001','LEGACY_MEETING','Reunión legacy','Actividad usada para ensayo de migración','GENERAL','ACTIVITY',60,'FINAL_PHOTO',false,false,'{}',true,100,'{}',now()-interval '1 year',now(),'00000000-0000-0000-0000-000000000102','MANUAL',null);
+
+insert into erp_supply.work_assignments values
+('00000000-0000-0000-0000-000000001201','00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000001101',null,'Actividad planificada legacy','Pendiente de evidencia','ACTIVITY','PUBLISHED','MEDIUM',now()-interval '4 hours',now()-interval '2 hours',now()-interval '2 hours',120,'FINAL_PHOTO',false,'00000000-0000-0000-0000-000000000102',null,null,'{}','{}',now()-interval '5 hours',now()-interval '1 hour','MANAGER_ASSIGNED',null,'APPROVED',null,'00000000-0000-0000-0000-000000000102',now()-interval '5 hours','00000000-0000-0000-0000-000000000102',now()-interval '5 hours','fixture');
+
+insert into erp_supply.work_assignment_members values
+('00000000-0000-0000-0000-000000001301','00000000-0000-0000-0000-000000001201','00000000-0000-0000-0000-000000000102','WAITING_EVIDENCE',now()-interval '5 hours',now()-interval '4 hours',now()-interval '1 hour',null,null,'{}');
+
+insert into erp_supply.work_executions values
+('00000000-0000-0000-0000-000000001401','00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000001201','00000000-0000-0000-0000-000000001301','00000000-0000-0000-0000-000000001101','00000000-0000-0000-0000-000000000102','PLANNED','WAITING_EVIDENCE','Actividad planificada legacy',now()-interval '4 hours',null,7200,3600,3600,3600,0,1.0,null,'Pendiente evidencia',null,null,'{}',now()-interval '4 hours',now()-interval '1 hour'),
+('00000000-0000-0000-0000-000000001402','00000000-0000-0000-0000-000000000001',null,null,'00000000-0000-0000-0000-000000001101','00000000-0000-0000-0000-000000000101','MANUAL','COMPLETED','Actividad manual legacy',now()-interval '8 hours',now()-interval '7 hours',3600,3600,3600,0,0,1.0,null,'Completada',null,null,'{}',now()-interval '8 hours',now()-interval '7 hours');
+
+insert into erp_supply.work_evidence values
+('00000000-0000-0000-0000-000000001501','00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000001402','00000000-0000-0000-0000-000000000101','FINAL_PHOTO','drive-legacy-1','evidence.jpg','image/jpeg',1024,'https://example.test/evidence',null,'fixture','{}',now()-interval '7 hours');
+
+insert into erp_supply.system_audit values
+(1,'00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000101','UPDATE','orders','00000000-0000-0000-0000-000000000201','{"status":"QUEUED"}','{"status":"IN_PROGRESS"}','{"source":"fixture"}',now()-interval '2 days'),
+(2,'00000000-0000-0000-0000-000000000001',null,'UPDATE','legacy_old','old-row',null,null,'{}',now()-interval '60 days'),
+(3,null,null,'ADMIN_PROFILE_ACCESS_REMOVED','profiles','00000000-0000-0000-0000-000000000102',null,null,'{"source":"fixture"}',now()-interval '60 days');
 
 commit;
