@@ -26,10 +26,18 @@ tables=(
   erp_supply.order_tasks
   erp_supply.invoices
   erp_supply.material_master
+  erp_supply.material_variants
   erp_supply.inventory_items
   erp_supply.inventory_lots
   erp_supply.material_reservations
+  erp_supply.inventory_movements
   erp_supply.deliveries
+  erp_supply.work_activity_catalog
+  erp_supply.work_assignments
+  erp_supply.work_assignment_members
+  erp_supply.work_executions
+  erp_supply.work_evidence
+  erp_supply.system_audit
 )
 
 dump_args=(
@@ -51,7 +59,11 @@ checksum="$(sha256sum "$TMP/source.dump" | awk '{print $1}')"
 echo "PASS dump created; sha256=$checksum"
 
 echo "Creating isolated local restore database..."
-psql "$LOCAL_ADMIN_DB_URL" -v ON_ERROR_STOP=1   -c "drop database if exists ${RESTORE_DB} with (force);"   -c "create database ${RESTORE_DB};" >/dev/null
+psql "$LOCAL_ADMIN_DB_URL" -v ON_ERROR_STOP=1 \
+  -c "drop database if exists ${RESTORE_DB} with (force);" \
+  -c "create database ${RESTORE_DB};" >/dev/null
+psql "$LEGACY_DB_URL" -v ON_ERROR_STOP=1 \
+  -c "create schema if not exists erp_supply;" >/dev/null
 
 echo "Restoring critical operational dump..."
 pg_restore --exit-on-error --no-owner --no-privileges   --dbname "$LEGACY_DB_URL" "$TMP/source.dump"
@@ -85,4 +97,22 @@ console.log('PASS restored clone aggregate snapshot matches source');
 console.log('PASS restored clone active-order snapshot matches source');
 NODE
 
-echo "PASS real logical backup/restore rehearsal completed in ephemeral local database."
+echo "Staging restored clone into the clean target..."
+SOURCE_DB_URL="$LEGACY_DB_URL" TARGET_DB_URL="$LOCAL_ADMIN_DB_URL" \
+  bash "$ROOT/scripts/migration/stage-legacy.sh"
+
+echo "Transforming restored clone into target model..."
+psql "$LOCAL_ADMIN_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/transform-from-legacy.sql"
+
+echo "Validating transformed target..."
+psql "$LOCAL_ADMIN_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/validate-critical.sql"
+
+echo "Reconciling restored source against transformed target..."
+SOURCE_DB_URL="$LEGACY_DB_URL" TARGET_DB_URL="$LOCAL_ADMIN_DB_URL" \
+  bash "$ROOT/scripts/migration/reconcile.sh"
+SOURCE_DB_URL="$LEGACY_DB_URL" TARGET_DB_URL="$LOCAL_ADMIN_DB_URL" \
+  bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
+
+echo "PASS real backup -> restore -> transform -> reconciliation rehearsal completed."
