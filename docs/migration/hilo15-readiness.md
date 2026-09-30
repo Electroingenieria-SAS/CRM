@@ -21,13 +21,13 @@ Estado: **NO-GO temporal para cutover**
 | ------- | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | MIG-002 | Restore real no ensayado                       | Abierto               | dump reciente restaurado en PostgreSQL/Supabase local efímero aislado y validado; no requiere staging remoto                                            |
 | MIG-003 | Proyecto Vercel / Preview                      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                                     |
-| MIG-004 | Protección de `main` inexistente               | Abierto               | PR/checks obligatorios y force-push bloqueado                                                                                                          |
-| MIG-005 | Drift `erp-auditoria-metrics`                  | Abierto / compat.     | producción sigue pública y tiene tráfico real sin Authorization; adaptar consumidor y validar JWT+CORS org-scoped antes del hardening                    |
-| MIG-006 | Ventana/responsable de cutover no documentados | Abierto               | ventana, freeze, responsable y canal de rollback definidos                                                                                             |
+| MIG-004 | Gobernanza de `main`                           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                                |
+| MIG-005 | Drift `erp-auditoria-metrics`                  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor                 |
+| MIG-006 | Ventana/responsable de cutover                 | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                                    |
 
 ## Decisión técnica actual
 
-**NO-GO.** El blocker Vercel (MIG-003) quedó cerrado y la ausencia de staging remoto deja de ser requisito. No se ejecuta cutover de datos/Auth/DNS mientras MIG-002 siga abierto y no estén resueltos/aceptados MIG-004, MIG-005 y MIG-006.
+**NO-GO temporal.** El único blocker técnico previo al cutover es MIG-002: restore rehearsal real y reconciliación sobre entorno local efímero gratuito. MIG-003 y MIG-006 están cerrados; MIG-004 queda mitigado técnicamente y requiere la activación administrativa nativa de GitHub; MIG-005 queda aislado como excepción legacy no usada por el CRM nuevo.
 
 Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Preview no productivo cuando exista el destino.
 
@@ -39,9 +39,9 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - D Migración seca: **puede ejecutarse sobre destino local efímero después de C; no requiere Supabase remoto**
 - E Validación/reconciliación: **scripts ejecutables preparados; baseline origen capturado**
 - F Infraestructura: **Vercel listo; estrategia Supabase Free-only definida, sin staging remoto**
-- G Cutover: **no autorizado**
+- G Cutover: **ventana/owner/rollback definidos; pendiente únicamente de MIG-002 + CI final**
 - H Smoke productivo: **no ejecutado**
-- I Handoff a Hilo 16: **no procede todavía**
+- I Handoff a Hilo 16: **preparado; procede después de freeze/cutover y baseline final**
 
 ## Evidencia adicional 2026-09-30
 
@@ -81,3 +81,22 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Dumps y datos sensibles nunca se publican como artifacts ni se guardan en Git.
 - Producción conserva el único destino Supabase operativo permitido por esta estrategia.
 - Si una capacidad exige plan Pro o costo recurrente, se reemplaza por una alternativa reproducible gratuita o se documenta como no adoptada.
+
+
+## Gobernanza y ownership
+
+- `.github/CODEOWNERS` asigna ownership de superficies sensibles de release, Supabase, migraciones y workflows a `@JEPTAC`.
+- `.github/workflows/main-governance.yml` marca como error cualquier push a `main` sin PR asociado.
+- La protección nativa/ruleset de GitHub no puede configurarse desde el conector disponible aunque la cuenta tenga permisos admin; se mantiene como acción administrativa explícita y no se falsea como aplicada.
+
+## Cutover operativo
+
+- Ventana estándar: primer día hábil aprobado después de CI verde, **17:40–19:10 America/Bogota**.
+- Responsable técnico: **JEPTAC**.
+- Freeze: **17:40**.
+- Decisión GO/ROLLBACK: máximo **18:40**.
+- Runbook y canal: `docs/release/cutover-window.md` + `docs/runbooks/cutover.md`.
+
+## Excepción legacy
+
+`erp-auditoria-metrics` no forma parte del CRM nuevo. Durante coexistencia permanece legacy-only y monitorizada; su hardening definitivo se ejecuta en un cambio separado después de identificar el consumidor anónimo observado.
