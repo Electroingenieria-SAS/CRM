@@ -3,6 +3,7 @@ import type {
   LogisticsFreightPort,
   LogisticsInventoryPort,
   LogisticsOrdersPort,
+  LogisticsWorkforceEvidencePort,
   LogisticsQueueQuery,
   LogisticsReleaseInput,
   LogisticsRepository,
@@ -23,6 +24,7 @@ export class LogisticsService {
     private readonly orders: LogisticsOrdersPort,
     private readonly storage: OrderEvidenceStoragePort,
     private readonly inventory?: LogisticsInventoryPort,
+    private readonly workforceEvidence?: LogisticsWorkforceEvidencePort,
   ) {}
 
   candidates(search?: string, page = 1, pageSize = 25) {
@@ -68,21 +70,40 @@ export class LogisticsService {
     key: string,
   ) {
     const normalizedType = evidenceType.trim().toUpperCase();
+    const idempotencyKey = requiredKey(key);
+
+    if (normalizedType === 'DELIVERY_PHOTO') {
+      if (!file.type.startsWith('image/')) {
+        throw new Error('La confirmación de entrega requiere una evidencia fotográfica.');
+      }
+      await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
+    }
+
     const stored = await this.storage.upload({
       organizationId,
       orderId,
       evidenceType: normalizedType,
       file,
     });
-    return this.addEvidence(
+    const evidenceId = await this.addEvidence(
       orderId,
       normalizedType,
       stored.storageProvider,
       stored.storageReference,
       stored.fileName,
       stored.mimeType,
-      key,
+      idempotencyKey,
     );
+
+    if (normalizedType === 'DELIVERY_PHOTO') {
+      await this.workforceEvidence?.attachFinalEvidence(
+        orderId,
+        stored,
+        `${idempotencyKey}:workforce`,
+      );
+    }
+
+    return evidenceId;
   }
 
   async addEvidence(
