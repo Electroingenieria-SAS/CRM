@@ -5,6 +5,7 @@ import { SupabaseFreightRepository } from '@/infrastructure/freight/supabase-fre
 import { SupabaseOrderWorkforceOutboxRepository } from '@/infrastructure/integrations/supabase-order-workforce-outbox-repository';
 import { SupabaseWorkforceAutomationAdapter } from '@/infrastructure/integrations/supabase-workforce-automation-adapter';
 import { OrdersLogisticsAdapter } from '@/infrastructure/logistics/orders-logistics-adapter';
+import { SupabaseLogisticsWorkforceEvidenceAdapter } from '@/infrastructure/logistics/supabase-logistics-workforce-evidence-adapter';
 import { SupabaseLogisticsRepository } from '@/infrastructure/logistics/supabase-logistics-repository';
 import { SupabaseOrderWorkflowRepository } from '@/infrastructure/orders/supabase-order-workflow-repository';
 import { SupabaseOrdersRepository } from '@/infrastructure/orders/supabase-orders-repository';
@@ -47,14 +48,16 @@ export function createLogisticsBrowserApplication(): LogisticsBrowserApplication
     ),
   );
   const freight = new FreightService(new SupabaseFreightRepository(client));
+  const ordersLogistics = new OrdersLogisticsAdapter(orders, workflow);
 
   return {
     auth: new AuthService(new SupabaseAuthGateway(client), new SupabaseSessionRepository(client)),
     logistics: new LogisticsService(
       new SupabaseLogisticsRepository(client),
       freight,
-      new OrdersLogisticsAdapter(orders, workflow),
-      new OrdersLogisticsAdapter(orders, workflow),
+      ordersLogistics,
+      ordersLogistics,
+      new SupabaseLogisticsWorkforceEvidenceAdapter(client),
       new SupabaseOrderEvidenceStorage(client),
     ),
     freight,
