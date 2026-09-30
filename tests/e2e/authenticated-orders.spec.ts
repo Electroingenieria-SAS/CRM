@@ -27,6 +27,7 @@ async function login(page: Page, email: string, userPassword = password()) {
   });
 
   await page.goto('/login');
+  await page.waitForLoadState('networkidle');
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(userPassword);
   await page.getByRole('button', { name: 'Ingresar' }).click();
@@ -165,6 +166,7 @@ test('password recovery completes through local Supabase and Mailpit', async ({
   );
 
   await page.goto('/login');
+  await page.waitForLoadState('networkidle');
   await page.getByLabel('Correo').fill(recoveryEmail);
   await page.getByRole('button', { name: 'Olvidé mi contraseña' }).click();
   await expect(page.getByRole('status')).toContainText(
