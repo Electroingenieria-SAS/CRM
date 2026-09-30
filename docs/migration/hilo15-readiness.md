@@ -8,7 +8,7 @@ Estado: **NO-GO temporal para cutover**
 
 - Hilo 13 está fusionado en `main` (PR #24).
 - `main` tiene pipeline principal y Workforce verdes en el último SHA.
-- Hilo 14 sigue abierto como PR #25 y su CI está en ejecución; no se considera certificado hasta merge + gates verdes.
+- Hilo 14 está certificado y fusionado en `main` (PR #25, merge `b13f934f03a43ea115547e914c67eef3f338cb9b`), con 14/14 escenarios UAT aprobados y cero bloqueantes funcionales.
 - No existe ruleset/protección de `main`.
 - Supabase productivo legado: `hezjxcxxcjlpmyalftam`, estado `ACTIVE_HEALTHY`, Postgres 17, sin branches.
 - Organización Supabase en plan Free: el mecanismo de backup operativo debe ser dump lógico externo; no se declara PITR.
@@ -19,7 +19,6 @@ Estado: **NO-GO temporal para cutover**
 
 | ID | Bloqueante | Estado | Criterio de cierre |
 | --- | --- | --- | --- |
-| MIG-001 | Hilo 14 no certificado | Abierto | PR #25 mergeado y gates verdes |
 | MIG-002 | Restore real no ensayado | Abierto | dump reciente restaurado en destino no productivo y smoke aprobado |
 | MIG-003 | Proyecto Vercel nuevo inexistente | Abierto | proyecto separado de `crm-suministros`, Preview configurado y smoke aprobado |
 | MIG-004 | Protección de `main` inexistente | Abierto | PR/checks obligatorios y force-push bloqueado |
@@ -28,13 +27,13 @@ Estado: **NO-GO temporal para cutover**
 
 ## Decisión técnica actual
 
-**NO-GO.** No se ejecutan DDL, importaciones, DNS, cambios de Auth, deploy productivo ni freeze mientras exista cualquiera de MIG-001, MIG-002 o MIG-003.
+**NO-GO.** No se ejecutan DDL, importaciones, DNS, cambios de Auth, deploy productivo ni freeze mientras exista cualquiera de MIG-002 o MIG-003.
 
 Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Preview no productivo cuando exista el destino.
 
 ## Checkpoints
 
-- A Readiness: **completado / NO-GO**
+- A Readiness: **completado / Hilo 14 cerrado; NO-GO por infraestructura/restore**
 - B Inventario y clasificación: **preparado**
 - C Backup + restore rehearsal: **bloqueado por destino no productivo**
 - D Migración seca: **bloqueado por C**
