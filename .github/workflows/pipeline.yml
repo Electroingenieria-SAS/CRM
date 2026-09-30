@@ -127,6 +127,9 @@ jobs:
             exit 1
           fi
           E2E_PASSWORD="$(openssl rand -base64 30 | tr -d '\n' | tr '/+' 'Aa')"
+          echo "::add-mask::$DB_URL"
+          echo "::add-mask::$LOCAL_SECRET_KEY"
+          echo "::add-mask::$E2E_PASSWORD"
           {
             echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
@@ -141,6 +144,11 @@ jobs:
           psql "$DB_URL"
           -v ON_ERROR_STOP=1
           -f tests/fixtures/authenticated_e2e.sql
+      - name: Seed synthetic Workforce policies
+        run: >
+          psql "$DB_URL"
+          -v ON_ERROR_STOP=1
+          -f tests/fixtures/workforce_e2e.sql
       - name: Seed synthetic Customer Intelligence dataset
         run: >
           psql "$DB_URL"
