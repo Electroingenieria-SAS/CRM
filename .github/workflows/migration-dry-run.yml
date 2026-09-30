@@ -84,6 +84,10 @@ jobs:
           test -n "$TARGET_DB_URL" || { echo "MIGRATION_TARGET_DB_URL is missing"; exit 2; }
           echo "::add-mask::$SOURCE_DB_URL"
           echo "::add-mask::$TARGET_DB_URL"
+      - name: Validate source referential integrity
+        run: psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/source-validate.sql
+      - name: Validate source compatibility with target contracts
+        run: psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/source-compatibility.sql
       - name: Reconcile source and non-production target
         run: bash scripts/migration/reconcile.sh
       - name: Reconcile in-flight orders
