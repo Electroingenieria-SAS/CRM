@@ -26,6 +26,7 @@ tables=(
   erp_supply.order_tasks
   erp_supply.invoices
   erp_supply.material_master
+  erp_supply.material_variants
   erp_supply.inventory_items
   erp_supply.inventory_lots
   erp_supply.material_reservations
