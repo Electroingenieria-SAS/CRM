@@ -11,7 +11,7 @@ No ejecutar este runbook hasta que:
 - Preview Vercel del CRM nuevo esté validado;
 - variables productivas estén inventariadas;
 - rollback frontend/DB/Functions esté preparado;
-- MIG-001..MIG-003 estén cerrados.
+- MIG-002 y MIG-007 estén cerrados;\n- la estrategia `docs/migration/free-slot-cutover.md` esté aprobada para la ventana.
 
 No se exige staging Supabase remoto ni plan pago para cumplir esta precondición.
 
@@ -49,4 +49,12 @@ Rollback inmediato ante:
 - Frontend: promover deployment Vercel saludable anterior.
 - Datos: no revertir DDL con `git revert`; usar forward-fix/compensación o restore verificado.
 - Functions: redeploy de versión conocida y verificación JWT/CORS.
-- Operación: reabrir legado solo si la estrategia de datos confirma que no habrá divergencia; nunca dual-write improvisado.
+- Operación: si el CRM nuevo todavía no recibió escrituras, reanudar el proyecto legacy pausado y validar antes de reabrir. Si el CRM nuevo ya recibió escrituras, congelar, reconciliar y aplicar retorno controlado/forward-fix; nunca dual-write improvisado.
+
+
+## Doble gate GO
+
+- **GO-to-cutover:** autoriza freeze, backup final y pausa del legacy. Requiere rehearsal real local + CI verde.
+- **GO-live:** autoriza abrir usuarios en el target nuevo. Requiere Auth, transformación, reconciliación, Preview y UAT migrada aprobados.
+
+No confundir ambos gates: un GO-to-cutover no autoriza todavía abrir producción nueva.

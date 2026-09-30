@@ -23,11 +23,11 @@ Estado: **NO-GO temporal para cutover**
 | MIG-003 | Proyecto Vercel / Preview      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                    |
 | MIG-004 | Gobernanza de `main`           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                |
 | MIG-005 | Drift `erp-auditoria-metrics`  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor |
-| MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |
+| MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |\n| MIG-007 | Destino Free-only / transición  | Abierto               | rehearsal real aprobado + estrategia de rotación de cupo: freeze → backup → pausar legacy → crear target Free → Auth/datos → Preview/UAT |
 
 ## Decisión técnica actual
 
-**NO-GO temporal.** El único blocker técnico previo al cutover es MIG-002: restore rehearsal real y reconciliación sobre entorno local efímero gratuito. MIG-003 y MIG-006 están cerrados; MIG-004 queda mitigado técnicamente y requiere la activación administrativa nativa de GitHub; MIG-005 queda aislado como excepción legacy no usada por el CRM nuevo.
+**NO-GO temporal.** Los blockers técnicos previos al cutover son MIG-002 y MIG-007. MIG-002 exige restore/transform rehearsal real con copia productiva; MIG-007 exige validar la transición Free-only hacia un proyecto nuevo durante la ventana, porque el Supabase legacy no contiene todavía el modelo target y no se considera ensayada una sustitución in-place. MIG-003 y MIG-006 están cerrados; MIG-004 queda mitigado técnicamente y requiere la activación administrativa nativa de GitHub; MIG-005 queda aislado como excepción legacy no usada por el CRM nuevo.
 
 Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Preview no productivo cuando exista el destino.
 
@@ -39,7 +39,7 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - D Migración seca: **puede ejecutarse sobre destino local efímero después de C; no requiere Supabase remoto**
 - E Validación/reconciliación: **scripts ejecutables preparados; baseline origen capturado**
 - F Infraestructura: **Vercel listo; estrategia Supabase Free-only definida, sin staging remoto**
-- G Cutover: **ventana/owner/rollback definidos; pendiente únicamente de MIG-002 + CI final**
+- G Cutover: **ventana/owner/rollback definidos; pendiente de MIG-002 + MIG-007 + CI final**
 - H Smoke productivo: **no ejecutado**
 - I Handoff a Hilo 16: **preparado; procede después de freeze/cutover y baseline final**
 
@@ -76,7 +76,7 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - No se creará un segundo Supabase persistente solo para QA.
 - Los rehearsals de schema, restore, importación y validación se ejecutan con Supabase/PostgreSQL local efímero en CI o entorno local aislado.
 - Dumps y datos sensibles nunca se publican como artifacts ni se guardan en Git.
-- Producción conserva el único destino Supabase operativo permitido por esta estrategia.
+- La estrategia preferida usa rotación de cupo: después del backup/freeze se pausa el legacy para liberar un cupo Free y crear el target nuevo; el legacy permanece pausado como rollback inicial.
 - Si una capacidad exige plan Pro o costo recurrente, se reemplaza por una alternativa reproducible gratuita o se documenta como no adoptada.
 
 ## Gobernanza y ownership
@@ -96,3 +96,15 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 ## Excepción legacy
 
 `erp-auditoria-metrics` no forma parte del CRM nuevo. Durante coexistencia permanece legacy-only y monitorizada; su hardening definitivo se ejecuta en un cambio separado después de identificar el consumidor anónimo observado.
+
+
+## Evidencia de compatibilidad del destino Free-only
+
+Inspección directa del proyecto legacy el 2026-09-30:
+
+- 77 tablas en `erp_supply`;
+- 142 funciones en `erp_supply`;
+- 168 funciones públicas con referencias explícitas a `erp_supply`;
+- tablas target `inventory_balances`, `inventory_reservations`, `logistics_shipments`, `workforce_activities` y `customer_intelligence_scores`: ausentes.
+
+Conclusión: no se autoriza aplicar el CRM nuevo directamente sobre el esquema legacy sin rehearsal específico. La estrategia operativa está definida en `docs/migration/free-slot-cutover.md`.
