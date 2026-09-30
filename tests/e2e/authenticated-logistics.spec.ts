@@ -140,9 +140,10 @@ async function operateShipment(page: Page) {
 }
 
 test('billing and logistics private routes redirect anonymous users', async ({ page }) => {
-  await page.goto('/billing');
+  await page.goto('/billing').catch(() => null);
   await expect(page).toHaveURL(/\/login\/?$/);
-  await page.goto('/logistics');
+
+  await page.goto('/logistics').catch(() => null);
   await expect(page).toHaveURL(/\/login\/?$/);
 });
 
