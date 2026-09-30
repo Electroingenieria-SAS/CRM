@@ -80,4 +80,52 @@ create table migration_legacy.deliveries(
   satisfaction_confirmed_by uuid, satisfaction_note text
 );
 
+
+create table migration_legacy.inventory_movements(
+  id bigint primary key, organization_id uuid, inventory_item_id uuid, lot_id uuid,
+  order_id uuid, movement_type text, quantity numeric, unit text, from_location text,
+  to_location text, actor_profile_id uuid, reference text, metadata jsonb, created_at timestamptz
+);
+create table migration_legacy.work_activity_catalog(
+  id uuid primary key, organization_id uuid, code text, name text, description text,
+  activity_group text, activity_kind text, standard_minutes integer, evidence_policy text,
+  acceptance_required boolean, team_allowed boolean, allowed_roles text[], active boolean,
+  sort_order integer, metadata jsonb, created_at timestamptz, updated_at timestamptz,
+  created_by uuid, catalog_origin text, archived_at timestamptz
+);
+create table migration_legacy.work_assignments(
+  id uuid primary key, organization_id uuid, catalog_id uuid, series_id uuid, title text,
+  description text, assignment_kind text, status text, priority text, planned_start timestamptz,
+  planned_end timestamptz, due_at timestamptz, estimated_minutes integer, evidence_policy text,
+  acceptance_required boolean, assigned_by uuid, related_entity_type text,
+  related_entity_id text, recurrence jsonb, metadata jsonb, created_at timestamptz,
+  updated_at timestamptz, request_origin text, request_reason text, approval_status text,
+  approval_scope text, requested_by uuid, requested_at timestamptz, decided_by uuid,
+  decided_at timestamptz, decision_note text
+);
+create table migration_legacy.work_assignment_members(
+  id uuid primary key, assignment_id uuid, profile_id uuid, status text,
+  assigned_at timestamptz, first_started_at timestamptz, submitted_at timestamptz,
+  completed_at timestamptz, cancelled_at timestamptz, metadata jsonb
+);
+create table migration_legacy.work_executions(
+  id uuid primary key, organization_id uuid, assignment_id uuid, assignment_member_id uuid,
+  catalog_id uuid, profile_id uuid, source text, status text, title_snapshot text,
+  started_at timestamptz, ended_at timestamptz, elapsed_seconds bigint, active_seconds bigint,
+  business_seconds bigint, paused_seconds bigint, start_delay_seconds bigint,
+  deviation_ratio numeric, deviation_reason text, result_note text,
+  related_entity_type text, related_entity_id text, metadata jsonb,
+  created_at timestamptz, updated_at timestamptz
+);
+create table migration_legacy.work_evidence(
+  id uuid primary key, organization_id uuid, execution_id uuid, profile_id uuid,
+  evidence_type text, drive_file_id text, file_name text, mime_type text, size_bytes bigint,
+  web_view_link text, external_value text, note text, metadata jsonb, created_at timestamptz
+);
+create table migration_legacy.system_audit(
+  id bigint primary key, organization_id uuid, actor_profile_id uuid, action text,
+  entity_type text, entity_id text, before_data jsonb, after_data jsonb,
+  metadata jsonb, created_at timestamptz
+);
+
 commit;
