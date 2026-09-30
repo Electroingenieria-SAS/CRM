@@ -391,16 +391,25 @@ select
   a.entity_id,
   'SUCCESS',
   'legacy-audit:'||a.id::text,
-  (coalesce(a.metadata,'{}'::jsonb)
-    - 'password' - 'passwd' - 'token' - 'access_token' - 'refresh_token'
-    - 'service_role' - 'authorization' - 'jwt' - 'secret') ||
-    jsonb_build_object(
-      'migrationSource','CRM-SUMINISTROS',
-      'legacyAuditId',a.id,
-      'legacyOrganizationMissing',a.organization_id is null,
-      'legacyBefore',a.before_data,
-      'legacyAfter',a.after_data
-    ),
+  jsonb_build_object(
+    'migrationSource','CRM-SUMINISTROS',
+    'legacyAuditId',a.id,
+    'legacyOrganizationMissing',a.organization_id is null,
+    'legacyBefore',
+      case when coalesce(a.before_data,'null'::jsonb)::text ~*
+        '"(password|passwd|token|access_token|refresh_token|service_role|authorization|jwt|secret)"[[:space:]]*:'
+        then null else a.before_data end,
+    'legacyAfter',
+      case when coalesce(a.after_data,'null'::jsonb)::text ~*
+        '"(password|passwd|token|access_token|refresh_token|service_role|authorization|jwt|secret)"[[:space:]]*:'
+        then null else a.after_data end,
+    'legacyPayloadRedacted',
+      (
+        coalesce(a.metadata,'{}'::jsonb) ||
+        jsonb_build_object('beforeData',a.before_data,'afterData',a.after_data)
+      )::text ~*
+        '"(password|passwd|token|access_token|refresh_token|service_role|authorization|jwt|secret)"[[:space:]]*:'
+  ),
   a.created_at
 from migration_legacy.system_audit a
 cross join audit_cutoff c
@@ -409,9 +418,9 @@ left join migration_legacy.organizations so on so.id=a.organization_id
 join erp_supply.organizations target_org on target_org.code=coalesce(so.code,po.code)
 where (
     a.created_at>=c.recent_from
-    or upper(a.action) like 'AUTH\_%' escape '\\'
-    or upper(a.action) like 'ADMIN\_%' escape '\\'
-    or upper(a.action) like 'APPROVAL\_%' escape '\\'
+    or left(upper(a.action),5)='AUTH_'
+    or left(upper(a.action),6)='ADMIN_'
+    or left(upper(a.action),9)='APPROVAL_'
   )
   and not exists(
     select 1 from erp_supply.audit_events x
