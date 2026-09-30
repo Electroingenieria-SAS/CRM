@@ -5,6 +5,7 @@ Estado: Hilo 16 puede preparar observabilidad y smoke, pero **no debe declarar e
 ## Ownership
 
 ### Hilo 15
+
 - backup / restore rehearsal;
 - dry-run de migración;
 - reconciliación de datos;
@@ -15,6 +16,7 @@ Estado: Hilo 16 puede preparar observabilidad y smoke, pero **no debe declarar e
 - registro final de SHA/dataset/infra.
 
 ### Hilo 16
+
 - observabilidad y baseline post-release;
 - smoke repetible no destructivo;
 - clasificación de regresiones;
