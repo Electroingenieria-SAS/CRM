@@ -24,15 +24,19 @@ No se exige staging Supabase remoto ni plan pago para cumplir esta precondición
 4. Ejecutar backup lógico final fuera del repositorio.
 5. Verificar `SHA256SUMS`.
 6. Extraer delta desde el último dry-run, si existe.
-7. Aplicar migraciones versionadas en destino.
-8. Importar datasets en orden referencial: organización → Auth/perfiles/roles → catálogos → clientes/proyecciones → pedidos → finanzas → compras/recepción → inventario → Workforce → logística → históricos seleccionados.
-9. Ejecutar reconciliación de conteos, FKs, finanzas e inventario.
-10. Ejecutar smoke de datos migrados: login, pedido, Finance, Inventory, Workforce, Logistics, Dashboard/PACO.
-11. Promover el mismo artefacto Vercel Preview validado; no reconstruir otro artefacto si puede usarse `promote`.
-12. Ejecutar smoke productivo no destructivo.
-13. Si todo está correcto, abrir operación en CRM nuevo.
-14. Mantener CRM antiguo en read-only durante coexistencia definida.
-15. Registrar SHA, fecha, conteos, checksums y responsables.
+7. Con el backup final ya validado, pausar el proyecto legacy para liberar un cupo Free; no eliminarlo.
+8. Crear el target Supabase Free definitivo dentro de la ventana.
+9. Aplicar migraciones versionadas sobre el target limpio.
+10. Migrar Auth/perfiles/roles según `docs/migration/auth-strategy.md`; asumir re-login y validar MFA administrativo.
+11. Importar/transformar datasets operativos en orden referencial: organización → perfiles/roles → catálogos → pedidos → finanzas → compras/recepción → inventario → Workforce → logística → históricos seleccionados.
+12. Ejecutar reconciliación de conteos, FKs, finanzas, inventario y pedidos activos.
+13. Configurar el Preview Vercel para usar el target nuevo mediante variables protegidas; nunca escribir claves en Git.
+14. Ejecutar UAT migrada y smoke de login, pedidos, Finance, Inventory, Workforce, Logistics, Dashboard/PACO.
+15. Tomar decisión **GO-live / ROLLBACK**.
+16. Si GO-live, promover el deployment validado y ejecutar smoke productivo no destructivo.
+17. Abrir operación en CRM nuevo.
+18. Mantener el CRM antiguo **pausado** durante la coexistencia inicial de rollback; no dual-write.
+19. Registrar SHA, proyecto target, fecha, conteos, checksums y responsables.
 
 ## Rollback triggers
 
