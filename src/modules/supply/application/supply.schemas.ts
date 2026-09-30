@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const supplyAreaSchema = z.enum(['PURCHASING','RECEIVING','PICKING','CUTTING']);
+export const supplyAreaSchema = z.enum(['PURCHASING', 'RECEIVING', 'PICKING', 'CUTTING']);
 
 export const supplyQueueItemSchema = z.object({
   id: z.string().uuid(),
@@ -25,16 +25,37 @@ export const supplyQueueSchema = z.object({
   contractVersion: z.string(),
 });
 
+const supplyMaterialLineSchema = z.object({
+  orderItemId: z.string().uuid(),
+  materialId: z.string().uuid(),
+  variantId: z.string().uuid().optional(),
+  quantity: z.number().positive(),
+  unit: z.string().trim().min(1).max(20),
+});
+
+export const orderReceptionInputSchema = z.object({
+  orderId: z.string().uuid(),
+  orderTaskId: z.string().uuid().optional(),
+  pickingProfileId: z.string().uuid().optional(),
+  cuttingProfileId: z.string().uuid().optional(),
+  lines: z.array(
+    supplyMaterialLineSchema.extend({
+      locationId: z.string().uuid().optional(),
+      requiresCut: z.boolean().default(false),
+      cutLengthEach: z.number().positive().optional(),
+      metadata: z.record(z.string(), z.unknown()).default({}),
+    }),
+  ).min(1),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
 export const purchaseRequestInputSchema = z.object({
   orderId: z.string().uuid(),
-  lines: z.array(z.object({
-    orderItemId: z.string().uuid(),
-    materialId: z.string().uuid(),
-    variantId: z.string().uuid().optional(),
-    quantity: z.number().positive(),
-    unit: z.string().trim().min(1).max(20),
-    note: z.string().trim().max(500).optional(),
-  })).min(1),
+  lines: z.array(
+    supplyMaterialLineSchema.extend({
+      note: z.string().trim().max(500).optional(),
+    }),
+  ).min(1),
 });
 
 export const purchaseOrderInputSchema = z.object({
@@ -51,7 +72,7 @@ export const purchaseOrderInputSchema = z.object({
 export const receiptInputSchema = z.object({
   purchaseOrderId: z.string().uuid().optional(),
   orderId: z.string().uuid().optional(),
-  receiptType: z.enum(['PURCHASE','RETURN','STANDALONE']).default('PURCHASE'),
+  receiptType: z.enum(['PURCHASE', 'RETURN', 'STANDALONE']).default('PURCHASE'),
   documentReference: z.string().trim().max(160).optional(),
   lines: z.array(z.object({
     purchaseOrderLineId: z.string().uuid().optional(),
@@ -74,28 +95,21 @@ export const receiptInputSchema = z.object({
 export const pickingJobInputSchema = z.object({
   orderId: z.string().uuid(),
   orderTaskId: z.string().uuid().optional(),
-  lines: z.array(z.object({
-    orderItemId: z.string().uuid(),
-    materialId: z.string().uuid(),
-    variantId: z.string().uuid().optional(),
-    locationId: z.string().uuid().optional(),
-    quantity: z.number().positive(),
-    unit: z.string().trim().min(1).max(20),
-  })).min(1),
+  lines: z.array(
+    supplyMaterialLineSchema.extend({ locationId: z.string().uuid().optional() }),
+  ).min(1),
 });
 
 export const cuttingJobInputSchema = z.object({
   orderId: z.string().uuid(),
   orderTaskId: z.string().uuid().optional(),
-  lines: z.array(z.object({
-    orderItemId: z.string().uuid(),
-    materialId: z.string().uuid(),
-    variantId: z.string().uuid().optional(),
-    reservationId: z.string().uuid(),
-    plannedQuantity: z.number().positive(),
-    cutLengthEach: z.number().positive().optional(),
-    unit: z.string().trim().min(1).max(20),
-  })).min(1),
+  lines: z.array(
+    supplyMaterialLineSchema.omit({ quantity: true }).extend({
+      reservationId: z.string().uuid(),
+      plannedQuantity: z.number().positive(),
+      cutLengthEach: z.number().positive().optional(),
+    }),
+  ).min(1),
 });
 
 export const supplyMutationSchema = z.object({
@@ -108,6 +122,7 @@ export const supplyMutationSchema = z.object({
 
 export type SupplyArea = z.infer<typeof supplyAreaSchema>;
 export type SupplyQueue = z.infer<typeof supplyQueueSchema>;
+export type OrderReceptionInput = z.input<typeof orderReceptionInputSchema>;
 export type PurchaseRequestInput = z.input<typeof purchaseRequestInputSchema>;
 export type PurchaseOrderInput = z.input<typeof purchaseOrderInputSchema>;
 export type ReceiptInput = z.input<typeof receiptInputSchema>;

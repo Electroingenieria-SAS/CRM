@@ -1,5 +1,6 @@
 import type {
   CuttingJobInput,
+  OrderReceptionInput,
   PickingJobInput,
   PurchaseOrderInput,
   PurchaseRequestInput,
@@ -10,13 +11,30 @@ import type {
 } from '@/modules/supply/application/supply.schemas';
 
 export interface SupplyRepository {
-  queue(area: SupplyArea, status?: string, search?: string, page?: number, pageSize?: number): Promise<SupplyQueue>;
+  queue(
+    area: SupplyArea,
+    status?: string,
+    search?: string,
+    page?: number,
+    pageSize?: number,
+  ): Promise<SupplyQueue>;
+  createOrderReception(input: OrderReceptionInput, key: string): Promise<SupplyMutation>;
+  confirmOrderReception(receptionId: string, key: string): Promise<SupplyMutation>;
   createPurchaseRequest(input: PurchaseRequestInput, key: string): Promise<SupplyMutation>;
   issuePurchaseOrder(input: PurchaseOrderInput, key: string): Promise<SupplyMutation>;
   createReceipt(input: ReceiptInput, key: string): Promise<SupplyMutation>;
-  confirmReceiptLine(lineId: string, movementId: string | undefined, key: string): Promise<SupplyMutation>;
+  confirmReceiptLine(
+    lineId: string,
+    movementId: string | undefined,
+    key: string,
+  ): Promise<SupplyMutation>;
   createPickingJob(input: PickingJobInput, key: string): Promise<SupplyMutation>;
-  syncPickingLine(lineId: string, reservationId: string, pickedQuantity: number, key: string): Promise<SupplyMutation>;
+  syncPickingLine(
+    lineId: string,
+    reservationId: string,
+    pickedQuantity: number,
+    key: string,
+  ): Promise<SupplyMutation>;
   createCuttingJob(input: CuttingJobInput, key: string): Promise<SupplyMutation>;
   startCutting(jobId: string, key: string): Promise<SupplyMutation>;
   syncCuttingLine(
@@ -26,5 +44,9 @@ export interface SupplyRepository {
     waste: number,
     key: string,
   ): Promise<SupplyMutation>;
-  completeCutting(jobId: string, evidenceId: string | undefined, key: string): Promise<SupplyMutation>;
+  completeCutting(
+    jobId: string,
+    evidenceId: string | undefined,
+    key: string,
+  ): Promise<SupplyMutation>;
 }
