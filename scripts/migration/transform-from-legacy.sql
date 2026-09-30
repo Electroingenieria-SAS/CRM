@@ -330,7 +330,7 @@ where a.reservation_id=r.id
   and r.status='ACTIVE'
   and r.metadata->>'migrationSource'='CRM-SUMINISTROS';
 
-do $
+do $$
 declare
   v_res record;
   v_bal record;
