@@ -1,7 +1,7 @@
 # UAT empresarial y certificación funcional — Hilo 14
 
 Estado: **en ejecución sobre staging sintético**  
-Base: Hilo 13 / integración global.
+Base certificada: `main@3738b91b703206cb3ece353ea7c2d9ae4651623a` (Hilo 13 / integración global).
 
 ## Criterio
 
