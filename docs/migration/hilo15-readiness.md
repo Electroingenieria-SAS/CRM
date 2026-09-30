@@ -13,13 +13,13 @@ Estado: **NO-GO temporal para cutover**
 - Supabase productivo legado: `hezjxcxxcjlpmyalftam`, estado `ACTIVE_HEALTHY`, Postgres 17, sin branches.
 - Organización Supabase en plan Free: el mecanismo de backup operativo debe ser dump lógico externo; no se declara PITR.
 - Vercel ya tiene proyecto separado `crm` (`prj_MEFvzc4lfeK6aZAtSnw9ue83gWdS`), conectado a `Electroingenieria-SAS/CRM`; Preview y deployment de producción responden `200` en `/login` con CSP/HSTS/noindex/nosniff/frame protections.
-- No existe destino remoto no productivo aprobado para ejecutar restore de un dump real.
+- Política de infraestructura: **Free-only**. No se crea staging/branch Supabase de pago. El restore rehearsal debe ejecutarse sobre PostgreSQL/Supabase local efímero en CI o entorno local aislado.
 
 ## Blockers de GO
 
 | ID      | Bloqueante                                     | Estado                | Criterio de cierre                                                                                                                                     |
 | ------- | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| MIG-002 | Restore real no ensayado                       | Abierto               | dump reciente restaurado en destino no productivo y smoke aprobado                                                                                     |
+| MIG-002 | Restore real no ensayado                       | Abierto               | dump reciente restaurado en PostgreSQL/Supabase local efímero aislado y validado; no requiere staging remoto                                            |
 | MIG-003 | Proyecto Vercel / Preview                      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                                     |
 | MIG-004 | Protección de `main` inexistente               | Abierto               | PR/checks obligatorios y force-push bloqueado                                                                                                          |
 | MIG-005 | Drift `erp-auditoria-metrics`                  | Abierto / compat.     | producción sigue pública y tiene tráfico real sin Authorization; adaptar consumidor y validar JWT+CORS org-scoped antes del hardening                    |
@@ -27,7 +27,7 @@ Estado: **NO-GO temporal para cutover**
 
 ## Decisión técnica actual
 
-**NO-GO.** El blocker Vercel (MIG-003) quedó cerrado. No se ejecuta cutover de datos/Auth/DNS mientras MIG-002 siga abierto y no estén resueltos/aceptados MIG-004, MIG-005 y MIG-006.
+**NO-GO.** El blocker Vercel (MIG-003) quedó cerrado y la ausencia de staging remoto deja de ser requisito. No se ejecuta cutover de datos/Auth/DNS mientras MIG-002 siga abierto y no estén resueltos/aceptados MIG-004, MIG-005 y MIG-006.
 
 Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Preview no productivo cuando exista el destino.
 
@@ -35,10 +35,10 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 
 - A Readiness: **completado / Hilo 14 cerrado; NO-GO por infraestructura/restore**
 - B Inventario y clasificación: **completado; preflight 15/15 PASS**
-- C Backup + restore rehearsal: **bloqueado por destino no productivo**
-- D Migración seca: **bloqueado por C**
+- C Backup + restore rehearsal: **pendiente de restore real en entorno local efímero gratuito**
+- D Migración seca: **puede ejecutarse sobre destino local efímero después de C; no requiere Supabase remoto**
 - E Validación/reconciliación: **scripts ejecutables preparados; baseline origen capturado**
-- F Infraestructura: **Vercel listo; destino Supabase no productivo pendiente**
+- F Infraestructura: **Vercel listo; estrategia Supabase Free-only definida, sin staging remoto**
 - G Cutover: **no autorizado**
 - H Smoke productivo: **no ejecutado**
 - I Handoff a Hilo 16: **no procede todavía**
@@ -48,7 +48,7 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Preflight referencial/inventario del origen: 15/15 PASS.
 - Pedido en vuelo: 1, etapa `LOCAL_DISPATCH`, 4 tareas, 1 factura, 1 reserva consumida, 0 entregas.
 - Workflow manual de dry-run protegido agregado; requiere secretos de origen/destino y nunca publica dumps.
-- El workflow de reconciliación remota aún no se ejecutó porque no existe destino Supabase no productivo autorizado.
+- La reconciliación remota deja de ser requisito del rehearsal. La comparación previa al cutover se hará contra el destino real únicamente cuando corresponda; antes de eso, restore/import/reconciliación se ensayan en entorno local efímero.
 - `erp-auditoria-metrics` presenta drift entre código y deployment: el repositorio legado exige JWT y CORS allowlist, pero la versión productiva activa continúa pública. Se observó tráfico real exitoso sin Authorization en las últimas 24 h, por lo que el cambio debe hacerse mediante ventana de compatibilidad, no por retiro abrupto.
 - Estrategia Auth documentada conforme a la guía vigente de Supabase para migración entre proyectos.
 
@@ -71,3 +71,13 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Proyecto nuevo `crm-reconstruction-staging`: costo reportado **USD 0/mes**; creación rechazada porque un miembro administrador ya alcanzó el límite de **2 proyectos Free activos**.
 - Development Branch `hilo15-migration-rehearsal`: costo reportado **USD 0,01344/h**; creación rechazada porque Supabase Branching requiere plan **Pro o superior**.
 - Decisión: no pausar/eliminar proyectos desconocidos y no subir de plan desde este hilo. Se usa Supabase local efímero en CI como rehearsal estructural; el restore con copia productiva sigue requiriendo un destino remoto o una credencial protegida para dump + restore aislado.
+
+
+## Política Free-only
+
+- El proyecto no subirá a planes pagos para staging, branching, PITR o ambientes temporales.
+- No se creará un segundo Supabase persistente solo para QA.
+- Los rehearsals de schema, restore, importación y validación se ejecutan con Supabase/PostgreSQL local efímero en CI o entorno local aislado.
+- Dumps y datos sensibles nunca se publican como artifacts ni se guardan en Git.
+- Producción conserva el único destino Supabase operativo permitido por esta estrategia.
+- Si una capacidad exige plan Pro o costo recurrente, se reemplaza por una alternativa reproducible gratuita o se documenta como no adoptada.
