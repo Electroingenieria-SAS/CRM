@@ -9,18 +9,18 @@ Este bloque no reconstruye dominios. Certifica que los módulos ya fusionados co
 
 ## Contratos críticos
 
-| Integración | Contrato / evidencia | Gate |
-| --- | --- | --- |
-| Auth → RBAC/RLS | sesión operativa + permisos por organización | authenticated E2E + pgTAP |
-| Customer Intelligence → Orders | `erp_x_customer_priority_signal` aplicada antes de insertar pedidos autenticados | pgTAP 004 + Orders E2E |
-| Orders → Finance | lectura de gate financiero desde detalle de pedido | Orders/Finance E2E |
-| Orders → Workforce | outbox, lifecycle, evidencia y reconciliación | concurrency + integration E2E |
-| Receiving/Picking/Cutting → Inventory | ports de integración, reservas y movimientos | Supply/Inventory tests |
-| Finance → Billing | Finance conserva factura/pago como fuente de verdad | Billing/Logistics E2E |
-| Freight → Logistics | estimación separada de costo real; realimentación del costo observado | Logistics E2E |
-| Logistics → Orders | entrega completa el ciclo operativo mediante port de Orders | Logistics E2E |
-| Analytics → operación | read models de Orders/Workforce/Logistics sin bypass de RLS | Analytics pgTAP + E2E |
-| Admin/Audit/PACO → servicios existentes | PACO orquesta servicios y auditoría conserva acciones críticas | release E2E |
+| Integración                             | Contrato / evidencia                                                             | Gate                          |
+| --------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------- |
+| Auth → RBAC/RLS                         | sesión operativa + permisos por organización                                     | authenticated E2E + pgTAP     |
+| Customer Intelligence → Orders          | `erp_x_customer_priority_signal` aplicada antes de insertar pedidos autenticados | pgTAP 004 + Orders E2E        |
+| Orders → Finance                        | lectura de gate financiero desde detalle de pedido                               | Orders/Finance E2E            |
+| Orders → Workforce                      | outbox, lifecycle, evidencia y reconciliación                                    | concurrency + integration E2E |
+| Receiving/Picking/Cutting → Inventory   | ports de integración, reservas y movimientos                                     | Supply/Inventory tests        |
+| Finance → Billing                       | Finance conserva factura/pago como fuente de verdad                              | Billing/Logistics E2E         |
+| Freight → Logistics                     | estimación separada de costo real; realimentación del costo observado            | Logistics E2E                 |
+| Logistics → Orders                      | entrega completa el ciclo operativo mediante port de Orders                      | Logistics E2E                 |
+| Analytics → operación                   | read models de Orders/Workforce/Logistics sin bypass de RLS                      | Analytics pgTAP + E2E         |
+| Admin/Audit/PACO → servicios existentes | PACO orquesta servicios y auditoría conserva acciones críticas                   | release E2E                   |
 
 ## Estrategia de regresión
 
