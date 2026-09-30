@@ -4,6 +4,7 @@ import type {
   LogisticsQueue,
   LogisticsCandidates,
 } from '@/modules/logistics/application/logistics.schemas';
+import type { StoredOrderEvidence } from '@/shared/evidence/order-evidence-storage';
 import type {
   RecordFreightActualInput,
   RecordFreightActualResponse,
@@ -110,4 +111,13 @@ export interface LogisticsOrdersPort {
 export interface LogisticsInventoryPort {
   onDispatched(orderId: string, key: string): Promise<void>;
   onReturned(orderId: string, reason: string, key: string): Promise<void>;
+}
+
+
+export interface LogisticsWorkforceEvidencePort {
+  attachFinalEvidence(
+    orderId: string,
+    evidence: StoredOrderEvidence,
+    key: string,
+  ): Promise<void>;
 }
