@@ -53,6 +53,46 @@ if (detailError || !detail?.order?.version) {
   throw new Error(`Could not load concurrency order: ${detailError?.message ?? 'missing version'}`);
 }
 
+const [orderItem] = detail.items ?? [];
+if (!orderItem?.id) {
+  throw new Error('Could not resolve the concurrency order item for Reception.');
+}
+
+const receptionKey = `reception-${orderNumber}`;
+const { data: reception, error: receptionError } = await coordinatorA.rpc(
+  'erp_x_order_reception_create',
+  {
+    p_payload: {
+      orderId: created.orderId,
+      lines: [
+        {
+          orderItemId: orderItem.id,
+          materialId: 'a2000000-0000-4000-8000-000000000002',
+          quantity: Number(orderItem.quantity),
+          unit: orderItem.unit,
+          requiresCut: Boolean(orderItem.requires_cut),
+        },
+      ],
+    },
+    p_idempotency_key: `${receptionKey}:create`,
+  },
+);
+
+if (receptionError || !reception?.id) {
+  throw new Error(
+    `Could not prepare order reception contract: ${receptionError?.message ?? 'missing reception id'}`,
+  );
+}
+
+const { error: receptionConfirmError } = await coordinatorA.rpc('erp_x_order_reception_confirm', {
+  p_reception_id: reception.id,
+  p_idempotency_key: `${receptionKey}:confirm`,
+});
+
+if (receptionConfirmError) {
+  throw new Error(`Could not confirm order reception: ${receptionConfirmError.message}`);
+}
+
 const argsA = {
   p_order_id: created.orderId,
   p_expected_version: detail.order.version,
