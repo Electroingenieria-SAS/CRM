@@ -427,10 +427,10 @@ select is(
 );
 
 select lives_ok(
-  $select public.erp_x_create_order(
+  $sql$select public.erp_x_create_order(
     '{"orderNumber":"CI-PRIORITY-INTEGRATION","orderType":"PVC","paymentCondition":"CASH","deliveryRoute":"LOCAL_DISPATCH","clientName":"Cliente Test 5","clientDocument":"NIT-5","clientCity":"Cali","clientAddress":"Calle Integración 1","items":[{"description":"Material integración","quantity":1}]}'::jsonb,
     'ci-priority-integration'
-  )$,
+  )$sql$,
   'orders creation consumes the customer intelligence priority signal'
 );
 
