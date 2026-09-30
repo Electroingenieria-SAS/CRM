@@ -48,7 +48,6 @@ Ninguna fila pasa a “Validado” solo por existir código: requiere pruebas, s
 > contrato actual termina en Receiving/Picking/Cutting y no expone una mutación de despacho por
 > `orderId`, por lo que Logistics no escribe sus tablas ni inventa una adaptación incompatible.
 
-
 ## Certificación transversal — Hilo 13
 
 La integración global se certifica sobre `main` mediante un único entorno Supabase local y fixtures sintéticos compartidos. El gate autenticado ejecuta en conjunto Orders, Customer Intelligence, Freight, Finance, Workforce, Orders↔Workforce, Inventory, Supply, Billing/Logistics, Analytics, Admin/Audit/PACO y accesibilidad.
