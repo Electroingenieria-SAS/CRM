@@ -72,7 +72,10 @@ jobs:
           node -e "JSON.parse(require('fs').readFileSync('/tmp/active.json','utf8') || '[]'); console.log('PASS active-order JSON')"
       - name: Stop local Supabase
         if: always()
-        run: supabase stop --no-backup
+        run: |
+          if command -v supabase >/dev/null 2>&1; then
+            supabase stop --no-backup || true
+          fi
 
   local-source-restore-rehearsal:
     if: github.event_name == 'workflow_dispatch' && inputs.execute_source_restore_rehearsal
@@ -92,6 +95,19 @@ jobs:
         uses: supabase/setup-cli@v1
         with:
           version: 2.118.0
+      - name: Install PostgreSQL 17 client
+        shell: bash
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl --fail --silent --show-error \
+            -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+            https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          . /etc/os-release
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          pg_dump --version
       - name: Start isolated local Supabase
         run: |
           supabase start
