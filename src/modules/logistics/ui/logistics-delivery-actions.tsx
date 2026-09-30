@@ -57,10 +57,10 @@ function DeliveryForm(
         <input value={receivedBy} onChange={(e) => setReceivedBy(e.target.value)} />
       </label>
       <label>
-        Evidencia *
+        Evidencia fotográfica *
         <input
           type="file"
-          accept="image/jpeg,image/png,image/webp,application/pdf"
+          accept="image/jpeg,image/png,image/webp"
           capture="environment"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
