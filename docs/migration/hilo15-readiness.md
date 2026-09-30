@@ -12,7 +12,7 @@ Estado: **NO-GO temporal para cutover**
 - No existe ruleset/protección de `main`.
 - Supabase productivo legado: `hezjxcxxcjlpmyalftam`, estado `ACTIVE_HEALTHY`, Postgres 17, sin branches.
 - Organización Supabase en plan Free: el mecanismo de backup operativo debe ser dump lógico externo; no se declara PITR.
-- Vercel no tiene proyecto separado para el CRM nuevo; existe `crm-suministros` y se mantiene como producto legado.
+- Vercel ya tiene proyecto separado `crm` (`prj_MEFvzc4lfeK6aZAtSnw9ue83gWdS`), conectado a `Electroingenieria-SAS/CRM`; Preview y deployment de producción responden `200` en `/login` con CSP/HSTS/noindex/nosniff/frame protections.
 - No existe destino remoto no productivo aprobado para ejecutar restore de un dump real.
 
 ## Blockers de GO
@@ -20,14 +20,14 @@ Estado: **NO-GO temporal para cutover**
 | ID      | Bloqueante                                     | Estado                | Criterio de cierre                                                                                                                                     |
 | ------- | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | MIG-002 | Restore real no ensayado                       | Abierto               | dump reciente restaurado en destino no productivo y smoke aprobado                                                                                     |
-| MIG-003 | Proyecto Vercel nuevo inexistente              | Abierto               | proyecto separado de `crm-suministros`, Preview configurado y smoke aprobado                                                                           |
+| MIG-003 | Proyecto Vercel / Preview                      | Cerrado               | proyecto `crm` separado, Preview `READY` y smoke público `/login` + headers aprobado                                                                     |
 | MIG-004 | Protección de `main` inexistente               | Abierto               | PR/checks obligatorios y force-push bloqueado                                                                                                          |
-| MIG-005 | Edge Function legacy insegura                  | Condicional / aislada | No migrar `erp-auditoria-metrics`; búsqueda runtime sin consumidores. El legado debe quedar aislado/read-only y su retiro se hace en ventana separada. |
+| MIG-005 | Drift `erp-auditoria-metrics`                  | Abierto / compat.     | producción sigue pública y tiene tráfico real sin Authorization; adaptar consumidor y validar JWT+CORS org-scoped antes del hardening                    |
 | MIG-006 | Ventana/responsable de cutover no documentados | Abierto               | ventana, freeze, responsable y canal de rollback definidos                                                                                             |
 
 ## Decisión técnica actual
 
-**NO-GO.** No se ejecutan DDL, importaciones, DNS, cambios de Auth, deploy productivo ni freeze mientras exista cualquiera de MIG-002 o MIG-003.
+**NO-GO.** El blocker Vercel (MIG-003) quedó cerrado. No se ejecuta cutover de datos/Auth/DNS mientras MIG-002 siga abierto y no estén resueltos/aceptados MIG-004, MIG-005 y MIG-006.
 
 Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Preview no productivo cuando exista el destino.
 
@@ -38,7 +38,7 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - C Backup + restore rehearsal: **bloqueado por destino no productivo**
 - D Migración seca: **bloqueado por C**
 - E Validación/reconciliación: **scripts ejecutables preparados; baseline origen capturado**
-- F Infraestructura: **Vercel/Supabase destino pendientes**
+- F Infraestructura: **Vercel listo; destino Supabase no productivo pendiente**
 - G Cutover: **no autorizado**
 - H Smoke productivo: **no ejecutado**
 - I Handoff a Hilo 16: **no procede todavía**
@@ -48,6 +48,17 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Preflight referencial/inventario del origen: 15/15 PASS.
 - Pedido en vuelo: 1, etapa `LOCAL_DISPATCH`, 4 tareas, 1 factura, 1 reserva consumida, 0 entregas.
 - Workflow manual de dry-run protegido agregado; requiere secretos de origen/destino y nunca publica dumps.
-- El workflow de reconciliación remota aún no se ejecutó porque no existe destino no productivo autorizado.
+- El workflow de reconciliación remota aún no se ejecutó porque no existe destino Supabase no productivo autorizado.
 - `erp-auditoria-metrics` presenta drift entre código y deployment: el repositorio legado exige JWT y CORS allowlist, pero la versión productiva activa continúa pública. Se observó tráfico real exitoso sin Authorization en las últimas 24 h, por lo que el cambio debe hacerse mediante ventana de compatibilidad, no por retiro abrupto.
 - Estrategia Auth documentada conforme a la guía vigente de Supabase para migración entre proyectos.
+
+
+## Evidencia Vercel 2026-09-30
+
+- Proyecto nuevo: `crm` (`prj_MEFvzc4lfeK6aZAtSnw9ue83gWdS`), separado de `crm-suministros`.
+- Preview observado `READY`: `dpl_AeRc32tEQBjV9snYTgpJhYCpeLXB`, branch `release/hilo15-controlled-production-migration`.
+- Deployment marcado production observado `READY`: `dpl_6JcwTpVkuarku2nb2Wueh1MwRNSX`.
+- Preview y alias productivo respondieron HTTP 200 en `/login`.
+- Headers verificados: CSP, HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, Referrer-Policy, Permissions-Policy y noindex.
+- Vercel Runtime Errors: sin clusters reportados en la ventana observada.
+- Esta evidencia valida la superficie web, pero **no sustituye el restore/reconciliación de datos ni prueba por sí sola el cutover Supabase**.
