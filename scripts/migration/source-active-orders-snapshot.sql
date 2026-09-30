@@ -1,6 +1,3 @@
-\pset tuples_only on
-\pset format unaligned
-
 select coalesce(jsonb_pretty(jsonb_agg(row_to_json(x) order by x.order_id)),'[]')
 from (
   select
