@@ -1,6 +1,8 @@
 \pset tuples_only on
 \pset format aligned
 
+drop table if exists migration_compatibility_checks;
+create temporary table migration_compatibility_checks as
 with checks as (
   select 'orders_missing_seller' check_name,count(*)::bigint failures
   from erp_supply.orders where seller_profile_id is null
@@ -90,8 +92,21 @@ with checks as (
     jsonb_build_object('beforeData',before_data,'afterData',after_data)
   )::text ~* '"(password|passwd|token|access_token|refresh_token|service_role|authorization|jwt|secret)"[[:space:]]*:'
 )
+select * from checks;
+
 select check_name,failures,case when failures=0 then 'PASS' else 'FAIL' end status
-from checks order by check_name;
+from migration_compatibility_checks order by check_name;
+
+do $
+declare
+  v_failures bigint;
+begin
+  select coalesce(sum(failures),0) into v_failures
+  from migration_compatibility_checks;
+  if v_failures>0 then
+    raise exception 'Source compatibility failed with % blocking findings',v_failures;
+  end if;
+end $;
 
 select
   count(*) filter(where amount>0) as operational_invoices,
