@@ -10,7 +10,10 @@ function mapError(error: { code?: string; message?: string } | null) {
   if (error?.code === '22023' || error?.code === '23514') {
     return new AppError('BUSINESS_RULE', error.message ?? 'La evidencia Workforce no es válida.');
   }
-  return new AppError('DATABASE', error?.message ?? 'No fue posible sincronizar la evidencia Workforce.');
+  return new AppError(
+    'DATABASE',
+    error?.message ?? 'No fue posible sincronizar la evidencia Workforce.',
+  );
 }
 
 export class SupabaseLogisticsWorkforceEvidenceAdapter
