@@ -26,10 +26,33 @@ echo "Transforming legacy source into clean target schema..."
 psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1   -v legacy_db_name="$FIXTURE_DB"   -f "$ROOT/scripts/migration/transform-from-legacy.sql"
 
 echo "Validating transformed target..."
-psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1   -f "$ROOT/scripts/migration/validate-critical.sql"
+psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/validate-critical.sql"
 
-SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL"   bash "$ROOT/scripts/migration/reconcile.sh"
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/reconcile.sh"
 
-SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL"   bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
 
-echo "PASS synthetic legacy -> target transformation rehearsal."
+psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/migrated-uat.sql"
+
+echo "Re-running transformation to validate idempotent recovery..."
+psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
+  -v legacy_db_name="$FIXTURE_DB" \
+  -f "$ROOT/scripts/migration/transform-from-legacy.sql"
+
+psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/validate-critical.sql"
+
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/reconcile.sh"
+
+SOURCE_DB_URL="$FIXTURE_DB_URL" TARGET_DB_URL="$TARGET_DB_URL" \
+  bash "$ROOT/scripts/migration/reconcile-active-orders.sh"
+
+psql "$TARGET_DB_URL" -v ON_ERROR_STOP=1 \
+  -f "$ROOT/scripts/migration/migrated-uat.sql"
+
+echo "PASS synthetic legacy -> target transformation + rerun + migrated UAT."
