@@ -126,7 +126,10 @@ jobs:
         run: bash scripts/migration/restore-rehearsal.sh
       - name: Stop local Supabase
         if: always()
-        run: supabase stop --no-backup
+        run: |
+          if command -v supabase >/dev/null 2>&1; then
+            supabase stop --no-backup || true
+          fi
 
   remote-reconciliation:
     if: github.event_name == 'workflow_dispatch' && inputs.execute_remote_reconciliation
