@@ -113,11 +113,6 @@ export interface LogisticsInventoryPort {
   onReturned(orderId: string, reason: string, key: string): Promise<void>;
 }
 
-
 export interface LogisticsWorkforceEvidencePort {
-  attachFinalEvidence(
-    orderId: string,
-    evidence: StoredOrderEvidence,
-    key: string,
-  ): Promise<void>;
+  attachFinalEvidence(orderId: string, evidence: StoredOrderEvidence, key: string): Promise<void>;
 }
