@@ -7,6 +7,31 @@ select jsonb_pretty(jsonb_build_object(
   'invoices',(select count(*) from erp_supply.invoices),
   'materials',(select count(*) from erp_supply.material_master),
   'shipments',(select count(*) from erp_supply.logistics_shipments),
+  'archived_invoice_refs',coalesce((
+    select sum(jsonb_array_length(coalesce(metadata->'legacyInvoiceReferences','[]'::jsonb)))
+    from erp_supply.orders
+  ),0),
+  'inventory_movements',(
+    select count(*) from erp_supply.inventory_movements
+    where metadata->>'migrationSource'='CRM-SUMINISTROS'
+      and coalesce((metadata->>'historicalOnly')::boolean,false)
+  ),
+  'workforce_activities',(
+    select count(*) from erp_supply.workforce_activities
+    where metadata->>'migrationSource'='CRM-SUMINISTROS'
+  ),
+  'workforce_execution_events',(
+    select count(*) from erp_supply.workforce_activity_events
+    where idempotency_key like 'legacy-execution:%'
+  ),
+  'workforce_evidence',(
+    select count(*) from erp_supply.workforce_activity_evidence
+    where metadata->>'migrationSource'='CRM-SUMINISTROS'
+  ),
+  'legacy_audit_events',(
+    select count(*) from erp_supply.audit_events
+    where request_id like 'legacy-audit:%'
+  ),
   'orders_by_status',coalesce((
     select jsonb_object_agg(status,total)
     from (select status,count(*)::bigint total from erp_supply.orders group by status) x
