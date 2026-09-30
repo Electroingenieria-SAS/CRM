@@ -3,6 +3,7 @@ import type {
   LogisticsFreightPort,
   LogisticsInventoryPort,
   LogisticsOrdersPort,
+  LogisticsWorkforceEvidencePort,
   LogisticsQueueQuery,
   LogisticsReleaseInput,
   LogisticsRepository,
@@ -21,6 +22,7 @@ export class LogisticsService {
     private readonly freight: LogisticsFreightPort,
     private readonly evidence: LogisticsEvidencePort,
     private readonly orders: LogisticsOrdersPort,
+    private readonly workforceEvidence: LogisticsWorkforceEvidencePort,
     private readonly storage: OrderEvidenceStoragePort,
     private readonly inventory?: LogisticsInventoryPort,
   ) {}
@@ -68,21 +70,38 @@ export class LogisticsService {
     key: string,
   ) {
     const normalizedType = evidenceType.trim().toUpperCase();
+    const idempotencyKey = requiredKey(key);
+    const completesWorkforce = normalizedType === 'DELIVERY_PHOTO';
+
+    if (completesWorkforce) {
+      await this.orders.ensureOperationalStarted(orderId, `${idempotencyKey}:orders`);
+    }
+
     const stored = await this.storage.upload({
       organizationId,
       orderId,
       evidenceType: normalizedType,
       file,
     });
-    return this.addEvidence(
+    const evidenceId = await this.addEvidence(
       orderId,
       normalizedType,
       stored.storageProvider,
       stored.storageReference,
       stored.fileName,
       stored.mimeType,
-      key,
+      idempotencyKey,
     );
+
+    if (completesWorkforce) {
+      await this.workforceEvidence.attachFinalEvidence(
+        orderId,
+        stored,
+        `${idempotencyKey}:workforce`,
+      );
+    }
+
+    return evidenceId;
   }
 
   async addEvidence(
