@@ -1,0 +1,10 @@
+# Default release/code ownership
+* @JEPTAC
+
+# Sensitive release surfaces
+/.github/workflows/ @JEPTAC
+/supabase/ @JEPTAC
+/scripts/migration/ @JEPTAC
+/docs/migration/ @JEPTAC
+/docs/release/ @JEPTAC
+/docs/runbooks/ @JEPTAC
