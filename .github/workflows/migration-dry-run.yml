@@ -27,6 +27,9 @@ jobs:
           bash -n scripts/migration/preflight.sh
           bash -n scripts/migration/reconcile.sh
           bash -n scripts/migration/reconcile-active-orders.sh
+          test -f scripts/migration/source-snapshot.sql
+          test -f scripts/migration/source-active-orders-snapshot.sql
+          test -f scripts/migration/source-validate.sql
 
   local-schema-rehearsal:
     runs-on: ubuntu-latest
