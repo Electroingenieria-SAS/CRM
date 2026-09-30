@@ -72,9 +72,9 @@ select jsonb_pretty(jsonb_build_object(
   'legacy_audit_events',(
     select count(*) from erp_supply.system_audit a
     where a.created_at >= (select max(created_at)-interval '30 days' from erp_supply.system_audit)
-       or upper(a.action) like 'AUTH\_%' escape '\\'
-       or upper(a.action) like 'ADMIN\_%' escape '\\'
-       or upper(a.action) like 'APPROVAL\_%' escape '\\'
+       or left(upper(a.action),5)='AUTH_'
+       or left(upper(a.action),6)='ADMIN_'
+       or left(upper(a.action),9)='APPROVAL_'
   ),
   'orders_by_status',coalesce((
     select jsonb_object_agg(status,total)
