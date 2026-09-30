@@ -26,6 +26,7 @@ Estado: Hilo 16 puede preparar observabilidad y smoke, pero **no debe declarar e
 - cierre de estabilización.
 
 Hilo 16 **no** debe:
+
 - migrar o reescribir datos;
 - crear un segundo pipeline de cutover;
 - cambiar reglas de mapping;
@@ -35,6 +36,7 @@ Hilo 16 **no** debe:
 ## Inputs que Hilo 15 entrega
 
 Antes del GO:
+
 - source preflight 15/15 PASS;
 - snapshot agregado del origen;
 - 1 pedido en vuelo identificado para reconciliación;
@@ -43,6 +45,7 @@ Antes del GO:
 - runbook de cutover/rollback.
 
 Después del cutover:
+
 - SHA exacto desplegado;
 - URL/deployment ID;
 - project ref Supabase destino;
@@ -54,6 +57,7 @@ Después del cutover:
 ## Señales iniciales para Hilo 16
 
 Durante estabilización medir, sin exponer PII:
+
 - auth/login failures;
 - 4xx/5xx por módulo;
 - RLS/authorization denials inesperados;
@@ -68,6 +72,7 @@ Durante estabilización medir, sin exponer PII:
 ## Baseline de migración para comparar
 
 El snapshot 2026-09-30 antes de freeze tiene:
+
 - 1 organización;
 - 33 perfiles;
 - 21 profile_roles;
@@ -85,6 +90,7 @@ El snapshot 2026-09-30 antes de freeze tiene:
 - 9.488 audit events.
 
 Inventario agregado baseline:
+
 - available 1.822.660,43;
 - reserved 64.928,84;
 - blocked 0.
@@ -94,6 +100,7 @@ Estos números se vuelven a capturar en freeze; Hilo 16 debe usar el baseline fi
 ## Pedido en vuelo
 
 En el snapshot actual existe 1 pedido en `LOCAL_DISPATCH`:
+
 - 4 tareas;
 - 1 factura;
 - 1 reserva consumida;
@@ -104,6 +111,7 @@ Hilo 16 debe comprobar que después del cutover no aparezca una transición arti
 ## Regla de coordinación
 
 Si Hilo 16 detecta:
+
 - **diferencia de datos/reconciliación** → Hilo 15;
 - **regresión de código/UI/API** → Hilo 16;
 - **duda de ownership** → bloquear corrección hasta reproducir y clasificar.
