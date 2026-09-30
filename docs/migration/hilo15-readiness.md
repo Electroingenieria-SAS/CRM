@@ -64,3 +64,10 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Esta evidencia valida la superficie web, pero **no sustituye el restore/reconciliación de datos ni prueba por sí sola el cutover Supabase**.
 
 - GitHub branch protection endpoint: 403 `Resource not accessible by integration`; no se reintenta desde este hilo.
+
+
+## Intentos de staging Supabase
+
+- Proyecto nuevo `crm-reconstruction-staging`: costo reportado **USD 0/mes**; creación rechazada porque un miembro administrador ya alcanzó el límite de **2 proyectos Free activos**.
+- Development Branch `hilo15-migration-rehearsal`: costo reportado **USD 0,01344/h**; creación rechazada porque Supabase Branching requiere plan **Pro o superior**.
+- Decisión: no pausar/eliminar proyectos desconocidos y no subir de plan desde este hilo. Se usa Supabase local efímero en CI como rehearsal estructural; el restore con copia productiva sigue requiriendo un destino remoto o una credencial protegida para dump + restore aislado.
