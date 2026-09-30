@@ -6,6 +6,7 @@ on:
       - "scripts/migration/legacy-fixture.sql"
       - "scripts/migration/transform-from-legacy.sql"
       - "scripts/migration/transform-rehearsal.sh"
+      - "scripts/migration/migrated-uat.sql"
       - ".github/workflows/migration-transform-rehearsal.yml"
   workflow_dispatch:
 
