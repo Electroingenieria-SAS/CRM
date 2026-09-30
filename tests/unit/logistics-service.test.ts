@@ -6,6 +6,7 @@ import type {
   LogisticsInventoryPort,
   LogisticsOrdersPort,
   LogisticsRepository,
+  LogisticsWorkforceEvidencePort,
 } from '@/modules/logistics/ports/logistics-ports';
 import type { OrderEvidenceStoragePort } from '@/shared/evidence/order-evidence-storage';
 
@@ -64,12 +65,25 @@ function fixture() {
       contractVersion: '1.0.0',
     }),
   };
-  const evidence: LogisticsEvidencePort = { add: vi.fn() };
+  const evidence: LogisticsEvidencePort = {
+    add: vi.fn().mockResolvedValue('66666666-6666-4666-8666-666666666666'),
+  };
   const orders: LogisticsOrdersPort = {
     ensureOperationalStarted: vi.fn().mockResolvedValue(undefined),
     completeDelivery: vi.fn().mockResolvedValue(undefined),
   };
-  const storage: OrderEvidenceStoragePort = { upload: vi.fn() };
+  const workforceEvidence: LogisticsWorkforceEvidencePort = {
+    attachFinalEvidence: vi.fn().mockResolvedValue(undefined),
+  };
+  const storage: OrderEvidenceStoragePort = {
+    upload: vi.fn().mockResolvedValue({
+      storageProvider: 'SUPABASE_STORAGE',
+      storageReference: 'org/order/delivery/photo.jpg',
+      fileName: 'delivery.jpg',
+      mimeType: 'image/jpeg',
+      sizeBytes: 1024,
+    }),
+  };
   const inventory: LogisticsInventoryPort = {
     onDispatched: vi.fn().mockResolvedValue(undefined),
     onReturned: vi.fn().mockResolvedValue(undefined),
@@ -80,13 +94,48 @@ function fixture() {
     freight,
     evidence,
     orders,
+    workforceEvidence,
     storage,
     inventory,
-    service: new LogisticsService(repository, freight, evidence, orders, storage, inventory),
+    service: new LogisticsService(
+      repository,
+      freight,
+      evidence,
+      orders,
+      workforceEvidence,
+      storage,
+      inventory,
+    ),
   };
 }
 
 describe('logistics service', () => {
+  it('reuses the delivery photo reference as Workforce final evidence', async () => {
+    const test = fixture();
+
+    const evidenceId = await test.service.uploadEvidence(
+      '77777777-7777-4777-8777-777777777777',
+      orderId,
+      'DELIVERY_PHOTO',
+      {} as File,
+      'delivery-evidence-1',
+    );
+
+    expect(evidenceId).toBe('66666666-6666-4666-8666-666666666666');
+    expect(test.orders.ensureOperationalStarted).toHaveBeenCalledWith(
+      orderId,
+      'delivery-evidence-1:orders',
+    );
+    expect(test.workforceEvidence.attachFinalEvidence).toHaveBeenCalledWith(
+      orderId,
+      expect.objectContaining({
+        storageReference: 'org/order/delivery/photo.jpg',
+        mimeType: 'image/jpeg',
+      }),
+      'delivery-evidence-1:workforce',
+    );
+  });
+
   it('starts Orders/Workforce before dispatch and records actual freight separately', async () => {
     const test = fixture();
 
