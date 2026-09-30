@@ -41,7 +41,7 @@ La estrategia Free-only preferida para producción es **rotación de cupo durant
 13. promover el deployment validado;
 14. entregar baseline a Hilo 16.
 
-El proyecto legacy debe permanecer pausado, no eliminado, durante la coexistencia inicial para conservar una vía de rollback.
+El proyecto legacy debe permanecer pausado, no eliminado, durante la coexistencia inicial para conservar una vía de rollback. La integración disponible expone operaciones explícitas de pausa y restauración del mismo proyecto; la restauración se usa únicamente si el gate de rollback lo exige.
 
 ## Gate previo al freeze
 
@@ -119,7 +119,7 @@ Autoriza abrir operación en el CRM nuevo. Exige, ya sobre el target creado dura
 - no promover a producción;
 - restaurar variables Vercel anteriores si fueron cambiadas;
 - pausar/eliminar el target nuevo según corresponda;
-- reanudar el legacy;
+- restaurar/reanudar el mismo proyecto legacy pausado;
 - validar login + operación legacy antes de reabrir.
 
 ### Después de abrir escrituras en el CRM nuevo
