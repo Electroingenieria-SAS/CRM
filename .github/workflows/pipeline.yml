@@ -210,6 +210,10 @@ jobs:
           tests/e2e/analytics.spec.ts
           tests/e2e/admin-audit-paco.spec.ts
           tests/e2e/release-accessibility.spec.ts
+      - name: Enterprise UAT representative journeys
+        run: >
+          npx playwright test --workers=1 --project=desktop-chromium
+          tests/e2e/uat-enterprise-certification.spec.ts
       - name: Targeted mobile integration smoke
         run: >
           npx playwright test --workers=1
