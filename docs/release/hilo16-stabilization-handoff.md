@@ -107,3 +107,10 @@ Si Hilo 16 detecta:
 - **duda de ownership** → bloquear corrección hasta reproducir y clasificar.
 
 No hacer dual-write ni reparar producción manualmente desde ambos hilos.
+
+
+## Fuente viva antes del freeze
+
+Los valores anteriores son observaciones pre-freeze, no baseline final. Durante Hilo 15 se observaron dos snapshots válidos con una diferencia de 8 unidades en el agregado de inventario. La comprobación mostró 2.963 lotes activos y 0 inactivos, por lo que la diferencia corresponde a cambio operativo del origen entre lecturas, no a un filtro de migración.
+
+Consecuencia: el baseline definitivo se captura **después del freeze** y es el único que Hilo 16 debe usar para detectar drift posproducción.
