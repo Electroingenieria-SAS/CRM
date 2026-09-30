@@ -2,27 +2,6 @@
 
 begin;
 
-create extension if not exists postgres_fdw;
-
-drop schema if exists migration_legacy cascade;
-drop server if exists hilo15_legacy cascade;
-create schema migration_legacy;
-
-create server hilo15_legacy
-foreign data wrapper postgres_fdw
-options (host '127.0.0.1', port '5432', dbname :'legacy_db_name');
-
-create user mapping for current_user
-server hilo15_legacy
-options (user 'postgres', password_required 'false');
-
-import foreign schema erp_supply
-limit to (
-  organizations,profiles,profile_roles,orders,order_items,order_tasks,invoices,
-  material_master,material_variants,inventory_items,inventory_lots,material_reservations,deliveries
-)
-from server hilo15_legacy into migration_legacy;
-
 do $$
 declare
   v_source_org migration_legacy.organizations%rowtype;
@@ -401,6 +380,5 @@ begin
 end $$;
 
 drop schema migration_legacy cascade;
-drop server hilo15_legacy cascade;
 
 commit;
