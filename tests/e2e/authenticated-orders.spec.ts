@@ -96,7 +96,7 @@ test('sales user restores session, creates, filters and opens an order', async (
 
   await page.getByRole('button', { name: 'Crear pedido' }).click();
   await page.getByLabel('Número de pedido *').fill(orderNumber);
-  await page.getByLabel('Cliente *').fill('Cliente Sintético E2E');
+  await page.getByLabel('Cliente *').fill('Cliente Sintético Premium');\n  await page.getByLabel('NIT o documento').fill('900002');
   await page.getByLabel('Ciudad *').fill('Cali');
   await page.getByLabel('Dirección de entrega *').fill('Calle QA 10 # 20-30');
   await page.getByLabel('Descripción *').fill('Cable sintético E2E');
@@ -118,7 +118,7 @@ test('sales user restores session, creates, filters and opens an order', async (
 
   const row = page.getByRole('button', { name: new RegExp(orderNumber) });
   await expect(row).toBeVisible();
-  await expect(page.getByText('Prioridad automática')).toBeVisible();
+  await expect(page.getByText('HIGH', { exact: true })).toBeVisible();
   await row.click();
 
   await expect(page.getByRole('heading', { level: 2, name: orderNumber })).toBeVisible();
