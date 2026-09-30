@@ -32,6 +32,15 @@ jobs:
       - name: Install reproducibly
         run: npm ci
 
+      - name: Capture canonical Prettier diff
+        run: |
+          FILES="src/app/supply/supply-workspace.tsx src/app/supply/use-supply-page.ts src/composition/supply-browser-application.ts src/infrastructure/supply/supabase-supply-repository.ts src/modules/supply/application/supply.schemas.ts tests/unit/supply-service.test.ts"
+          npx prettier --write $FILES
+          echo "----- PRETTIER DIFF START -----"
+          git diff --no-color -- $FILES
+          echo "----- PRETTIER DIFF END -----"
+          git checkout -- $FILES
+
       - name: Validate application
         run: npm run validate
 
