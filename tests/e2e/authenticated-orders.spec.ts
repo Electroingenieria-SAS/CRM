@@ -96,7 +96,8 @@ test('sales user restores session, creates, filters and opens an order', async (
 
   await page.getByRole('button', { name: 'Crear pedido' }).click();
   await page.getByLabel('Número de pedido *').fill(orderNumber);
-  await page.getByLabel('Cliente *').fill('Cliente Sintético Premium');\n  await page.getByLabel('NIT o documento').fill('900002');
+  await page.getByLabel('Cliente *').fill('Cliente Sintético Premium');
+  await page.getByLabel('NIT o documento').fill('900002');
   await page.getByLabel('Ciudad *').fill('Cali');
   await page.getByLabel('Dirección de entrega *').fill('Calle QA 10 # 20-30');
   await page.getByLabel('Descripción *').fill('Cable sintético E2E');
