@@ -21,7 +21,15 @@ export function createSupplyBrowserApplication(): SupplyBrowserApplication | nul
   const inventory = new InventoryService(new SupabaseInventoryRepository(client));
 
   return {
-    auth: new AuthService(new SupabaseAuthGateway(client), new SupabaseSessionRepository(client)),
-    supply: new SupplyService(new SupabaseSupplyRepository(client), inventory, inventory, inventory),
+    auth: new AuthService(
+      new SupabaseAuthGateway(client),
+      new SupabaseSessionRepository(client),
+    ),
+    supply: new SupplyService(
+      new SupabaseSupplyRepository(client),
+      inventory,
+      inventory,
+      inventory,
+    ),
   };
 }

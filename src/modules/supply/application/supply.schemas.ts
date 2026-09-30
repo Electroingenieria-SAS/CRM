@@ -38,35 +38,43 @@ export const orderReceptionInputSchema = z.object({
   orderTaskId: z.string().uuid().optional(),
   pickingProfileId: z.string().uuid().optional(),
   cuttingProfileId: z.string().uuid().optional(),
-  lines: z.array(
-    supplyMaterialLineSchema.extend({
-      locationId: z.string().uuid().optional(),
-      requiresCut: z.boolean().default(false),
-      cutLengthEach: z.number().positive().optional(),
-      metadata: z.record(z.string(), z.unknown()).default({}),
-    }),
-  ).min(1),
+  lines: z
+    .array(
+      supplyMaterialLineSchema.extend({
+        locationId: z.string().uuid().optional(),
+        requiresCut: z.boolean().default(false),
+        cutLengthEach: z.number().positive().optional(),
+        metadata: z.record(z.string(), z.unknown()).default({}),
+      }),
+    )
+    .min(1),
   metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const purchaseRequestInputSchema = z.object({
   orderId: z.string().uuid(),
-  lines: z.array(
-    supplyMaterialLineSchema.extend({
-      note: z.string().trim().max(500).optional(),
-    }),
-  ).min(1),
+  lines: z
+    .array(
+      supplyMaterialLineSchema.extend({
+        note: z.string().trim().max(500).optional(),
+      }),
+    )
+    .min(1),
 });
 
 export const purchaseOrderInputSchema = z.object({
   requestId: z.string().uuid(),
   supplierId: z.string().uuid(),
   externalReference: z.string().trim().max(120).optional(),
-  lines: z.array(z.object({
-    requestLineId: z.string().uuid(),
-    quantity: z.number().positive(),
-    unitPrice: z.number().nonnegative().optional(),
-  })).min(1),
+  lines: z
+    .array(
+      z.object({
+        requestLineId: z.string().uuid(),
+        quantity: z.number().positive(),
+        unitPrice: z.number().nonnegative().optional(),
+      }),
+    )
+    .min(1),
 });
 
 export const receiptInputSchema = z.object({
@@ -74,42 +82,57 @@ export const receiptInputSchema = z.object({
   orderId: z.string().uuid().optional(),
   receiptType: z.enum(['PURCHASE', 'RETURN', 'STANDALONE']).default('PURCHASE'),
   documentReference: z.string().trim().max(160).optional(),
-  lines: z.array(z.object({
-    purchaseOrderLineId: z.string().uuid().optional(),
-    materialId: z.string().uuid(),
-    variantId: z.string().uuid().optional(),
-    locationId: z.string().uuid(),
-    expectedQuantity: z.number().nonnegative().optional(),
-    acceptedQuantity: z.number().nonnegative(),
-    rejectedQuantity: z.number().nonnegative().default(0),
-    unit: z.string().trim().min(1).max(20),
-    incidentCode: z.enum([
-      'SHORTAGE','SURPLUS','DAMAGED','WRONG_REFERENCE','WRONG_QUANTITY','OTHER',
-    ]).optional(),
-    note: z.string().trim().max(1000).optional(),
-  }).refine((line) => line.acceptedQuantity > 0 || line.rejectedQuantity > 0, {
-    message: 'La línea debe aceptar o rechazar alguna cantidad.',
-  })).min(1),
+  lines: z
+    .array(
+      z
+        .object({
+          purchaseOrderLineId: z.string().uuid().optional(),
+          materialId: z.string().uuid(),
+          variantId: z.string().uuid().optional(),
+          locationId: z.string().uuid(),
+          expectedQuantity: z.number().nonnegative().optional(),
+          acceptedQuantity: z.number().nonnegative(),
+          rejectedQuantity: z.number().nonnegative().default(0),
+          unit: z.string().trim().min(1).max(20),
+          incidentCode: z
+            .enum([
+              'SHORTAGE',
+              'SURPLUS',
+              'DAMAGED',
+              'WRONG_REFERENCE',
+              'WRONG_QUANTITY',
+              'OTHER',
+            ])
+            .optional(),
+          note: z.string().trim().max(1000).optional(),
+        })
+        .refine((line) => line.acceptedQuantity > 0 || line.rejectedQuantity > 0, {
+          message: 'La línea debe aceptar o rechazar alguna cantidad.',
+        }),
+    )
+    .min(1),
 });
 
 export const pickingJobInputSchema = z.object({
   orderId: z.string().uuid(),
   orderTaskId: z.string().uuid().optional(),
-  lines: z.array(
-    supplyMaterialLineSchema.extend({ locationId: z.string().uuid().optional() }),
-  ).min(1),
+  lines: z
+    .array(supplyMaterialLineSchema.extend({ locationId: z.string().uuid().optional() }))
+    .min(1),
 });
 
 export const cuttingJobInputSchema = z.object({
   orderId: z.string().uuid(),
   orderTaskId: z.string().uuid().optional(),
-  lines: z.array(
-    supplyMaterialLineSchema.omit({ quantity: true }).extend({
-      reservationId: z.string().uuid(),
-      plannedQuantity: z.number().positive(),
-      cutLengthEach: z.number().positive().optional(),
-    }),
-  ).min(1),
+  lines: z
+    .array(
+      supplyMaterialLineSchema.omit({ quantity: true }).extend({
+        reservationId: z.string().uuid(),
+        plannedQuantity: z.number().positive(),
+        cutLengthEach: z.number().positive().optional(),
+      }),
+    )
+    .min(1),
 });
 
 export const supplyMutationSchema = z.object({

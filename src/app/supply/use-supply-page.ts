@@ -32,7 +32,8 @@ async function bootstrap(application: SupplyBrowserApplication) {
   if (!context) return null;
   const areas = allowedAreas(context);
   const [area] = areas;
-  if (!area) throw new Error('No tienes permisos para consultar la operación de materiales.');
+  if (!area)
+    throw new Error('No tienes permisos para consultar la operación de materiales.');
   return { context, areas, area, queue: await application.supply.queue(area) };
 }
 
@@ -65,7 +66,10 @@ export function useSupplyPage() {
         setQueue(data.queue);
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : 'No fue posible abrir el módulo.');
+        if (active)
+          setMessage(
+            error instanceof Error ? error.message : 'No fue posible abrir el módulo.',
+          );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -118,7 +122,9 @@ export function useSupplyPage() {
     status,
     search,
     loading: application ? loading : false,
-    message: application ? message : 'Este entorno no tiene un backend de staging configurado.',
+    message: application
+      ? message
+      : 'Este entorno no tiene un backend de staging configurado.',
     setArea,
     setStatus,
     setSearch,

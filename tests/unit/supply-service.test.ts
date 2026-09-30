@@ -132,11 +132,7 @@ describe('SupplyService', () => {
   it('requires evidence before closing Corte', () => {
     const { value } = service();
     expect(() =>
-      value.completeCutting(
-        '88888888-8888-4888-8888-888888888888',
-        '',
-        'cut-close',
-      ),
+      value.completeCutting('88888888-8888-4888-8888-888888888888', '', 'cut-close'),
     ).toThrow('Corte requiere evidencia fotográfica.');
   });
 });
