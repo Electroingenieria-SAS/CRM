@@ -27,6 +27,7 @@ jobs:
           bash -n scripts/migration/preflight.sh
           bash -n scripts/migration/reconcile.sh
           bash -n scripts/migration/reconcile-active-orders.sh
+          bash -n scripts/migration/restore-rehearsal.sh
           test -f scripts/migration/source-snapshot.sql
           test -f scripts/migration/source-active-orders-snapshot.sql
           test -f scripts/migration/source-validate.sql
@@ -64,6 +65,43 @@ jobs:
         run: |
           psql "$DB_URL" -qAt -v ON_ERROR_STOP=1 -f scripts/migration/active-orders-snapshot.sql > /tmp/active.json
           node -e "JSON.parse(require('fs').readFileSync('/tmp/active.json','utf8') || '[]'); console.log('PASS active-order JSON')"
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
+
+  local-source-restore-rehearsal:
+    runs-on: ubuntu-latest
+    needs: validate-scripts
+    env:
+      SOURCE_DB_URL: ${{ secrets.MIGRATION_SOURCE_DB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require protected source connection
+        run: |
+          test -n "$SOURCE_DB_URL" || {
+            echo "::error::MIGRATION_SOURCE_DB_URL is required for the real restore rehearsal."
+            exit 2
+          }
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Start isolated local Supabase
+        run: |
+          supabase start
+          supabase db reset
+      - name: Resolve local admin DB URL
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          test -n "${DB_URL:-}" || { echo "DB_URL missing"; exit 2; }
+          echo "::add-mask::$DB_URL"
+          echo "LOCAL_ADMIN_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+      - name: Real backup and restore rehearsal
+        run: bash scripts/migration/restore-rehearsal.sh
       - name: Stop local Supabase
         if: always()
         run: supabase stop --no-backup
