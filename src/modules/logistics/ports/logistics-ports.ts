@@ -107,6 +107,20 @@ export interface LogisticsOrdersPort {
   completeDelivery(orderId: string, key: string): Promise<void>;
 }
 
+export interface LogisticsWorkforceEvidencePort {
+  attachFinalEvidence(
+    orderId: string,
+    input: {
+      storageProvider: string;
+      storageReference: string;
+      fileName?: string;
+      mimeType?: string;
+      sizeBytes?: number;
+    },
+    key: string,
+  ): Promise<void>;
+}
+
 export interface LogisticsInventoryPort {
   onDispatched(orderId: string, key: string): Promise<void>;
   onReturned(orderId: string, reason: string, key: string): Promise<void>;
