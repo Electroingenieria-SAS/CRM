@@ -14,6 +14,7 @@ on:
       - 'scripts/migration/source-snapshot.sql'
       - 'scripts/migration/snapshot.sql'
       - 'scripts/migration/reconcile.sh'
+      - 'scripts/migration/validate-real-transform.sh'
       - '.github/workflows/migration-transform-rehearsal.yml'
   workflow_dispatch:
 
@@ -29,6 +30,7 @@ jobs:
         run: |
           bash -n scripts/migration/transform-rehearsal.sh
           bash -n scripts/migration/stage-legacy.sh
+          bash -n scripts/migration/validate-real-transform.sh
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
