@@ -1,6 +1,3 @@
-\pset tuples_only on
-\pset format unaligned
-
 select jsonb_pretty(jsonb_build_object(
   'organizations',(select count(*) from erp_supply.organizations),
   'profiles',(select count(*) from erp_supply.profiles),
