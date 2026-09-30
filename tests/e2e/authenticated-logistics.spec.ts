@@ -115,7 +115,7 @@ async function operateShipment(page: Page) {
     await expect(deliver).toBeVisible();
     await page.getByLabel('Receptor').fill('Cliente QA');
     await page
-      .getByLabel('Evidencia *')
+      .getByLabel('Evidencia fotográfica *')
       .first()
       .setInputFiles({
         name: 'delivery.jpg',
