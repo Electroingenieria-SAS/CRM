@@ -1,6 +1,3 @@
-\pset tuples_only on
-\pset format unaligned
-
 with legacy_lots as (
   select
     i.organization_id,
