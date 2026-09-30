@@ -106,7 +106,7 @@ begin
   if v_failures>0 then
     raise exception 'Source compatibility failed with % blocking findings',v_failures;
   end if;
-end $;
+end $$;
 
 select
   count(*) filter(where amount>0) as operational_invoices,
