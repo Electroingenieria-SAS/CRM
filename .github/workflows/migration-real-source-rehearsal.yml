@@ -1,0 +1,83 @@
+name: Real source migration rehearsal
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/migration/restore-rehearsal.sh'
+      - 'scripts/migration/validate-real-transform.sh'
+      - 'scripts/migration/real-source-transform-rehearsal.sh'
+      - '.github/workflows/migration-real-source-rehearsal.yml'
+  workflow_dispatch:
+    inputs:
+      execute_real_source_rehearsal:
+        description: Run backup, restore, transform and reconciliation against the protected legacy source
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate migration scripts
+        run: |
+          bash -n scripts/migration/restore-rehearsal.sh
+          bash -n scripts/migration/validate-real-transform.sh
+          bash -n scripts/migration/real-source-transform-rehearsal.sh
+
+  real-source-rehearsal:
+    if: github.event_name == 'workflow_dispatch' && inputs.execute_real_source_rehearsal
+    needs: validate-scripts
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_DB_URL: ${{ secrets.MIGRATION_SOURCE_DB_URL }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Require protected source connection
+        shell: bash
+        run: |
+          test -n "$SOURCE_DB_URL" || {
+            echo "::error::MIGRATION_SOURCE_DB_URL is required."
+            exit 2
+          }
+          echo "::add-mask::$SOURCE_DB_URL"
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Install PostgreSQL 17 client
+        shell: bash
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl --fail --silent --show-error             -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc             https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          . /etc/os-release
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main"             | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+      - name: Start clean isolated target
+        run: |
+          supabase start
+          supabase db reset
+      - name: Resolve local target connection
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          test -n "${DB_URL:-}" || { echo "DB_URL missing"; exit 2; }
+          echo "::add-mask::$DB_URL"
+          echo "LOCAL_ADMIN_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+          echo "TARGET_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+      - name: Complete real source rehearsal
+        run: bash scripts/migration/real-source-transform-rehearsal.sh
+      - name: Stop local target
+        if: always()
+        run: |
+          if command -v supabase >/dev/null 2>&1; then
+            supabase stop --no-backup || true
+          fi
