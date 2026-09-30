@@ -47,9 +47,66 @@ function navigation(context: SessionContext): AppShellNavigationItem[] {
   return items;
 }
 
-export function SupplyWorkspace(props: Props) {
-  const pagination = props.queue.pagination;
+function SupplyQueueSection({ area, queue }: Pick<Props, 'area' | 'queue'>) {
+  return (
+    <section aria-labelledby="supply-queue-title">
+      <div className={styles.sectionHeader}>
+        <div>
+          <h2 id="supply-queue-title">{labels[area]}</h2>
+          <p>{queue.pagination.totalItems} registros en la cola.</p>
+        </div>
+        <Link href="/orders">Abrir pedidos</Link>
+      </div>
+      {queue.items.length ? (
+        <div className={styles.grid}>
+          {queue.items.map((item) => (
+            <article className={styles.card} key={item.id}>
+              <div className={styles.cardTop}>
+                <strong>{item.orderNumber ?? item.reference ?? 'Operación independiente'}</strong>
+                <span>{item.status}</span>
+              </div>
+              {item.clientName ? <p>{item.clientName}</p> : null}
+              {item.reference ? <small>Referencia: {item.reference}</small> : null}
+              {item.assignedTo ? <small>Responsable: {item.assignedTo}</small> : null}
+              <small>Actualizado: {new Date(item.updatedAt).toLocaleString('es-CO')}</small>
+              {item.orderId ? <Link href={`/orders?order=${item.orderId}`}>Ver pedido</Link> : null}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.empty}>
+          <h3>Sin pendientes</h3>
+          <p>No hay registros que coincidan con los filtros actuales.</p>
+        </div>
+      )}
+    </section>
+  );
+}
 
+function SupplyPagination({ queue, loading, goPage }: Pick<Props, 'queue' | 'loading' | 'goPage'>) {
+  const { pagination } = queue;
+  return (
+    <footer className={styles.pagination} aria-label="Paginación">
+      <button
+        type="button"
+        disabled={pagination.page <= 1 || loading}
+        onClick={() => void goPage(pagination.page - 1)}
+      >
+        Anterior
+      </button>
+      <span>Página {pagination.page} de {Math.max(pagination.totalPages, 1)}</span>
+      <button
+        type="button"
+        disabled={pagination.page >= pagination.totalPages || loading}
+        onClick={() => void goPage(pagination.page + 1)}
+      >
+        Siguiente
+      </button>
+    </footer>
+  );
+}
+
+export function SupplyWorkspace(props: Props) {
   return (
     <AppShell
       userName={props.context.profile.name}
@@ -103,57 +160,8 @@ export function SupplyWorkspace(props: Props) {
         </section>
 
         {props.message ? <p role="alert" className={styles.message}>{props.message}</p> : null}
-
-        <section aria-labelledby="supply-queue-title">
-          <div className={styles.sectionHeader}>
-            <div>
-              <h2 id="supply-queue-title">{labels[props.area]}</h2>
-              <p>{pagination.totalItems} registros en la cola.</p>
-            </div>
-            <Link href="/orders">Abrir pedidos</Link>
-          </div>
-
-          {props.queue.items.length ? (
-            <div className={styles.grid}>
-              {props.queue.items.map((item) => (
-                <article className={styles.card} key={item.id}>
-                  <div className={styles.cardTop}>
-                    <strong>{item.orderNumber ?? item.reference ?? 'Operación independiente'}</strong>
-                    <span>{item.status}</span>
-                  </div>
-                  {item.clientName ? <p>{item.clientName}</p> : null}
-                  {item.reference ? <small>Referencia: {item.reference}</small> : null}
-                  {item.assignedTo ? <small>Responsable: {item.assignedTo}</small> : null}
-                  <small>Actualizado: {new Date(item.updatedAt).toLocaleString('es-CO')}</small>
-                  {item.orderId ? <Link href={`/orders?order=${item.orderId}`}>Ver pedido</Link> : null}
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.empty}>
-              <h3>Sin pendientes</h3>
-              <p>No hay registros que coincidan con los filtros actuales.</p>
-            </div>
-          )}
-        </section>
-
-        <footer className={styles.pagination} aria-label="Paginación">
-          <button
-            type="button"
-            disabled={pagination.page <= 1 || props.loading}
-            onClick={() => void props.goPage(pagination.page - 1)}
-          >
-            Anterior
-          </button>
-          <span>Página {pagination.page} de {Math.max(pagination.totalPages, 1)}</span>
-          <button
-            type="button"
-            disabled={pagination.page >= pagination.totalPages || props.loading}
-            onClick={() => void props.goPage(pagination.page + 1)}
-          >
-            Siguiente
-          </button>
-        </footer>
+        <SupplyQueueSection area={props.area} queue={props.queue} />
+        <SupplyPagination queue={props.queue} loading={props.loading} goPage={props.goPage} />
       </div>
     </AppShell>
   );
