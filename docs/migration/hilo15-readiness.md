@@ -62,3 +62,5 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Headers verificados: CSP, HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, Referrer-Policy, Permissions-Policy y noindex.
 - Vercel Runtime Errors: sin clusters reportados en la ventana observada.
 - Esta evidencia valida la superficie web, pero **no sustituye el restore/reconciliación de datos ni prueba por sí sola el cutover Supabase**.
+
+- GitHub branch protection endpoint: 403 `Resource not accessible by integration`; no se reintenta desde este hilo.
