@@ -4,13 +4,17 @@ Este secreto es el único dato externo requerido para ejecutar el backup/restore
 
 ## Qué contiene
 
-Una cadena PostgreSQL de Supabase obtenida desde **Connect → Session pooler** del proyecto legado `hezjxcxxcjlpmyalftam`, con la contraseña actual de la base de datos.
+Una cadena PostgreSQL válida del proyecto legado `hezjxcxxcjlpmyalftam`.
 
-Formato conceptual:
+Ruta A — contraseña DB existente:
 
 `postgresql://postgres.<project-ref>:<DB_PASSWORD>@<pooler-host>:5432/postgres`
 
-No copiar un `service_role`, JWT, publishable key ni contraseña a archivos del repositorio.
+Ruta B — **Temporary Access** de Supabase, preferida cuando no se conoce la contraseña DB: habilitar acceso temporal para el usuario autorizado, permitirle asumir el rol `postgres` por una ventana corta y usar un PAT de Supabase como credencial PostgreSQL. El valor completo se guarda directamente como `MIGRATION_SOURCE_DB_URL`; el PAT nunca se publica ni se guarda en Git.
+
+El proyecto legacy corre PostgreSQL 17.6 y cumple el requisito de versión para Temporary Access. Esta ruta evita rotar la contraseña productiva y no altera conexiones existentes.
+
+No copiar un `service_role`, JWT de Auth, publishable key, PAT ni contraseña a archivos del repositorio.
 
 ## Dónde se configura
 
@@ -29,7 +33,9 @@ El workflow solo la consume en ejecuciones manuales de release que habiliten el 
 - No imprimirlo; los workflows aplican masking cuando corresponde.
 - Dumps temporales se crean fuera de Git y se eliminan al finalizar.
 - El secret puede retirarse de GitHub Actions después de concluir migración/cutover.
-- Si la contraseña DB actual no se conoce, cualquier reset debe coordinarse antes porque puede afectar conexiones directas existentes. Este hilo no rota producción automáticamente.
+- Si la contraseña DB actual no se conoce, **no resetearla por defecto**. Preferir Temporary Access con expiración corta y revocación posterior.
+- Un reset de contraseña sigue siendo fallback y debe coordinarse porque puede afectar conexiones directas existentes. Este hilo no rota producción automáticamente.
+- Probe real 2026-10-01: GitHub Actions no dispone actualmente de `MIGRATION_SOURCE_DB_URL` ni `SUPABASE_ACCESS_TOKEN`; PR auxiliar #35 quedó cerrado sin merge y sin exponer valores.
 
 ## Criterio de cierre MIG-002
 
