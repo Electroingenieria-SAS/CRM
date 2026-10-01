@@ -22,9 +22,17 @@ También se observaron 77 tablas legacy, 142 funciones dentro de `erp_supply` y 
 
 Por ello, no se considera segura una sustitución in-place del esquema sin un rehearsal específico y completo.
 
+## Revalidación de capacidad 2026-10-01
+
+La API de Supabase reportó costo **USD 0/mes** para crear un proyecto adicional en la organización accesible `ERP EI`. Ese dato confirma costo, **no confirma todavía disponibilidad efectiva de cuota**: la creación no se ejecutó porque Supabase exige seleccionar/autorizAR explícitamente la organización antes de crear el proyecto.
+
+Si Supabase acepta la creación del target Free antes del freeze, la estrategia cambia a **target-first**: crear y preparar el target con antelación, ejecutar MIG-002, migración/reconciliación/UAT y reservar la pausa del legacy solo para el freeze final. Esto reduce riesgo y downtime.
+
+Si la creación vuelve a ser rechazada por cuota Free, se mantiene como fallback la rotación de cupo documentada abajo.
+
 ## Estrategia preferida
 
-La estrategia Free-only preferida para producción es **rotación de cupo durante la ventana de mantenimiento**, no staging persistente:
+Mientras no exista un target Free creado y validado, la estrategia de fallback para producción es **rotación de cupo durante la ventana de mantenimiento**, no staging persistente:
 
 1. ensayar localmente con copia real;
 2. freeze del legacy;
