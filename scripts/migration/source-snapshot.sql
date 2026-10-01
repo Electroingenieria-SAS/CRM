@@ -62,7 +62,26 @@ select jsonb_pretty(jsonb_build_object(
   'archived_invoice_refs',(select count(*) from erp_supply.invoices where amount is null or amount<=0),
   'materials',(select count(*) from erp_supply.material_master),
   'shipments',(select count(*) from erp_supply.deliveries),
-  'inventory_movements',(select count(*) from erp_supply.inventory_movements),
+  'inventory_movements',(
+    select count(*)
+    from erp_supply.inventory_movements m
+    left join erp_supply.inventory_items i on i.id=m.inventory_item_id
+    left join erp_supply.inventory_lots l on l.id=m.lot_id
+    where coalesce(i.active,false)
+      and coalesce(l.source_active,true)
+      and i.material_master_id is not null
+  ),
+  'archived_inventory_movements',(
+    select count(*)
+    from erp_supply.inventory_movements m
+    left join erp_supply.inventory_items i on i.id=m.inventory_item_id
+    left join erp_supply.inventory_lots l on l.id=m.lot_id
+    where not (
+      coalesce(i.active,false)
+      and coalesce(l.source_active,true)
+      and i.material_master_id is not null
+    )
+  ),
   'workforce_activities',(
     (select count(*) from erp_supply.work_assignment_members)
     +(select count(*) from erp_supply.work_executions where assignment_id is null)

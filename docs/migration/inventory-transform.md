@@ -43,6 +43,8 @@ Las reservas ERP activas se reproducen después del opening balance con operacio
 ## Históricos
 
 - Movimientos legacy confiables pueden conservarse como histórico/auditoría.
+- Si un movimiento histórico pertenece a un ítem legacy inactivo o sin material maestro canónico, se preserva como operación `archive-only` con su identidad, cantidad, unidad y referencias originales, pero no se fuerza dentro del ledger del modelo nuevo.
+- La reconciliación separa movimientos ledger-eligibles de movimientos `archive-only`; ambos grupos deben conservarse exactamente y su suma debe explicar el histórico clasificado.
 - No se recalcula el saldo final sumando ciegamente movimientos históricos si no son ledger completo.
 - Reservas CONSUMED/RELEASED se conservan solo cuando aportan trazabilidad; no vuelven a reservar stock.
 - Conteos y métricas derivadas se recalculan en el destino cuando corresponda.
