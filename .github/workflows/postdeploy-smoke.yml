@@ -1,0 +1,54 @@
+name: Postdeploy stabilization smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Exact Preview/production URL to smoke
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  public-shell-smoke:
+    runs-on: ubuntu-latest
+    env:
+      E2E_BASE_URL: ${{ inputs.base_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Validate target URL
+        shell: bash
+        run: |
+          case "$E2E_BASE_URL" in
+            https://*) ;;
+            *) echo "Only HTTPS deployment URLs are allowed"; exit 2 ;;
+          esac
+      - name: Install representative browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: External shell and responsive smoke
+        run: >
+          npx playwright test
+          --project=desktop-chromium
+          --project=mobile-android
+          --project=tablet-webkit
+          tests/e2e/staging-shell.spec.ts
+      - name: Basic security headers
+        shell: bash
+        run: |
+          headers="$(curl --fail --silent --show-error --head "$E2E_BASE_URL/")"
+          echo "$headers" | grep -qi '^x-content-type-options:'
+          echo "$headers" | grep -qi '^referrer-policy:'
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: postdeploy-smoke-report
+          path: playwright-report/
+          retention-days: 14

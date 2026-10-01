@@ -1,0 +1,26 @@
+name: Main governance
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  verify-associated-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require an associated pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          count="$(gh api -H 'Accept: application/vnd.github+json'             "/repos/$REPO/commits/$SHA/pulls" --jq 'length')"
+          if [ "$count" -lt 1 ]; then
+            echo "::error::Direct push detected on main. Native branch protection must also be enabled in GitHub settings."
+            exit 1
+          fi
+          echo "PASS: main commit is associated with a pull request."

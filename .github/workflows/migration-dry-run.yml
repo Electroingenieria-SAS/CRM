@@ -1,0 +1,159 @@
+name: Migration dry-run
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/migration/**'
+      - 'docs/migration/**'
+      - 'supabase/functions/migration-source-export/**'
+      - '.github/workflows/migration-dry-run.yml'
+  workflow_dispatch:
+    inputs:
+      execute_source_restore_rehearsal:
+        description: Run real production-source OIDC backup/restore rehearsal locally
+        required: true
+        type: boolean
+        default: false
+      execute_remote_reconciliation:
+        description: Run source vs non-production target reconciliation
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  validate-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate migration shell scripts
+        run: |
+          bash -n scripts/migration/preflight.sh
+          bash -n scripts/migration/reconcile.sh
+          bash -n scripts/migration/reconcile-active-orders.sh
+          bash -n scripts/migration/restore-rehearsal.sh
+          bash -n scripts/migration/oidc-source-rehearsal.sh
+          test -f scripts/migration/source-snapshot.sql
+          test -f scripts/migration/source-active-orders-snapshot.sql
+          test -f scripts/migration/source-validate.sql
+
+  local-schema-rehearsal:
+    runs-on: ubuntu-latest
+    needs: validate-scripts
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Start isolated Supabase
+        run: |
+          supabase start
+          supabase db reset
+      - name: Resolve local DB URL
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          test -n "${DB_URL:-}" || { echo "DB_URL missing"; exit 2; }
+          echo "::add-mask::$DB_URL"
+          echo "DB_URL=$DB_URL" >> "$GITHUB_ENV"
+      - name: Validate critical invariants on target schema
+        run: psql "$DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/validate-critical.sql
+      - name: Validate migration snapshot query
+        run: |
+          psql "$DB_URL" -qAt -v ON_ERROR_STOP=1 -f scripts/migration/snapshot.sql > /tmp/snapshot.json
+          node -e "JSON.parse(require('fs').readFileSync('/tmp/snapshot.json','utf8')); console.log('PASS snapshot JSON')"
+      - name: Validate active-order snapshot query
+        run: |
+          psql "$DB_URL" -qAt -v ON_ERROR_STOP=1 -f scripts/migration/active-orders-snapshot.sql > /tmp/active.json
+          node -e "JSON.parse(require('fs').readFileSync('/tmp/active.json','utf8') || '[]'); console.log('PASS active-order JSON')"
+      - name: Stop local Supabase
+        if: always()
+        run: |
+          if command -v supabase >/dev/null 2>&1; then
+            supabase stop --no-backup || true
+          fi
+
+  oidc-source-restore-rehearsal:
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.head_ref == 'release/hilo15-oidc-source-rehearsal' &&
+       github.base_ref == 'release/hilo15-controlled-production-migration') ||
+      (github.event_name == 'workflow_dispatch' && inputs.execute_source_restore_rehearsal)
+    runs-on: ubuntu-latest
+    needs: validate-scripts
+    env:
+      SOURCE_EXPORT_URL: https://hezjxcxxcjlpmyalftam.supabase.co/functions/v1/migration-source-export
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Install PostgreSQL 17 client
+        shell: bash
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl --fail --silent --show-error \
+            -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+            https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          . /etc/os-release
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/17/bin/pg_dump --version
+      - name: Start isolated local Supabase
+        run: |
+          supabase start
+          supabase db reset
+      - name: Resolve local admin DB URL
+        shell: bash
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          set -a
+          source /tmp/supabase.env
+          set +a
+          test -n "${DB_URL:-}" || { echo "DB_URL missing"; exit 2; }
+          echo "::add-mask::$DB_URL"
+          echo "LOCAL_ADMIN_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+      - name: Real production source OIDC export and restore rehearsal
+        run: bash scripts/migration/oidc-source-rehearsal.sh
+      - name: Stop local Supabase
+        if: always()
+        run: |
+          if command -v supabase >/dev/null 2>&1; then
+            supabase stop --no-backup || true
+          fi
+
+  remote-reconciliation:
+    if: github.event_name == 'workflow_dispatch' && inputs.execute_remote_reconciliation
+    runs-on: ubuntu-latest
+    needs: validate-scripts
+    env:
+      SOURCE_DB_URL: ${{ secrets.MIGRATION_SOURCE_DB_URL }}
+      TARGET_DB_URL: ${{ secrets.MIGRATION_TARGET_DB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify protected connection secrets exist
+        shell: bash
+        run: |
+          test -n "$SOURCE_DB_URL" || { echo "MIGRATION_SOURCE_DB_URL is missing"; exit 2; }
+          test -n "$TARGET_DB_URL" || { echo "MIGRATION_TARGET_DB_URL is missing"; exit 2; }
+          echo "::add-mask::$SOURCE_DB_URL"
+          echo "::add-mask::$TARGET_DB_URL"
+      - name: Validate source referential integrity
+        run: psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/source-validate.sql
+      - name: Validate source compatibility with target contracts
+        run: psql "$SOURCE_DB_URL" -v ON_ERROR_STOP=1 -f scripts/migration/source-compatibility.sql
+      - name: Reconcile source and non-production target
+        run: bash scripts/migration/reconcile.sh
+      - name: Reconcile in-flight orders
+        run: bash scripts/migration/reconcile-active-orders.sh

@@ -34,3 +34,6 @@ pop3_port = 55326
 
 [functions.admin-users]
 verify_jwt = true
+
+[functions.migration-source-export]
+verify_jwt = true
