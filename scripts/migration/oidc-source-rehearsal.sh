@@ -111,7 +111,10 @@ for table in "${tables[@]}"; do
   payload="$TMP/$table.b64"
   : >"$payload"
 
-  read -r expected_count expected_digest < <(read_fingerprint "$table" "$before")
+  before_fp="$(read_fingerprint "$table" "$before")"
+  expected_count="${before_fp%% *}"
+  expected_digest="${before_fp#* }"
+  echo "PASS $table source fingerprint acquired: $expected_count row(s)"
 
   offset=0
   while :; do
@@ -129,8 +132,12 @@ for table in "${tables[@]}"; do
     [ "$rows" -lt 250 ] && break
   done
 
-  read -r final_count final_digest < <(read_fingerprint "$table" "$after")
-  read -r local_count local_digest < <(local_fingerprint "$payload")
+  after_fp="$(read_fingerprint "$table" "$after")"
+  final_count="${after_fp%% *}"
+  final_digest="${after_fp#* }"
+  local_fp="$(local_fingerprint "$payload")"
+  local_count="${local_fp%% *}"
+  local_digest="${local_fp#* }"
 
   if [ "$expected_count" != "$final_count" ] || [ "$expected_digest" != "$final_digest" ]; then
     echo "FAIL source changed during OIDC export for $table" >&2
