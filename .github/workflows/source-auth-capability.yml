@@ -1,0 +1,25 @@
+name: Source auth capability probe
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/source-auth-capability.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      MIGRATION_SOURCE_DB_URL_PRESENT: ${{ secrets.MIGRATION_SOURCE_DB_URL != '' }}
+      SUPABASE_ACCESS_TOKEN_PRESENT: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' }}
+    steps:
+      - name: Report protected credential availability
+        shell: bash
+        run: |
+          echo "MIGRATION_SOURCE_DB_URL_PRESENT=$MIGRATION_SOURCE_DB_URL_PRESENT"
+          echo "SUPABASE_ACCESS_TOKEN_PRESENT=$SUPABASE_ACCESS_TOKEN_PRESENT"
+          if [ "$MIGRATION_SOURCE_DB_URL_PRESENT" != "true" ] && [ "$SUPABASE_ACCESS_TOKEN_PRESENT" != "true" ]; then
+            echo "::notice::No protected source-auth credential is currently available to GitHub Actions."
+          fi
