@@ -1,6 +1,6 @@
 # Hilo 15 — Readiness de migración y puesta en producción
 
-Corte: 2026-09-30  
+Corte: 2026-10-01  
 Baseline: `main@3738b91b703206cb3ece353ea7c2d9ae4651623a`  
 Estado: **NO-GO temporal para cutover**
 
@@ -24,7 +24,7 @@ Estado: **NO-GO temporal para cutover**
 | MIG-004 | Gobernanza de `main`           | Mitigado / admin ext. | CODEOWNERS + workflow detectan push directo; protección nativa/ruleset requiere acción administrativa fuera del conector                |
 | MIG-005 | Drift `erp-auditoria-metrics`  | Excepción legacy      | no se migra ni usa en CRM nuevo; se mantiene legacy-only/read-only durante coexistencia y se endurece después de identificar consumidor |
 | MIG-006 | Ventana/responsable de cutover | Cerrado               | ventana estándar 17:40–19:10 America/Bogota, JEPTAC, freeze/GO/rollback documentados                                                    |
-| MIG-007 | Destino Free-only / transición | Abierto               | rehearsal real aprobado + rotación de cupo: freeze → backup → pausar legacy → crear target Free → Auth/datos → Preview/UAT              |
+| MIG-007 | Destino Free-only / transición | Abierto               | intentar target Free anticipado si la cuota lo permite; si no, rehearsal real aprobado + rotación de cupo durante cutover                |
 
 ## Decisión técnica actual
 
@@ -43,6 +43,18 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - G Cutover: **ventana/owner/rollback definidos; pendiente de MIG-002 + MIG-007 + CI final**
 - H Smoke productivo: **no ejecutado**
 - I Handoff a Hilo 16: **preparado; procede después de freeze/cutover y baseline final**
+
+## Evidencia adicional 2026-10-01
+
+- Candidate Hilo 15: `9029b02e31dd93516dba1d6cf278b65a11fa436b`.
+- PR #34 de reconciliación semántica exacta integrado al parent.
+- CI completo del candidate: `Migration dry-run`, `Migration transform rehearsal` y `CRM quality, security and staging` en SUCCESS, incluyendo database/pgTAP/RLS, CodeQL, secret-scan, supply-chain, E2E staging y E2E autenticado.
+- Vercel: deployment del mismo SHA candidate `9029b02e…` (`dpl_54bAgrYrZTFte3cu7bLtUAgSp34B`) en estado `READY`; el antiguo `build-rate-limit` ya no describe el estado actual.
+- Revalidación read-only contra el Supabase legacy real: **15/15 controles referenciales PASS** y **20/20 controles de compatibilidad PASS**.
+- Snapshot actual del origen: 4 pedidos (3 cerrados, 1 en progreso), 1 factura monetaria, 3 referencias de factura archivada, 1.959 materiales, 3 entregas, 5 movimientos de inventario y 1 pedido activo en etapa `LOCAL_DISPATCH`.
+- GitHub Actions no tiene actualmente `MIGRATION_SOURCE_DB_URL` ni `SUPABASE_ACCESS_TOKEN`; comprobado mediante PR #35 cerrado sin merge y sin imprimir valores.
+- Supabase reporta costo USD 0/mes para un proyecto adicional en `ERP EI`; la disponibilidad efectiva de cuota aún debe comprobarse mediante creación explícitamente autorizada.
+- MIG-002 sigue abierto únicamente porque falta una credencial PostgreSQL protegida para ejecutar el dump/restore real. Se documentó Temporary Access como alternativa segura a resetear la contraseña DB.
 
 ## Evidencia adicional 2026-09-30
 
