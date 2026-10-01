@@ -120,9 +120,9 @@ compare_exact_set   "legacy Auth identity preservation"   "legacy-auth"   "selec
      from erp_supply.profiles
     where preferences->>'legacyAuthUserId' is not null"
 
-compare_exact_set   "monetary invoice identity/order/amount preservation"   "monetary-invoices"   "select jsonb_build_array(id,order_id,invoice_number,invoice_date,amount,currency)::text
+compare_exact_set   "monetary invoice identity/order/amount preservation"   "monetary-invoices"   "select jsonb_build_array(id,order_id,invoice_number,invoice_date,trim_scale(amount),currency)::text
      from erp_supply.invoices
-    where amount>0"   "select jsonb_build_array(id,order_id,invoice_number,invoice_date,amount,currency)::text
+    where amount>0"   "select jsonb_build_array(id,order_id,invoice_number,invoice_date,trim_scale(amount),currency)::text
      from erp_supply.invoices
     where amount>0
       and metadata->>'migrationSource'='CRM-SUMINISTROS'"
