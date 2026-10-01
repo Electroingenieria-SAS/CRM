@@ -32,13 +32,6 @@ jobs:
       - name: Install reproducibly
         run: npm ci
 
-      - name: Capture exact Prettier output once
-        run: |
-          echo "PRETTIER_BASE64_BEGIN"
-          npx prettier supabase/functions/migration-source-export/index.ts | base64 -w0
-          echo
-          echo "PRETTIER_BASE64_END"
-
       - name: Validate application
         run: npm run validate
 
