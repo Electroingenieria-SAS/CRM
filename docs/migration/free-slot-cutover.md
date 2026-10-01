@@ -24,7 +24,7 @@ Por ello, no se considera segura una sustitución in-place del esquema sin un re
 
 ## Revalidación de capacidad 2026-10-01
 
-La API de Supabase reportó costo **USD 0/mes** para crear un proyecto adicional en la organización accesible `ERP EI`. Ese dato confirma costo, **no confirma todavía disponibilidad efectiva de cuota**: la creación no se ejecutó porque Supabase exige seleccionar/autorizAR explícitamente la organización antes de crear el proyecto.
+La API de Supabase reportó costo **USD 0/mes** para crear un proyecto adicional en la organización accesible `ERP EI`. Ese dato confirma costo, **no confirma todavía disponibilidad efectiva de cuota**: la creación no se ejecutó porque Supabase exige seleccionar/autorizar explícitamente la organización antes de crear el proyecto.
 
 Si Supabase acepta la creación del target Free antes del freeze, la estrategia cambia a **target-first**: crear y preparar el target con antelación, ejecutar MIG-002, migración/reconciliación/UAT y reservar la pausa del legacy solo para el freeze final. Esto reduce riesgo y downtime.
 
