@@ -49,6 +49,7 @@ Este hilo sí puede preparar scripts, mapping, reconciliación, runbooks y Previ
 - Candidate Hilo 15: `9029b02e31dd93516dba1d6cf278b65a11fa436b`.
 - PR #34 de reconciliación semántica exacta integrado al parent.
 - CI completo del candidate: `Migration dry-run`, `Migration transform rehearsal` y `CRM quality, security and staging` en SUCCESS, incluyendo database/pgTAP/RLS, CodeQL, secret-scan, supply-chain, E2E staging y E2E autenticado.
+- Vercel: deployment del mismo SHA candidate `9029b02e…` (`dpl_54bAgrYrZTFte3cu7bLtUAgSp34B`) en estado `READY`; el antiguo `build-rate-limit` ya no describe el estado actual.
 - Revalidación read-only contra el Supabase legacy real: **15/15 controles referenciales PASS** y **20/20 controles de compatibilidad PASS**.
 - Snapshot actual del origen: 4 pedidos (3 cerrados, 1 en progreso), 1 factura monetaria, 3 referencias de factura archivada, 1.959 materiales, 3 entregas, 5 movimientos de inventario y 1 pedido activo en etapa `LOCAL_DISPATCH`.
 - GitHub Actions no tiene actualmente `MIGRATION_SOURCE_DB_URL` ni `SUPABASE_ACCESS_TOKEN`; comprobado mediante PR #35 cerrado sin merge y sin imprimir valores.
