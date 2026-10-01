@@ -102,7 +102,8 @@ async function verifyOidc(token: string): Promise<Claims> {
 
   const jwks = await jwksResponse.json();
   const jwk = jwks.keys?.find(
-    (candidate: Record<string, unknown>) => candidate.kid === header.kid && candidate.kty === 'RSA',
+    (candidate: Record<string, unknown>) =>
+      candidate.kid === header.kid && candidate.kty === 'RSA',
   );
   if (!jwk) throw new Error('OIDC signing key not found');
 
