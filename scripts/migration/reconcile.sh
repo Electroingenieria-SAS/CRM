@@ -26,7 +26,7 @@ delete target.captured_at;
 
 const critical=[
   'organizations','profiles','profile_roles','orders','order_items','invoices','archived_invoice_refs',
-  'materials','shipments','inventory_movements','workforce_activities',
+  'materials','shipments','inventory_movements','archived_inventory_movements','workforce_activities',
   'workforce_execution_events','workforce_evidence','legacy_audit_events'
 ];
 let failed=false;

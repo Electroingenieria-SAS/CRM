@@ -16,6 +16,12 @@ select jsonb_pretty(jsonb_build_object(
     where metadata->>'migrationSource'='CRM-SUMINISTROS'
       and coalesce((metadata->>'historicalOnly')::boolean,false)
   ),
+  'archived_inventory_movements',(
+    select count(*) from erp_supply.inventory_operations
+    where operation_type='LEGACY_HISTORY'
+      and result->>'migrationSource'='CRM-SUMINISTROS'
+      and coalesce((result->>'archiveOnly')::boolean,false)
+  ),
   'workforce_activities',(
     select count(*) from erp_supply.workforce_activities
     where metadata->>'migrationSource'='CRM-SUMINISTROS'

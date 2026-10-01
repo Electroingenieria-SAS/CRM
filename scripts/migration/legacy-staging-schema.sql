@@ -7,6 +7,10 @@ create table migration_legacy.organizations(
   id uuid primary key, code text, name text, timezone text, active boolean,
   settings jsonb, created_at timestamptz, updated_at timestamptz
 );
+create table migration_legacy.roles(
+  code text primary key, name text not null, description text, system_role boolean not null,
+  active boolean not null, created_at timestamptz not null
+);
 create table migration_legacy.profiles(
   id uuid primary key, organization_id uuid, auth_user_id uuid, email text, display_name text,
   employee_code text, active boolean, is_system boolean, preferences jsonb,

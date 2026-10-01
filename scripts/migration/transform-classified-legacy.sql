@@ -22,14 +22,33 @@ select
     'migrationSource','CRM-SUMINISTROS',
     'legacyMovementId',m.id,
     'legacyMovementType',m.movement_type,
-    'historicalOnly',true
+    'legacyInventoryItemId',m.inventory_item_id,
+    'legacyLotId',m.lot_id,
+    'legacyOrderId',m.order_id,
+    'legacyFromLocation',m.from_location,
+    'legacyToLocation',m.to_location,
+    'legacyReference',m.reference,
+    'quantity',m.quantity,
+    'unit',m.unit,
+    'historicalOnly',true,
+    'archiveOnly',not (
+      coalesce(i.active,false)
+      and coalesce(l.source_active,true)
+      and i.material_master_id is not null
+    )
   ),
   m.created_at,
   m.created_at
 from migration_legacy.inventory_movements m
 join migration_legacy.organizations so on so.id=m.organization_id
 join erp_supply.organizations o on o.code=so.code
-on conflict(organization_id,operation_key) do nothing;
+left join migration_legacy.inventory_items i on i.id=m.inventory_item_id
+left join migration_legacy.inventory_lots l on l.id=m.lot_id
+on conflict(organization_id,operation_key) do update set
+  result=excluded.result,
+  actor_profile_id=excluded.actor_profile_id,
+  created_at=excluded.created_at,
+  completed_at=excluded.completed_at;
 
 insert into erp_supply.inventory_movements(
   id,organization_id,operation_id,material_id,variant_id,location_id,order_id,
@@ -85,6 +104,9 @@ join erp_supply.inventory_locations loc
  and loc.code='LEGACY-'||substr(md5(coalesce(l.warehouse_code,'')||'|'||l.location),1,20)
 join erp_supply.inventory_operations op
   on op.organization_id=o.id and op.operation_key='legacy-movement:'||m.id::text
+where i.active
+  and coalesce(l.source_active,true)
+  and i.material_master_id is not null
 on conflict(id) do nothing;
 
 insert into erp_supply.workforce_activity_catalog(

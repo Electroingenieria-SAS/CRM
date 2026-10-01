@@ -5,11 +5,12 @@ on:
     paths:
       - 'scripts/migration/**'
       - 'docs/migration/**'
+      - 'supabase/functions/migration-source-export/**'
       - '.github/workflows/migration-dry-run.yml'
   workflow_dispatch:
     inputs:
       execute_source_restore_rehearsal:
-        description: Run real source backup/restore rehearsal in ephemeral local PostgreSQL
+        description: Run real production-source OIDC backup/restore rehearsal locally
         required: true
         type: boolean
         default: false
@@ -21,6 +22,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   validate-scripts:
@@ -33,6 +35,7 @@ jobs:
           bash -n scripts/migration/reconcile.sh
           bash -n scripts/migration/reconcile-active-orders.sh
           bash -n scripts/migration/restore-rehearsal.sh
+          bash -n scripts/migration/oidc-source-rehearsal.sh
           test -f scripts/migration/source-snapshot.sql
           test -f scripts/migration/source-active-orders-snapshot.sql
           test -f scripts/migration/source-validate.sql
@@ -77,20 +80,18 @@ jobs:
             supabase stop --no-backup || true
           fi
 
-  local-source-restore-rehearsal:
-    if: github.event_name == 'workflow_dispatch' && inputs.execute_source_restore_rehearsal
+  oidc-source-restore-rehearsal:
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.head_ref == 'release/hilo15-oidc-source-rehearsal' &&
+       github.base_ref == 'release/hilo15-controlled-production-migration') ||
+      (github.event_name == 'workflow_dispatch' && inputs.execute_source_restore_rehearsal)
     runs-on: ubuntu-latest
     needs: validate-scripts
     env:
-      SOURCE_DB_URL: ${{ secrets.MIGRATION_SOURCE_DB_URL }}
+      SOURCE_EXPORT_URL: https://hezjxcxxcjlpmyalftam.supabase.co/functions/v1/migration-source-export
     steps:
       - uses: actions/checkout@v4
-      - name: Require protected source connection
-        run: |
-          test -n "$SOURCE_DB_URL" || {
-            echo "::error::MIGRATION_SOURCE_DB_URL is required for the real restore rehearsal."
-            exit 2
-          }
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
@@ -107,7 +108,8 @@ jobs:
             | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client-17
-          pg_dump --version
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/17/bin/pg_dump --version
       - name: Start isolated local Supabase
         run: |
           supabase start
@@ -122,8 +124,8 @@ jobs:
           test -n "${DB_URL:-}" || { echo "DB_URL missing"; exit 2; }
           echo "::add-mask::$DB_URL"
           echo "LOCAL_ADMIN_DB_URL=$DB_URL" >> "$GITHUB_ENV"
-      - name: Real backup and restore rehearsal
-        run: bash scripts/migration/restore-rehearsal.sh
+      - name: Real production source OIDC export and restore rehearsal
+        run: bash scripts/migration/oidc-source-rehearsal.sh
       - name: Stop local Supabase
         if: always()
         run: |
