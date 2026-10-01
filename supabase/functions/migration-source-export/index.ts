@@ -12,6 +12,7 @@ const WORKFLOW_PREFIX =
 
 const TABLES = new Set([
   "organizations",
+  "roles",
   "profiles",
   "profile_roles",
   "orders",
