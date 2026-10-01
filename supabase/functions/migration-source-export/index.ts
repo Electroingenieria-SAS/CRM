@@ -7,7 +7,8 @@ const REPOSITORY = 'Electroingenieria-SAS/CRM';
 const REPOSITORY_ID = '1387615740';
 const REPOSITORY_OWNER_ID = '308466143';
 const ACTOR_ID = '282648667';
-const WORKFLOW_PREFIX = 'Electroingenieria-SAS/CRM/.github/workflows/migration-dry-run.yml@';
+const WORKFLOW_PREFIX =
+  'Electroingenieria-SAS/CRM/.github/workflows/migration-dry-run.yml@';
 
 const TABLES = new Set([
   'organizations',
@@ -86,7 +87,9 @@ async function verifyOidc(token: string): Promise<Claims> {
   if (parts.length !== 3) throw new Error('Malformed OIDC token');
 
   const header = JSON.parse(decoder.decode(decodeBase64Url(parts[0])));
-  const claims = JSON.parse(decoder.decode(decodeBase64Url(parts[1]))) as Claims;
+  const claims = JSON.parse(
+    decoder.decode(decodeBase64Url(parts[1])),
+  ) as Claims;
 
   if (header.alg !== 'RS256' || typeof header.kid !== 'string') {
     throw new Error('Unsupported signing header');
@@ -152,7 +155,9 @@ async function verifyOidc(token: string): Promise<Claims> {
       throw new Error('PR refs rejected');
     }
   } else if (claims.event_name === 'workflow_dispatch') {
-    if (claims.ref !== 'refs/heads/release/hilo15-controlled-production-migration') {
+    if (
+      claims.ref !== 'refs/heads/release/hilo15-controlled-production-migration'
+    ) {
       throw new Error('Dispatch ref rejected');
     }
   } else {
@@ -189,7 +194,11 @@ async function fingerprint(table: string) {
   };
 }
 
-async function tablePage(table: string, offset: number, limit: number): Promise<Response> {
+async function tablePage(
+  table: string,
+  offset: number,
+  limit: number,
+): Promise<Response> {
   const query =
     "select replace(encode(convert_to(payload,'UTF8'),'base64'),E'\\n','') payload " +
     'from (select row_to_json(t)::text payload from erp_supply.' +
