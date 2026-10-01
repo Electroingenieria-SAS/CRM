@@ -40,10 +40,8 @@ oidc_token() {
 request_to_file() {
   local url="$1"
   local output="$2"
-  local token
-  token="$(oidc_token)"
   curl --fail --silent --show-error \
-    -H "Authorization: Bearer $token" \
+    -H "Authorization: Bearer $OIDC_BEARER" \
     -H "Accept: application/json,text/plain" \
     "$url" -o "$output"
 }
@@ -94,6 +92,9 @@ tables=(
   work_assignment_members work_executions work_evidence system_audit
 )
 
+OIDC_BEARER="$(oidc_token)"
+test -n "$OIDC_BEARER" || { echo "FAIL unable to obtain GitHub OIDC token" >&2; exit 5; }
+
 health="$TMP/health.json"
 request_to_file "${SOURCE_EXPORT_URL}?mode=health" "$health"
 node - "$health" <<'NODE'
@@ -115,9 +116,8 @@ for table in "${tables[@]}"; do
   offset=0
   while :; do
     page="$TMP/$table.$offset.page"
-    token="$(oidc_token)"
     curl --fail --silent --show-error \
-      -H "Authorization: Bearer $token" \
+      -H "Authorization: Bearer $OIDC_BEARER" \
       "${SOURCE_EXPORT_URL}?mode=table&table=${table}&offset=${offset}&limit=250" \
       -o "$page"
 
