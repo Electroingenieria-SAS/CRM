@@ -194,7 +194,7 @@ jobs:
       - name: Prove logistics concurrency and idempotency
         run: node tests/integration/logistics-concurrency.mjs
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
       - name: Authenticated full-domain regression
         run: >
           npx playwright test --workers=1 --project=desktop-chromium
