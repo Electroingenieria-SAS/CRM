@@ -56,7 +56,7 @@ read_fingerprint() {
 const fs=require("fs");
 const p=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
 if(!Number.isInteger(p.count) || typeof p.digest!=="string" || !p.digest) process.exit(3);
-process.stdout.write(String(p.count)+" "+p.digest);
+process.stdout.write(String(p.count)+" "+p.digest+"\\n");
 NODE
 }
 
@@ -72,7 +72,7 @@ const hashes=lines.map(line=>{
   return crypto.createHash("md5").update(raw).digest("hex");
 }).sort();
 const digest=crypto.createHash("md5").update(hashes.join("")).digest("hex");
-process.stdout.write(String(lines.length)+" "+digest);
+process.stdout.write(String(lines.length)+" "+digest+"\\n");
 NODE
 }
 
