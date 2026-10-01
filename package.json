@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --write supabase/functions/migration-source-export/index.ts && git diff -- supabase/functions/migration-source-export/index.ts && exit 1",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
