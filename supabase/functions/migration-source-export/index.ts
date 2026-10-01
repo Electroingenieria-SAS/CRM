@@ -232,7 +232,7 @@ Deno.serve(async (req: Request) => {
 
     if (mode === 'table') {
       const table = allowedTable(url);
-      const offset = Number(url.searchParams.get('toffset') ?? '0');
+      const offset = Number(url.searchParams.get('offset') ?? '0');
       const limit = Number(url.searchParams.get('limit') ?? '250');
       if (
         !Number.isInteger(offset) ||
