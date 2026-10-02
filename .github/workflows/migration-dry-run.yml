@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           version: 2.118.0
       - name: Start isolated Supabase
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           version: 2.118.0
       - name: Install PostgreSQL 17 client
