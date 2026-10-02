@@ -32,7 +32,7 @@ jobs:
           bash -n scripts/migration/stage-legacy.sh
           bash -n scripts/migration/validate-real-transform.sh
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           version: 2.118.0
       - name: Start clean target Supabase
