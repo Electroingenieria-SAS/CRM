@@ -28,7 +28,7 @@ jobs:
   validate-scripts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Validate migration shell scripts
         run: |
           bash -n scripts/migration/preflight.sh
@@ -91,7 +91,7 @@ jobs:
     env:
       SOURCE_EXPORT_URL: https://hezjxcxxcjlpmyalftam.supabase.co/functions/v1/migration-source-export
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
@@ -141,7 +141,7 @@ jobs:
       SOURCE_DB_URL: ${{ secrets.MIGRATION_SOURCE_DB_URL }}
       TARGET_DB_URL: ${{ secrets.MIGRATION_TARGET_DB_URL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Verify protected connection secrets exist
         shell: bash
         run: |
